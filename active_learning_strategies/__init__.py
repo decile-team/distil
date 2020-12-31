@@ -1,0 +1,1 @@
+from .fass import FASS
