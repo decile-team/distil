@@ -1,6 +1,6 @@
 # DISTIL
-DISTIL: Deep dIverSified inTeractIve Learning
-##Getting Started
+DISTIL: Deep dIverSified inTeractIve Learning  
+## Getting Started
 ```
 cd notebooks/
 python run_user.py
