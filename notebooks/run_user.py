@@ -8,6 +8,8 @@ from torchvision import transforms
 import torch
 import torch.optim as optim
 from torch.autograd import Variable
+import sys
+sys.path.append('../')
 from active_learning_strategies import FASS
 
 # linear model class
@@ -134,14 +136,16 @@ class DataHandler_Points(Dataset):
         return len(self.X)
 
 #User Execution
-data_path = './data_corpus/iris.csv'
-test_path = './data_corpus/iris_test.csv'
+data_path = '../data_corpus/iris.csv'
+test_path = '../data_corpus/iris_test.csv'
 args = {'n_epoch':50, 'lr':float(0.01)}
 nclasses = 3    ##Number of unique classes
 n_rounds = 11    ##Number of rounds to run active learning
 budget = 10		##Number of new data points after every iteration
 
 df = pd.read_csv(data_path)
+df = df.sample(frac=1).reset_index(drop=True)
+df = df.sample(frac=1).reset_index(drop=True)
 df = df.sample(frac=1).reset_index(drop=True)
 X = df.iloc[:,:-1].to_numpy()
 y = df.iloc[:, -1].to_numpy()
@@ -205,4 +209,4 @@ for rd in range(1, n_rounds):
 print('Training Completed')
 # final_df = pd.DataFrame(X_tr)
 # final_df['Target'] = list(y_tr)
-# final_df.to_csv('./final.csv', index=False)
+# final_df.to_csv('../final.csv', index=False)
