@@ -10,20 +10,16 @@ from copy import deepcopy
 import pickle
 
 class Strategy:
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args):
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses):
         self.X = X
         self.Y = Y
-        # self.idxs_lb = idxs_lb
         self.unlabeled_x = unlabeled_x
         self.net = net
         self.clf = net
         self.handler = handler
         self.target_classes = nclasses
-        self.args = args
-        # self.n_pool = len(Y)
         self.use_cuda = torch.cuda.is_available()
-        self.filename = '../data_corpus/state.pkl'
-        print('Use_CUDA ', self.use_cuda)
+        self.filename = '../datasets/state.pkl'
 
     def select(self, n):
         pass
@@ -124,6 +120,7 @@ class Strategy:
         loader_te = DataLoader(self.handler(X, True))
         self.clf.eval()
         embedding = torch.zeros([X.shape[0], self.clf.get_embedding_dim()])
+
         with torch.no_grad():
             for x, idxs in loader_te:
                 if self.use_cuda:
@@ -132,7 +129,6 @@ class Strategy:
                     x = Variable(x)  
                 out, e1 = self.clf(x)
                 embedding[idxs] = e1.data.cpu()
-        
         return embedding
 
     # gradient embedding (assumes cross-entropy loss)
@@ -162,33 +158,3 @@ class Strategy:
                         else:
                             embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (-1 * batchProbs[j][c])
             return torch.Tensor(embedding)
-
-
-    # gradient embedding old function
-    
-    # def get_grad_embedding(self, X, Y):
-    #     model = self.clf
-    #     embDim = model.get_embedding_dim()
-    #     model.eval()
-    #     nLab = len(np.unique(Y))
-    #     embedding = np.zeros([len(Y), embDim * nLab])
-    #     loader_te = DataLoader(self.handler(X, Y, transform=self.args['transformTest']),
-    #                         shuffle=False, **self.args['loader_te_args'])
-    #     with torch.no_grad():
-    #         for x, y, idxs in loader_te:
-    #             # x, y = Variable(x.cuda()), Variable(y.cuda())
-    #             if self.use_cuda:
-    #                 x, y = Variable(x.cuda()), Variable(y.cuda())
-    #             else:
-    #                 x, y = Variable(x), Variable(y)  
-    #             cout, out = self.clf(x)
-    #             out = out.data.cpu().numpy()
-    #             batchProbs = F.softmax(cout, dim=1).data.cpu().numpy()
-    #             maxInds = np.argmax(batchProbs,1)
-    #             for j in range(len(y)):
-    #                 for c in range(nLab):
-    #                     if c == maxInds[j]:
-    #                         embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (1 - batchProbs[j][c])
-    #                     else:
-    #                         embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (-1 * batchProbs[j][c])
-    #         return torch.Tensor(embedding)

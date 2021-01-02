@@ -10,7 +10,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 import sys
 sys.path.append('../')
-from active_learning_strategies import FASS
+from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling
 
 # linear model class
 class linMod(nn.Module):
@@ -41,6 +41,10 @@ class mlpMod(nn.Module):
     def get_embedding_dim(self):
         return self.embSize
 
+def init_weights(m):
+    if type(m) == nn.Linear:
+        torch.nn.init.xavier_uniform_(m.weight)
+        m.bias.data.fill_(0.01)
 
 #custom training
 class data_train:
@@ -78,7 +82,7 @@ class data_train:
             loss.backward()
 
             # clamp gradients, just in case
-            for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
+            # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
 
             optimizer.step()
         return accFinal / len(loader_tr.dataset.X)
@@ -136,12 +140,12 @@ class DataHandler_Points(Dataset):
         return len(self.X)
 
 #User Execution
-data_path = '../data_corpus/iris.csv'
-test_path = '../data_corpus/iris_test.csv'
+data_path = '../datasets/iris.csv'
+test_path = '../datasets/iris_test.csv'
 args = {'n_epoch':50, 'lr':float(0.01)}
 nclasses = 3    ##Number of unique classes
 n_rounds = 11    ##Number of rounds to run active learning
-budget = 10		##Number of new data points after every iteration
+budget = 10 		##Number of new data points after every iteration
 
 df = pd.read_csv(data_path)
 df = df.sample(frac=1).reset_index(drop=True)
@@ -162,8 +166,12 @@ y_test = df_test.iloc[:, -1].to_numpy()
 
 nSamps, dim = np.shape(X)
 net = mlpMod(dim, nclasses, embSize=3)
-strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, args)
+net.apply(init_weights)
 
+strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, 'facility_location', 'PerClass')
+# strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
+# strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, 5)
+# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
 #Training first set of points
 dt = data_train(X_tr, y_tr, net, DataHandler_Points, args)
 clf = dt.train()
@@ -176,37 +184,38 @@ print('Initial Testing accuracy:', round(acc[0], 3), flush=True)
 
 ##User Controlled Loop
 for rd in range(1, n_rounds):
-	print('-------------------------------------------------')
-	print('Round', rd) 
-	print('-------------------------------------------------')
-	idx = strategy.select(budget)
-	print('New data points added -', len(idx))
-	strategy.save_state()
+    print('-------------------------------------------------')
+    print('Round', rd) 
+    print('-------------------------------------------------')
+    idx = strategy.select(budget)
+    print('New data points added -', len(idx))
+    strategy.save_state()
 
-	#Adding new points to training set
-	X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
-	X_unlabeled = np.delete(X_unlabeled, idx, axis = 0)
+    #Adding new points to training set
+    X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
+    X_unlabeled = np.delete(X_unlabeled, idx, axis = 0)
 
-	#Human In Loop, Assuming user adds new labels here
-	y_tr = np.concatenate((y_tr, y_unlabeled[idx]), axis = 0)
-	y_unlabeled = np.delete(y_unlabeled, idx, axis = 0)
-	print('Number of training points -',X_tr.shape[0])
-	print('Number of lables -', y_tr.shape[0])
-	print('Number of unlabeled points -', X_unlabeled.shape[0])
+    #Human In Loop, Assuming user adds new labels here
+    y_tr = np.concatenate((y_tr, y_unlabeled[idx]), axis = 0)
+    y_unlabeled = np.delete(y_unlabeled, idx, axis = 0)
+    print('Number of training points -',X_tr.shape[0])
+    print('Number of labels -', y_tr.shape[0])
+    print('Number of unlabeled points -', X_unlabeled.shape[0])
 
-	#Reload state and start training
-	strategy.load_state()
-	strategy.update_data(X_tr, y_tr, X_unlabeled)
-	dt.update_data(X_tr, y_tr)
-	clf = dt.train()
-	strategy.update_model(clf)
-	y_pred = strategy.predict(X_test).numpy()
-	acc[rd] = round(1.0 * (y_test == y_pred).sum().item() / len(y_test), 3)
-	print('Testing accuracy:', acc[rd], flush=True)
+    #Reload state and start training
+    strategy.load_state()
+    strategy.update_data(X_tr, y_tr, X_unlabeled)
+    dt.update_data(X_tr, y_tr)
+
+    clf = dt.train()
+    strategy.update_model(clf)
+    y_pred = strategy.predict(X_test).numpy()
+    acc[rd] = round(1.0 * (y_test == y_pred).sum().item() / len(y_test), 3)
+    print('Testing accuracy:', acc[rd], flush=True)
 	if acc[rd] > 0.98:
 		print('Testing accuracy reached above 98%, stopping training!')
 		break
 print('Training Completed')
-# final_df = pd.DataFrame(X_tr)
-# final_df['Target'] = list(y_tr)
-# final_df.to_csv('../final.csv', index=False)
+final_df = pd.DataFrame(X_tr)
+final_df['Target'] = list(y_tr)
+final_df.to_csv('../final.csv', index=False)
