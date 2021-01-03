@@ -14,7 +14,6 @@ class Strategy:
         
         self.X = X
         self.Y = Y
-        # self.idxs_lb = idxs_lb
         self.unlabeled_x = unlabeled_x
         self.clf = net
         self.handler = handler
@@ -110,12 +109,12 @@ class Strategy:
              **self.args['loader_te_args'])
         self.clf.eval()
         embedding = torch.zeros([X.shape[0], self.clf.get_embedding_dim()])
+
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
                 out, e1 = self.clf(x)
                 embedding[idxs] = e1.data.cpu()
-        
         return embedding
 
     # gradient embedding (assumes cross-entropy loss)
@@ -126,7 +125,7 @@ class Strategy:
         
         nLab = self.target_classes
         
-        embedding = np.zeros([X.shape[0], embDim * nLab])
+        embedding = torch.zeros([X.shape[0], embDim * nLab])
         loader_te = DataLoader(self.handler(X),shuffle=False,
              **self.args['loader_te_args'])
 
@@ -150,6 +149,8 @@ class Strategy:
                     embedding[idxs] = torch.cat((l0_grads, l1_grads), dim=1)
                 else:
                     embedding[idxs] = l1_grads
+
+        return embedding
 
         '''with torch.no_grad():
             for x, idxs in loader_te:
