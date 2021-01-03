@@ -15,7 +15,7 @@ class Strategy:
         self.X = X
         self.Y = Y
         self.unlabeled_x = unlabeled_x
-        self.clf = net
+        self.model = net
         self.handler = handler
         self.target_classes = nclasses
         self.args = args
@@ -33,7 +33,7 @@ class Strategy:
         self.unlabeled_x = unlabeled_x
 
     def update_model(self, clf):
-        self.clf = clf
+        self.model = clf
 
     def save_state(self):
         with open(self.filename, 'wb') as f:
@@ -45,27 +45,27 @@ class Strategy:
 
     def predict(self,X):
 
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
+        loader_te = DataLoader(self.handler(X),shuffle=False,*self.args['batch_size'])
 
-        self.clf.eval()
+        self.model.eval()
         P = torch.zeros(X.shape[0]).long()
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
-                out, e1 = self.clf(x)
+                out, e1 = self.model(x)
                 pred = out.max(1)[1]
                 P[idxs] = pred.data.cpu()
         return P
 
     def predict_prob(self,X):
 
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
-        self.clf.eval()
+        loader_te = DataLoader(self.handler(X),shuffle=False,*self.args['batch_size'])
+        self.model.eval()
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)                  
-                out, e1 = self.clf(x)
+                out, e1 = self.model(x)
                 prob = F.softmax(out, dim=1)
                 probs[idxs] = prob.cpu().data
         
@@ -73,8 +73,8 @@ class Strategy:
 
     def predict_prob_dropout(self,X, n_drop):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
-        self.clf.train()
+        loader_te = DataLoader(self.handler(X),shuffle=False,*self.args['batch_size'])
+        self.model.train()
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
             for i in range(n_drop):
@@ -82,7 +82,7 @@ class Strategy:
                 for x, idxs in loader_te:
 
                     x = x.to(self.device)   
-                    out, e1 = self.clf(x)
+                    out, e1 = self.model(x)
                     prob = F.softmax(out, dim=1)
                     probs[idxs] += prob.cpu().data
         probs /= n_drop
@@ -91,52 +91,54 @@ class Strategy:
 
     def predict_prob_dropout_split(self,X, n_drop):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
-        self.clf.train()
+        loader_te = DataLoader(self.handler(X),shuffle=False,*self.args['batch_size'])
+        self.model.train()
         probs = torch.zeros([n_drop, X.shape[0], self.target_classes])
         with torch.no_grad():
             for i in range(n_drop):
                 print('n_drop {}/{}'.format(i+1, n_drop))
                 for x, idxs in loader_te:
                     x = x.to(self.device)
-                    out, e1 = self.clf(x)
+                    out, e1 = self.model(x)
                     probs[i][idxs] += F.softmax(out, dim=1).cpu().data
             return probs
 
     def get_embedding(self,X):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False,
-             **self.args['loader_te_args'])
-        self.clf.eval()
-        embedding = torch.zeros([X.shape[0], self.clf.get_embedding_dim()])
+        loader_te = DataLoader(self.handler(X),shuffle=False,*self.args['batch_size'])
+        self.model.eval()
+        embedding = torch.zeros([X.shape[0], self.model.get_embedding_dim()])
 
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
-                out, e1 = self.clf(x)
+                out, e1 = self.model(x)
                 embedding[idxs] = e1.data.cpu()
         return embedding
 
     # gradient embedding (assumes cross-entropy loss)
     #calculating hypothesised labels within
-    def get_grad_embedding(self,X, bias_grad=True):
+    def get_grad_embedding(self,X,Y=None, bias_grad=True):
         
-        embDim = self.clf.get_embedding_dim()
+        embDim = self.model.get_embedding_dim()
         
         nLab = self.target_classes
         
         embedding = torch.zeros([X.shape[0], embDim * nLab])
-        loader_te = DataLoader(self.handler(X),shuffle=False,
-             **self.args['loader_te_args'])
+
+        loader_te = DataLoader(self.handler(X),shuffle=False,*self.args['batch_size'])
 
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)
-                out, l1 = self.clf(x)
+                out, l1 = self.model(x)
                 data = F.softmax(out, dim=1)
 
                 outputs = torch.zeros(x.shape[0], nLab).to(self.device)
-                y_trn = self.predict(x)
+                if Y is not None:
+                    y_trn = self.predict(x)
+                else:
+                    y_trn = Y[idxs]
                 outputs.scatter_(1, y_trn.view(-1, 1), 1)
                 l0_grads = data - outputs
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
@@ -159,7 +161,7 @@ class Strategy:
                 else:
                     x = Variable(x) 
 
-                cout, out = self.clf(x)
+                cout, out = self.model(x)
                 out = out.data.cpu().numpy()
                 batchProbs = F.softmax(cout, dim=1).data.cpu().numpy()
                 maxInds = np.argmax(batchProbs,1)
@@ -175,7 +177,7 @@ class Strategy:
     # gradient embedding old function
     
     # def get_grad_embedding(self, X, Y):
-    #     model = self.clf
+    #     model = self.model
     #     embDim = model.get_embedding_dim()
     #     model.eval()
     #     nLab = len(np.unique(Y))
@@ -189,7 +191,7 @@ class Strategy:
     #                 x, y = Variable(x.cuda()), Variable(y.cuda())
     #             else:
     #                 x, y = Variable(x), Variable(y)  
-    #             cout, out = self.clf(x)
+    #             cout, out = self.model(x)
     #             out = out.data.cpu().numpy()
     #             batchProbs = F.softmax(cout, dim=1).data.cpu().numpy()
     #             maxInds = np.argmax(batchProbs,1)
