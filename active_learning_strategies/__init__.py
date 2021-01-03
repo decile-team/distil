@@ -3,3 +3,8 @@ from .entropy_sampling import EntropySampling
 from .entropy_sampling_dropout import EntropySamplingDropout
 from .random_sampling import RandomSampling
 from .submodular import SubmodularFunction
+from .least_confidence import LeastConfidence
+from .least_confidence_dropout import LeastConfidenceDropout
+from .margin_sampling import MarginSampling
+from .margin_sampling_dropout import MarginSamplingDropout
+from .core_set import CoreSet

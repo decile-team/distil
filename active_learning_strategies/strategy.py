@@ -10,7 +10,7 @@ from copy import deepcopy
 import pickle
 
 class Strategy:
-    def __init__(self,X, Y, unlabeled_x, net, handler, nclasses, args): #
+    def __init__(self,X, Y, unlabeled_x, net, handler, nclasses, **args): #
         
         self.X = X
         self.Y = Y
@@ -19,8 +19,9 @@ class Strategy:
         self.handler = handler
         self.target_classes = nclasses
         self.args = args
+        print('Learning rate', args['lr'])
         # self.n_pool = len(Y)
-        self.filename = '../data_corpus/state.pkl'
+        self.filename = '../datasets/state.pkl'
         #print('Use_CUDA ', self.use_cuda)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -45,7 +46,7 @@ class Strategy:
 
     def predict(self,X):
 
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
+        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
 
         self.clf.eval()
         P = torch.zeros(X.shape[0]).long()
@@ -59,7 +60,7 @@ class Strategy:
 
     def predict_prob(self,X):
 
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
+        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
         self.clf.eval()
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
@@ -73,7 +74,7 @@ class Strategy:
 
     def predict_prob_dropout(self,X, n_drop):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
+        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
         self.clf.train()
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
@@ -91,7 +92,7 @@ class Strategy:
 
     def predict_prob_dropout_split(self,X, n_drop):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False,**self.args['batch_size'])
+        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
         self.clf.train()
         probs = torch.zeros([n_drop, X.shape[0], self.target_classes])
         with torch.no_grad():
@@ -105,8 +106,7 @@ class Strategy:
 
     def get_embedding(self,X):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False,
-             **self.args['loader_te_args'])
+        loader_te = DataLoader(self.handler(X),shuffle=False)
         self.clf.eval()
         embedding = torch.zeros([X.shape[0], self.clf.get_embedding_dim()])
 
@@ -126,8 +126,7 @@ class Strategy:
         nLab = self.target_classes
         
         embedding = torch.zeros([X.shape[0], embDim * nLab])
-        loader_te = DataLoader(self.handler(X),shuffle=False,
-             **self.args['loader_te_args'])
+        loader_te = DataLoader(self.handler(X),shuffle=False)
 
         with torch.no_grad():
             for x, idxs in loader_te:
@@ -151,52 +150,3 @@ class Strategy:
                     embedding[idxs] = l1_grads
 
         return embedding
-
-        '''with torch.no_grad():
-            for x, idxs in loader_te:
-                if self.use_cuda:
-                    x = Variable(x.cuda())
-                else:
-                    x = Variable(x) 
-
-                cout, out = self.clf(x)
-                out = out.data.cpu().numpy()
-                batchProbs = F.softmax(cout, dim=1).data.cpu().numpy()
-                maxInds = np.argmax(batchProbs,1)
-                for j in range(x.shape[0]):
-                    for c in range(nLab):
-                        if c == maxInds[j]:
-                            embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (1 - batchProbs[j][c])
-                        else:
-                            embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (-1 * batchProbs[j][c])
-            return torch.Tensor(embedding)'''
-
-
-    # gradient embedding old function
-    
-    # def get_grad_embedding(self, X, Y):
-    #     model = self.clf
-    #     embDim = model.get_embedding_dim()
-    #     model.eval()
-    #     nLab = len(np.unique(Y))
-    #     embedding = np.zeros([len(Y), embDim * nLab])
-    #     loader_te = DataLoader(self.handler(X, Y, transform=self.args['transformTest']),
-    #                         shuffle=False, **self.args['loader_te_args'])
-    #     with torch.no_grad():
-    #         for x, y, idxs in loader_te:
-    #             # x, y = Variable(x.cuda()), Variable(y.cuda())
-    #             if self.use_cuda:
-    #                 x, y = Variable(x.cuda()), Variable(y.cuda())
-    #             else:
-    #                 x, y = Variable(x), Variable(y)  
-    #             cout, out = self.clf(x)
-    #             out = out.data.cpu().numpy()
-    #             batchProbs = F.softmax(cout, dim=1).data.cpu().numpy()
-    #             maxInds = np.argmax(batchProbs,1)
-    #             for j in range(len(y)):
-    #                 for c in range(nLab):
-    #                     if c == maxInds[j]:
-    #                         embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (1 - batchProbs[j][c])
-    #                     else:
-    #                         embedding[idxs[j]][embDim * c : embDim * (c+1)] = deepcopy(out[j]) * (-1 * batchProbs[j][c])
-    #         return torch.Tensor(embedding)

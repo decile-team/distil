@@ -9,6 +9,7 @@ import math
 from collections import defaultdict
 import copy
 from scipy.sparse import csr_matrix
+import pandas as pd
 
 class SubmodularFunction():
 
@@ -142,7 +143,21 @@ class SubmodularFunction():
             
             
             if self.submod == 'feature_based':
-                pass
+                
+                class_map = {}
+                for i in range(len_unique_elements):
+                    class_map[torch.IntTensor.item(classes[i])] = i #Mapping classes from 0 to n
+                    
+                sparse_data = torch.zeros([self.x_trn.shape[0], self.x_trn.shape[1]*len_unique_elements])
+                for i in range(self.x_trn.shape[0]):
+                    
+                    start_col = class_map[torch.IntTensor.item(self.y_trn[i])]*self.x_trn.shape[1]
+                    end_col = start_col+self.x_trn.shape[1]
+                    sparse_data[i, start_col:end_col] = self.x_trn[i, :]
+
+                fl = apricot.functions.featureBased.FeatureBasedSelection(random_state=0, n_samples=budget)
+                x_sub = fl.fit_transform(sparse_data.numpy())
+                total_greedy_list = self.get_index(sparse_data.numpy(), x_sub)
 
             else:
                 for i in range(len(classes)):
