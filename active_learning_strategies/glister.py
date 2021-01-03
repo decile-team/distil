@@ -97,7 +97,7 @@ class GLISTER(Strategy):
                 self.out = torch.zeros(predicted_y.shape[0], self.target_classes).to(self.device)
                 self.emb = torch.zeros(self.Y_Val.shape[0], embDim).to(self.device)
 
-                self.grads_val_curr = torch.zeros(self.target_classes*(1+embDim), 1).to(self.device)
+            self.grads_val_curr = torch.zeros(self.target_classes*(1+embDim), 1).to(self.device)
             
             with torch.no_grad():
 
