@@ -3,8 +3,8 @@ import torch
 from .strategy import Strategy
 
 class EntropySampling(Strategy):
-	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses):
-		super(EntropySampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses)
+	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+		super(EntropySampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
 	def select(self, n):
 		

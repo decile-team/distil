@@ -3,9 +3,12 @@ import torch
 from .strategy import Strategy
 
 class MarginSamplingDropout(Strategy):
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, n_drop=10):
-        self.n_drop = n_drop
-        super(MarginSamplingDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses)
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+        if 'n_drop' in args:
+            self.n_drop = args['n_drop']
+        else:
+            self.n_drop = 10
+        super(MarginSamplingDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def select(self, n):
 

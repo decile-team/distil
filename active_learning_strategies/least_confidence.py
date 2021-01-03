@@ -2,8 +2,8 @@ import numpy as np
 from .strategy import Strategy
 
 class LeastConfidence(Strategy):
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses):
-        super(LeastConfidence, self).__init__(X, Y, unlabeled_x, net, handler, nclasses)
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+        super(LeastConfidence, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def select(self, n):
 

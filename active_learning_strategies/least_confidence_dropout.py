@@ -3,9 +3,12 @@ import torch
 from .strategy import Strategy
 
 class LeastConfidenceDropout(Strategy):
-	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, n_drop=10):
-		self.n_drop = n_drop
-		super(LeastConfidenceDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses)
+	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+		if 'n_drop' in args:
+			self.n_drop = args['n_drop']
+		else:
+			self.n_drop = 10
+		super(LeastConfidenceDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
 	def select(self, n):
 		probs = self.predict_prob_dropout(self.unlabeled_x, self.n_drop)

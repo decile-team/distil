@@ -144,11 +144,11 @@ class DataHandler_Points(Dataset):
 #User Execution
 data_path = '../datasets/iris.csv'
 test_path = '../datasets/iris_test.csv'
-args = {'n_epoch':150, 'lr':float(0.001)}
+args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
 nclasses = 3    ##Number of unique classes
 n_rounds = 11    ##Number of rounds to run active learning
 budget = 10 		##Number of new data points after every iteration
-strategy_args = {'batch_size' : 1} 
+strategy_args = {'batch_size' : 2, 'lr' : 0.1} 
 
 df = pd.read_csv(data_path)
 df = df.sample(frac=1).reset_index(drop=True)
@@ -171,15 +171,22 @@ nSamps, dim = np.shape(X)
 net = mlpMod(dim, nclasses, embSize=3)
 net.apply(init_weights)
 
-# strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, 'feature_based', 'Supervised')
+strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'PerClass'} 
+strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+
+# strategy_args = {'batch_size' : 2}
 # strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-# strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, 5)
-# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, batch_size=1)
-# strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-# strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, n_drop=3)
+# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-# strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, n_drop=3)
-strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, tor=1e-4, batch_size=1, lr=0.1)
+
+# strategy_args = {'batch_size' : 2, 'n_drop' : 2}
+# strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+
+# strategy_args = {'batch_size' : 2, 'tor':1e-4}
+# strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
 #Training first set of points
 dt = data_train(X_tr, y_tr, net, DataHandler_Points, args)
@@ -221,10 +228,10 @@ for rd in range(1, n_rounds):
     y_pred = strategy.predict(X_test).numpy()
     acc[rd] = round(1.0 * (y_test == y_pred).sum().item() / len(y_test), 3)
     print('Testing accuracy:', acc[rd], flush=True)
-    # if acc[rd] > 0.98:
-    #     print('Testing accuracy reached above 98%, stopping training!')
-    #     break
+    if acc[rd] > 0.98:
+        print('Testing accuracy reached above 98%, stopping training!')
+        break
 print('Training Completed')
-final_df = pd.DataFrame(X_tr)
-final_df['Target'] = list(y_tr)
-final_df.to_csv('../final.csv', index=False)
+# final_df = pd.DataFrame(X_tr)
+# final_df['Target'] = list(y_tr)
+# final_df.to_csv('../final.csv', index=False)

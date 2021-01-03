@@ -20,10 +20,18 @@ from .submodular import SubmodularFunction
 
 class FASS(Strategy):
 
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, submod='facility_location', selection_type='PerClass'):
-        self.submod = submod
-        self.selection_type = selection_type
-        super(FASS, self).__init__(X, Y, unlabeled_x, net, handler,nclasses)
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+        
+        if 'submod' in args:
+            self.submod = args['submod']
+        else:
+            self.submod = 'facility_location'
+
+        if 'selection_type' in args:
+            self.selection_type = args['selection_type']
+        else:
+            self.selection_type = 'PerClass'
+        super(FASS, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
 
     def select(self, n):
 
@@ -31,7 +39,7 @@ class FASS(Strategy):
         # idxs_unlabeled = np.arange(self.n_pool)[~self.idxs_lb]
         # print('Length of unlabeled ', len(idxs_unlabeled))
         curr_X_trn = self.unlabeled_x
-        cached_state_dict = copy.deepcopy(self.net.state_dict())
+        cached_state_dict = copy.deepcopy(self.model.state_dict())
         predicted_y = self.predict(curr_X_trn)  # Hypothesised Labels
         soft = self.predict_prob(curr_X_trn)    #Probabilities of each class
 
@@ -47,7 +55,7 @@ class FASS(Strategy):
         if len(list(curr_X_trn.size())) == 3:
             curr_X_trn = torch.reshape(curr_X_trn, (curr_X_trn.shape[0], curr_X_trn.shape[1]*curr_X_trn.shape[2]))
 
-        submodular = SubmodularFunction(device, curr_X_trn[indices], predicted_y[indices], self.net, curr_X_trn.shape[0], 32, True, self.submod, self.selection_type)
+        submodular = SubmodularFunction(device, curr_X_trn[indices], predicted_y[indices], self.model, curr_X_trn.shape[0], 32, True, self.submod, self.selection_type)
         dsf_idxs_flag_val = submodular.lazy_greedy_max(n, cached_state_dict)
 
         #Mapping to original indices

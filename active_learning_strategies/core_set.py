@@ -7,9 +7,14 @@ from datetime import datetime
 from sklearn.metrics import pairwise_distances
 
 class CoreSet(Strategy):
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, tor=1e-4, **args):
-        self.tor = tor
-        super(CoreSet, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, **args)
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+
+        if 'tor' in args:
+            self.tor = args['tor']
+        else:
+            self.tor = 1e-4
+
+        super(CoreSet, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def furthest_first(self, X, X_set, n):
         m = np.shape(X)[0]
@@ -38,8 +43,8 @@ class CoreSet(Strategy):
         embedding_labeled = embedding_labeled.numpy()
 
         chosen = self.furthest_first(embedding_unlabeled, embedding_labeled, n)
-        print(chosen)
-        if len(list(set(chosen))) < 10:
-            print(embedding_unlabeled)
+        # print(chosen)
+        # if len(list(set(chosen))) < 10:
+        #     print(embedding_unlabeled)
 
         return chosen

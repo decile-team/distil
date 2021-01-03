@@ -3,8 +3,8 @@ from .strategy import Strategy
 import pdb
 
 class MarginSampling(Strategy):
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses):
-        super(MarginSampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses)
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+        super(MarginSampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def select(self, n):
 

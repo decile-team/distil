@@ -10,18 +10,22 @@ from copy import deepcopy
 import pickle
 
 class Strategy:
-    def __init__(self,X, Y, unlabeled_x, net, handler, nclasses, **args): #
+    def __init__(self,X, Y, unlabeled_x, net, handler, nclasses, args={}): #
         
         self.X = X
         self.Y = Y
         self.unlabeled_x = unlabeled_x
-        self.clf = net
+        self.model = net
         self.handler = handler
         self.target_classes = nclasses
         self.args = args
-        print('Learning rate', args['lr'])
-        # self.n_pool = len(Y)
-        self.filename = '../datasets/state.pkl'
+        if 'batch_size' not in args:
+            args['batch_size'] = 1
+        
+        if 'filename' not in args:    
+            self.filename = '../datasets/state.pkl'
+        else:
+            self.filename = args['filename']
         #print('Use_CUDA ', self.use_cuda)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -34,7 +38,7 @@ class Strategy:
         self.unlabeled_x = unlabeled_x
 
     def update_model(self, clf):
-        self.clf = clf
+        self.model = clf
 
     def save_state(self):
         with open(self.filename, 'wb') as f:
@@ -48,12 +52,12 @@ class Strategy:
 
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
 
-        self.clf.eval()
+        self.model.eval()
         P = torch.zeros(X.shape[0]).long()
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
-                out, e1 = self.clf(x)
+                out, e1 = self.model(x)
                 pred = out.max(1)[1]
                 P[idxs] = pred.data.cpu()
         return P
@@ -61,21 +65,21 @@ class Strategy:
     def predict_prob(self,X):
 
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
-        self.clf.eval()
+        self.model.eval()
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)                  
-                out, e1 = self.clf(x)
+                out, e1 = self.model(x)
                 prob = F.softmax(out, dim=1)
                 probs[idxs] = prob.cpu().data
         
         return probs
 
     def predict_prob_dropout(self,X, n_drop):
-        
+
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
-        self.clf.train()
+        self.model.train()
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
             for i in range(n_drop):
@@ -83,7 +87,7 @@ class Strategy:
                 for x, idxs in loader_te:
 
                     x = x.to(self.device)   
-                    out, e1 = self.clf(x)
+                    out, e1 = self.model(x)
                     prob = F.softmax(out, dim=1)
                     probs[idxs] += prob.cpu().data
         probs /= n_drop
@@ -93,49 +97,52 @@ class Strategy:
     def predict_prob_dropout_split(self,X, n_drop):
         
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
-        self.clf.train()
+        self.model.train()
         probs = torch.zeros([n_drop, X.shape[0], self.target_classes])
         with torch.no_grad():
             for i in range(n_drop):
                 print('n_drop {}/{}'.format(i+1, n_drop))
                 for x, idxs in loader_te:
                     x = x.to(self.device)
-                    out, e1 = self.clf(x)
+                    out, e1 = self.model(x)
                     probs[i][idxs] += F.softmax(out, dim=1).cpu().data
             return probs
 
     def get_embedding(self,X):
         
-        loader_te = DataLoader(self.handler(X),shuffle=False)
-        self.clf.eval()
-        embedding = torch.zeros([X.shape[0], self.clf.get_embedding_dim()])
+        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
+        self.model.eval()
+        embedding = torch.zeros([X.shape[0], self.model.get_embedding_dim()])
 
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
-                out, e1 = self.clf(x)
+                out, e1 = self.model(x)
                 embedding[idxs] = e1.data.cpu()
         return embedding
 
     # gradient embedding (assumes cross-entropy loss)
     #calculating hypothesised labels within
-    def get_grad_embedding(self,X, bias_grad=True):
+    def get_grad_embedding(self,X,Y=None, bias_grad=True):
         
-        embDim = self.clf.get_embedding_dim()
+        embDim = self.model.get_embedding_dim()
         
         nLab = self.target_classes
         
         embedding = torch.zeros([X.shape[0], embDim * nLab])
-        loader_te = DataLoader(self.handler(X),shuffle=False)
+        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
 
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)
-                out, l1 = self.clf(x)
+                out, l1 = self.model(x)
                 data = F.softmax(out, dim=1)
 
                 outputs = torch.zeros(x.shape[0], nLab).to(self.device)
-                y_trn = self.predict(x)
+                if Y is not None:
+                    y_trn = self.predict(x)
+                else:
+                    y_trn = Y[idxs]
                 outputs.scatter_(1, y_trn.view(-1, 1), 1)
                 l0_grads = data - outputs
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
