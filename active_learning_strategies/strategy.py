@@ -127,8 +127,12 @@ class Strategy:
         embDim = self.model.get_embedding_dim()
         
         nLab = self.target_classes
+
+        if bias_grad:
+            embedding = torch.zeros([X.shape[0], (embDim+1)*nLab])
+        else:
+            embedding = torch.zeros([X.shape[0], embDim * nLab])
         
-        embedding = torch.zeros([X.shape[0], embDim * nLab])
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
 
         with torch.no_grad():
@@ -138,10 +142,10 @@ class Strategy:
                 data = F.softmax(out, dim=1)
 
                 outputs = torch.zeros(x.shape[0], nLab).to(self.device)
-                if Y is not None:
-                    y_trn = self.predict(x)
+                if Y is None:
+                    y_trn = self.predict(x.cpu().numpy())
                 else:
-                    y_trn = Y[idxs]
+                    y_trn = torch.tensor(Y[idxs])
                 outputs.scatter_(1, y_trn.view(-1, 1), 1)
                 l0_grads = data - outputs
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
