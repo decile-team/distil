@@ -180,7 +180,7 @@ class GLISTER(Strategy):
         else:
             budget = n
 
-        if self.typeOf == "FacLoc" and self.typeOf == "Diversity":
+        if self.typeOf == "FacLoc" or self.typeOf == "Diversity":
             if self.lam is not None:
                 self._compute_similarity_kernel()
             else:
