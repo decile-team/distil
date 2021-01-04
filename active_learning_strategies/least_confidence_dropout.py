@@ -10,8 +10,8 @@ class LeastConfidenceDropout(Strategy):
 			self.n_drop = 10
 		super(LeastConfidenceDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
-	def select(self, n):
+	def select(self, budget):
 		probs = self.predict_prob_dropout(self.unlabeled_x, self.n_drop)
 		U = probs.max(1)[0]
-		U_idx = U.sort()[1][:n]
+		U_idx = U.sort()[1][:budget]
 		return U_idx

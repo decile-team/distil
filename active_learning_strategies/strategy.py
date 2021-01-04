@@ -29,7 +29,7 @@ class Strategy:
         #print('Use_CUDA ', self.use_cuda)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def select(self, n):
+    def select(self, budget):
         pass
 
     def update_data(self,X,Y,unlabeled_x): #
@@ -49,7 +49,6 @@ class Strategy:
             self = pickle.load(f)
 
     def predict(self,X):
-
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
 
         self.model.eval()

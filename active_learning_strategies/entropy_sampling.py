@@ -6,11 +6,11 @@ class EntropySampling(Strategy):
 	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
 		super(EntropySampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
-	def select(self, n):
+	def select(self, budget):
 		
 		probs = self.predict_prob(self.unlabeled_x)
 		log_probs = torch.log(probs)
 		U = (probs*log_probs).sum(1)
-		U_idx = U.sort()[1][:n]
+		U_idx = U.sort()[1][:budget]
 
 		return U_idx
