@@ -8,3 +8,5 @@ from .least_confidence_dropout import LeastConfidenceDropout
 from .margin_sampling import MarginSampling
 from .margin_sampling_dropout import MarginSamplingDropout
 from .core_set import CoreSet
+from .glister import GLISTER
+from .badge import BADGE

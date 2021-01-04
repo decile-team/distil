@@ -79,6 +79,6 @@ class BADGE(Strategy):
 
     def select(self, n):
 
-        gradEmbedding = self.get_grad_embedding(self.unlabeled_x)
+        gradEmbedding = self.get_grad_embedding(self.unlabeled_x,bias_grad=False)
         chosen = init_centers(gradEmbedding.cpu().numpy(), n)
         return chosen

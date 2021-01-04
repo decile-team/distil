@@ -74,7 +74,7 @@ class GLISTER(Strategy):
     def _compute_per_element_grads(self):
         
         self.grads_per_elem = self.get_grad_embedding(self.unlabeled_x)
-        self.prev_grads_sum = torch.sum(self.get_grad_embedding(self.X,self.Y),dim=0)
+        self.prev_grads_sum = torch.sum(self.get_grad_embedding(self.X,self.Y),dim=0).view(1, -1)
 
     def _update_grads_val(self,grads_currX=None, first_init=False):
 
@@ -95,7 +95,7 @@ class GLISTER(Strategy):
                 loader = DataLoader(self.handler(self.unlabeled_x,predicted_y,select=False),shuffle=False,\
                     batch_size=self.args['batch_size'])
                 self.out = torch.zeros(predicted_y.shape[0], self.target_classes).to(self.device)
-                self.emb = torch.zeros(self.Y_Val.shape[0], embDim).to(self.device)
+                self.emb = torch.zeros(predicted_y.shape[0], embDim).to(self.device)
 
             self.grads_val_curr = torch.zeros(self.target_classes*(1+embDim), 1).to(self.device)
             
@@ -110,7 +110,7 @@ class GLISTER(Strategy):
                         self.out[idxs, j] = init_out[:, j] - (1 * self.args['lr'] * (torch.matmul(init_l1, self.prev_grads_sum[0][(j * embDim) +
                                     self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) + self.prev_grads_sum[0][j])).view(-1)
                 
-                    scores = F.softmax(self.out, dim=1)
+                    scores = F.softmax(self.out[idxs], dim=1)
                     one_hot_label = torch.zeros(len(y), self.target_classes).to(self.device)
                     one_hot_label.scatter_(1, y.view(-1, 1), 1)
                     l0_grads = scores - one_hot_label
@@ -133,8 +133,14 @@ class GLISTER(Strategy):
                                 self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) +  grads_currX[0][j])).view(-1)
             
                 scores = F.softmax(self.out, dim=1)
-                one_hot_label = torch.zeros(len(y), self.target_classes).to(self.device)
-                one_hot_label.scatter_(1, y.view(-1, 1), 1)
+                if self.valid:
+                    Y_Val = torch.tensor(self.Y_Val)
+                    one_hot_label = torch.zeros(Y_Val.shape[0], self.target_classes).to(self.device)
+                    one_hot_label.scatter_(1,Y_Val.view(-1, 1), 1)   
+                else:
+                    predicted_y = self.predict(self.unlabeled_x)
+                    one_hot_label = torch.zeros(self.unlabeled_x.shape[0], self.target_classes).to(self.device)
+                    one_hot_label.scatter_(1, predicted_y.view(-1, 1), 1)
                 l0_grads = scores - one_hot_label
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
                 l1_grads = l0_expand * self.emb.repeat(1, self.target_classes)
