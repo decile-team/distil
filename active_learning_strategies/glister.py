@@ -92,10 +92,13 @@ class GLISTER(Strategy):
             
             else:
                 predicted_y = self.predict(self.unlabeled_x)
-                loader = DataLoader(self.handler(self.unlabeled_x,predicted_y,select=False),shuffle=False,\
+                self.X_new = np.concatenate((self.unlabeled_x,self.X), axis = 0)
+                self.Y_new = np.concatenate((predicted_y,self.Y), axis = 0)
+
+                loader = DataLoader(self.handler(self.X_new,self.Y_new,select=False),shuffle=False,\
                     batch_size=self.args['batch_size'])
-                self.out = torch.zeros(predicted_y.shape[0], self.target_classes).to(self.device)
-                self.emb = torch.zeros(predicted_y.shape[0], embDim).to(self.device)
+                self.out = torch.zeros(self.Y_new.shape[0], self.target_classes).to(self.device)
+                self.emb = torch.zeros(self.Y_new.shape[0], embDim).to(self.device)
 
             self.grads_val_curr = torch.zeros(self.target_classes*(1+embDim), 1).to(self.device)
             
@@ -107,8 +110,11 @@ class GLISTER(Strategy):
                     init_out, init_l1 = self.model(x)
                     self.emb[idxs] = init_l1 
                     for j in range(self.target_classes):
-                        self.out[idxs, j] = init_out[:, j] - (1 * self.args['lr'] * (torch.matmul(init_l1, self.prev_grads_sum[0][(j * embDim) +
+                        try:
+                            self.out[idxs, j] = init_out[:, j] - (1 * self.args['lr'] * (torch.matmul(init_l1, self.prev_grads_sum[0][(j * embDim) +
                                     self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) + self.prev_grads_sum[0][j])).view(-1)
+                        except KeyError:
+                            print("Please pass learning rate used during the training")
                 
                     scores = F.softmax(self.out[idxs], dim=1)
                     one_hot_label = torch.zeros(len(y), self.target_classes).to(self.device)
@@ -129,8 +135,12 @@ class GLISTER(Strategy):
             with torch.no_grad():
 
                 for j in range(self.target_classes):
-                    self.out[:, j] = self.out[:, j] - (1 * self.args['lr'] * (torch.matmul(self.emb, grads_currX[0][(j * embDim) +
-                                self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) +  grads_currX[0][j])).view(-1)
+                    try:
+                        self.out[:, j] = self.out[:, j] - (1 * self.args['lr'] * (torch.matmul(self.emb, grads_currX[0][(j * embDim) +
+                                    self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) +  grads_currX[0][j])).view(-1)
+                    except KeyError:
+                        print("Please pass learning rate used during the training")
+
             
                 scores = F.softmax(self.out, dim=1)
                 if self.valid:
@@ -138,9 +148,9 @@ class GLISTER(Strategy):
                     one_hot_label = torch.zeros(Y_Val.shape[0], self.target_classes).to(self.device)
                     one_hot_label.scatter_(1,Y_Val.view(-1, 1), 1)   
                 else:
-                    predicted_y = self.predict(self.unlabeled_x)
-                    one_hot_label = torch.zeros(self.unlabeled_x.shape[0], self.target_classes).to(self.device)
-                    one_hot_label.scatter_(1, predicted_y.view(-1, 1), 1)
+                    
+                    one_hot_label = torch.zeros(self.Y_new.shape[0], self.target_classes).to(self.device)
+                    one_hot_label.scatter_(1, torch.tensor(self.Y_new).view(-1, 1), 1)
                 l0_grads = scores - one_hot_label
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
                 l1_grads = l0_expand * self.emb.repeat(1, self.target_classes)
@@ -160,7 +170,7 @@ class GLISTER(Strategy):
                 gains = torch.matmul(grads, self.grads_val_curr)
         return gains
     
-    def select(self, n):
+    def select(self, budget):
 
         self._compute_per_element_grads()
         self._update_grads_val(first_init=True)
@@ -172,13 +182,13 @@ class GLISTER(Strategy):
         if self.typeOf == 'Rand':
             if self.lam is not None:
                 if self.lam >0 and self.lam < 1:
-                    budget = (1-self.lam)*n
+                    curr_bud = (1-self.lam)*budget
                 else:
                     raise ValueError("Lambda value should be between 0 and 1")
             else:
                 raise ValueError("Please pass a appropriate lambda value for random regularisation")
         else:
-            budget = n
+            curr_bud = budget
 
         if self.typeOf == "FacLoc" or self.typeOf == "Diversity":
             if self.lam is not None:
@@ -189,7 +199,7 @@ class GLISTER(Strategy):
                 elif self.typeOf == "Diversity":
                     raise ValueError("Please pass a appropriate lambda value for Diversity based regularisation")
         
-        while (numSelected < budget):
+        while (numSelected < curr_bud):
 
             if self.typeOf == "Diversity":
                 gains = self.eval_taylor_modular(self.grads_per_elem[remainSet],greedySet,remainSet)
@@ -207,6 +217,6 @@ class GLISTER(Strategy):
                 self.max_sim = torch.max(self.max_sim,self.sim_mat[bestId])
             
         if self.typeOf == 'Rand':
-            greedySet.extend(list(np.random.choice(remainSet, size=n - int(budget),replace=False)))
+            greedySet.extend(list(np.random.choice(remainSet, size=budget - int(curr_bud),replace=False)))
         
         return greedySet

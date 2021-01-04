@@ -147,10 +147,9 @@ def libsvm_file_load(path,dim, save_data=False):
     return (X_data, Y_label)
 
 #User Execution
-np.random.seed(42)
-trn_file = '/home/durga/Documents/Phd_Work/Code/Datasets/data/satimage/satimage.scale.trn'
-val_file = '/home/durga/Documents/Phd_Work/Code/Datasets/data/satimage/satimage.scale.val'
-tst_file = '/home/durga/Documents/Phd_Work/Code/Datasets/data/satimage/satimage.scale.tst'
+trn_file = '../datasets/satimage/satimage.scale.trn'
+val_file = '../datasets/satimage/satimage.scale.val'
+tst_file = '../datasets/satimage/satimage.scale.tst'
 data_dims = 36
 num_cls = 6
 
@@ -169,7 +168,8 @@ x_tst = sc.transform(x_tst)
 
 nSamps, dim = np.shape(x_trn)
 
-start_idxs = np.random.choice(nSamps, size=20, replace=False)
+np.random.seed(42)
+start_idxs = np.random.choice(nSamps, size=32, replace=False)
 
 X_tr = x_trn[start_idxs]
 X_unlabeled = np.delete(x_trn, start_idxs, axis = 0)
@@ -180,17 +180,17 @@ y_unlabeled = np.delete(y_trn, start_idxs, axis = 0)
 net = mlpMod(dim, num_cls, embSize=100)
 net.apply(init_weights)
 
-strategy_args = {'batch_size' : 2, 'lr':float(0.001)} 
-strategy = GLISTER(X_tr, y_tr, X_unlabeled, net, DataHandler_Points,num_cls, strategy_args,valid=False)
+strategy_args = {'batch_size' : 100, 'lr':float(0.001)} 
+strategy = GLISTER(X_tr, y_tr, X_unlabeled, net, DataHandler_Points,num_cls, strategy_args,valid=False,
+typeOf='Diversity',lam=10)
 #,X_val=x_val,Y_val=y_val)
 
 #valid,X_val=None,Y_val=None,loss_criterion=nn.CrossEntropyLoss(),typeOf='none',lam=None,\
 #    kernel_batch_size = 200
 
 args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
-nclasses = 3    ##Number of unique classes
-n_rounds = 11    ##Number of rounds to run ac
-budget = 10     ##Number of new data points after every iteration
+n_rounds = 10    ##Number of rounds to run ac
+budget = 32    ##Number of new data points after every iteration
 
 #Training first set of points
 dt = data_train(X_tr, y_tr, net, DataHandler_Points, args)

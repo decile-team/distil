@@ -77,8 +77,8 @@ class BADGE(Strategy):
 
         super(BADGE, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
 
-    def select(self, n):
+    def select(self, budget):
 
         gradEmbedding = self.get_grad_embedding(self.unlabeled_x,bias_grad=False)
-        chosen = init_centers(gradEmbedding.cpu().numpy(), n)
+        chosen = init_centers(gradEmbedding.cpu().numpy(), budget)
         return chosen
