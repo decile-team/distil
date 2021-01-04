@@ -1,2 +1,3 @@
 data/
 downloaded_data/
+__pycache__/
