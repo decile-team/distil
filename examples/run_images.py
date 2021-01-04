@@ -97,13 +97,13 @@ X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 dim = np.shape(X)[1:]
 handler = DataHandler_MNIST
 
-X_tr = X[:200].numpy()
-y_tr = y[:200].numpy()
-X_unlabeled = X[200:400].numpy()
-y_unlabeled = y[200:400].numpy()
+X_tr = X[:2000].numpy()
+y_tr = y[:2000].numpy()
+X_unlabeled = X[2000:].numpy()
+y_unlabeled = y[2000:].numpy()
 
-X_test = X_test[: 100].numpy()
-y_test = y_test[: 100].numpy()
+X_test = X_test[: 1000].numpy()
+y_test = y_test[: 1000].numpy()
 
 nclasses = 10
 n_rounds = 11    ##Number of rounds to run active learning
@@ -137,8 +137,6 @@ strategy.update_model(clf)
 y_pred = strategy.predict(X_test).numpy()
 
 acc = np.zeros(n_rounds)
-zz = 1.0*(y_test[0:5] == y_pred[0:5])
-print(zz)
 acc[0] = (1.0*(y_test == y_pred)).sum().item() / len(y_test)
 print('Initial Testing accuracy:', round(acc[0], 3), flush=True)
 
