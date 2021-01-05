@@ -55,13 +55,11 @@ class FASS(Strategy):
             values,indices = entropy2.topk(5*budget)
         else:
             indices = [i for i in range(entropy2.shape[0])]    
-        curr_X_trn = torch.from_numpy(curr_X_trn)
+        # curr_X_trn = torch.from_numpy(curr_X_trn)
+        curr_X_trn_embeddings = self.get_embedding(curr_X_trn)
+        curr_X_trn_embeddings  = curr_X_trn_embeddings.reshape(curr_X_trn.shape[0], -1)
 
-        #Handling image data, 3d to 2d
-        if len(list(curr_X_trn.size())) == 3:
-            curr_X_trn = torch.reshape(curr_X_trn, (curr_X_trn.shape[0], curr_X_trn.shape[1]*curr_X_trn.shape[2]))
-
-        submodular = SubmodularFunction(device, curr_X_trn[indices], predicted_y[indices], self.model, curr_X_trn.shape[0], 32, True, self.submod, self.selection_type)
+        submodular = SubmodularFunction(device, curr_X_trn_embeddings[indices], predicted_y[indices], self.model, curr_X_trn.shape[0], 32, True, self.submod, self.selection_type)
         dsf_idxs_flag_val = submodular.lazy_greedy_max(budget, cached_state_dict)
 
         #Mapping to original indices

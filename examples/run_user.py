@@ -14,7 +14,7 @@ from active_learning_strategies import FASS, EntropySampling, EntropySamplingDro
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
                                 CoreSet
 from utils.models.logreg_net import LogisticRegNet
-
+from utils.models.simpleNN_net import TwoLayerNet
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -142,11 +142,12 @@ y_test = df_test.iloc[:, -1].to_numpy()
 
 nSamps, dim = np.shape(X)
 # net = mlpMod(dim, nclasses, embSize=3)
-net = LogisticRegNet(dim, nclasses)
+print('Dim',dim)
+net = TwoLayerNet(dim, nclasses, dim*2)
 net.apply(init_weights)
 
-# strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'PerClass'} 
-# strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+strategy_args = {'batch_size' : 2, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
+strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
 # strategy_args = {'batch_size' : 2}
 # strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
@@ -159,8 +160,8 @@ net.apply(init_weights)
 # strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
-strategy_args = {'batch_size' : 1, 'tor':1e-4}
-strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy_args = {'batch_size' : 1, 'tor':1e-4}
+# strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
 #Training first set of points
 dt = data_train(X_tr, y_tr, net, DataHandler_Points, args)
