@@ -144,13 +144,13 @@ class GLISTER(Strategy):
             
                 scores = F.softmax(self.out, dim=1)
                 if self.valid:
-                    Y_Val = torch.tensor(self.Y_Val)
+                    Y_Val = torch.tensor(self.Y_Val,device=self.device)
                     one_hot_label = torch.zeros(Y_Val.shape[0], self.target_classes).to(self.device)
                     one_hot_label.scatter_(1,Y_Val.view(-1, 1), 1)   
                 else:
                     
                     one_hot_label = torch.zeros(self.Y_new.shape[0], self.target_classes).to(self.device)
-                    one_hot_label.scatter_(1, torch.tensor(self.Y_new).view(-1, 1), 1)
+                    one_hot_label.scatter_(1, torch.tensor(self.Y_new,device=self.device).view(-1, 1), 1)
                 l0_grads = scores - one_hot_label
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
                 l1_grads = l0_expand * self.emb.repeat(1, self.target_classes)
