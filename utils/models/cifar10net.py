@@ -13,13 +13,17 @@ class CifarNet(nn.Module):
         self.fc2 = nn.Linear(128, 256)
         self.fc3 = nn.Linear(256, 10)
 
-    def forward(self, x):
+    def forward(self, x, last=False):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = self.pool(F.relu(self.conv3(x)))
         x = x.view(-1, 64 * 4 * 4)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
+        output = self.fc3(x)
+        if last:
+          return output, x
+        else:
+          return output
+    def get_embedding_dim(self):
+        return 256
