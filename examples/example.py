@@ -177,7 +177,7 @@ net.apply(init_weights)
 
 strategy_args = {'batch_size' : 100, 'lr':float(0.001)} 
 strategy = GLISTER(X_tr, y_tr, X_unlabeled, net, DataHandler_Points,num_cls, strategy_args,valid=False,
-typeOf='Diversity',lam=10)
+typeOf='FacLoc',lam=10)
 #,X_val=x_val,Y_val=y_val)
 
 #valid,X_val=None,Y_val=None,loss_criterion=nn.CrossEntropyLoss(),typeOf='none',lam=None,\
