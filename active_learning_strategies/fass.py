@@ -33,11 +33,17 @@ class FASS(Strategy):
             self.selection_type = 'PerClass'
         super(FASS, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
 
-    def select(self, n):
+    def select(self, budget):
 
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
-        # idxs_unlabeled = np.arange(self.n_pool)[~self.idxs_lb]
-        # print('Length of unlabeled ', len(idxs_unlabeled))
+
+        submod_choices = ['facility_location', 'graph_cut', 'saturated_coverage', 'sum_redundancy', 'feature_based']
+        if self.submod not in submod_choices:
+            raise ValueError('Submodular function is invalid, Submodular functions can only be '+ str(submod_choices))
+        selection_type = ['PerClass', 'Supervised']
+        if self.selection_type not in selection_type:
+            raise ValueError('Selection type is invalid, Selection type can only be '+ str(selection_type))
+
         curr_X_trn = self.unlabeled_x
         cached_state_dict = copy.deepcopy(self.model.state_dict())
         predicted_y = self.predict(curr_X_trn)  # Hypothesised Labels
@@ -45,8 +51,8 @@ class FASS(Strategy):
 
         entropy2 = Categorical(probs = soft).entropy()
         
-        if 5*n < entropy2.shape[0]:
-            values,indices = entropy2.topk(5*n)
+        if 5*budget < entropy2.shape[0]:
+            values,indices = entropy2.topk(5*budget)
         else:
             indices = [i for i in range(entropy2.shape[0])]    
         curr_X_trn = torch.from_numpy(curr_X_trn)
@@ -56,7 +62,7 @@ class FASS(Strategy):
             curr_X_trn = torch.reshape(curr_X_trn, (curr_X_trn.shape[0], curr_X_trn.shape[1]*curr_X_trn.shape[2]))
 
         submodular = SubmodularFunction(device, curr_X_trn[indices], predicted_y[indices], self.model, curr_X_trn.shape[0], 32, True, self.submod, self.selection_type)
-        dsf_idxs_flag_val = submodular.lazy_greedy_max(n, cached_state_dict)
+        dsf_idxs_flag_val = submodular.lazy_greedy_max(budget, cached_state_dict)
 
         #Mapping to original indices
         return_indices = []

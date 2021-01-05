@@ -35,16 +35,23 @@ class CoreSet(Strategy):
 
         return idxs
 
-    def select(self, n):
+    def select(self, budget):
 
         embedding_unlabeled = self.get_embedding(self.unlabeled_x)
         embedding_unlabeled = embedding_unlabeled.numpy()
         embedding_labeled = self.get_embedding(self.X)
         embedding_labeled = embedding_labeled.numpy()
 
-        chosen = self.furthest_first(embedding_unlabeled, embedding_labeled, n)
-        # print(chosen)
-        # if len(list(set(chosen))) < 10:
-        #     print(embedding_unlabeled)
+        chosen = self.furthest_first(embedding_unlabeled, embedding_labeled, budget)
+        print(chosen)
+
+        if len(list(set(chosen))) < 10:
+            print(embedding_unlabeled)
+            print('Weights lm1')
+            print(self.model.lm1.weight.data.numpy())
+            print('Weights lm2')
+            print(self.model.lm2.weight.data.numpy())
+            print('Input X')
+            print(self.unlabeled_x)
 
         return chosen

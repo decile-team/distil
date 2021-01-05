@@ -13,13 +13,12 @@ sys.path.append('../')
 from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
                                 CoreSet
-from models import mlpMod, linMod
-
-
-def init_weights(m):
-    if type(m) == nn.Linear:
-        torch.nn.init.xavier_uniform_(m.weight)
-        m.bias.data.fill_(0.01)
+# from models.linearmodel import mlpMod, linMod, ResNet18
+from models.linearmodel import linMod
+from models.mlpmod import mlpMod
+from models.resnet import ResNet18
+from utils.DataHandler import DataHandler_MNIST
+from utils.dataset import get_dataset
 
 #custom training
 class data_train:
@@ -77,13 +76,13 @@ class data_train:
             self.clf =  self.net.apply(weight_reset)
 
         optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
-        loader_tr = DataLoader(self.handler(self.X, self.Y, False))
+        loader_tr = DataLoader(self.handler(self.X, self.Y, False), shuffle=True, batch_size = args['batch_size'])
         epoch = 1
         accCurrent = 0
         while accCurrent < 0.95 and epoch < n_epoch: 
             accCurrent = self._train(epoch, loader_tr, optimizer)
             epoch += 1
-            # print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
+            print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
             
             if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging
                 self.clf = self.net.apply(weight_reset)
@@ -92,78 +91,47 @@ class data_train:
         print('Epoch:', str(epoch),'Training accuracy:',round(accCurrent, 3), flush=True)
         return self.clf
 
+data_set_name = 'MNIST'
+download_path = '../downloaded_data/'
+X, y, X_test, y_test = get_dataset(data_set_name, download_path)
+dim = np.shape(X)[1:]
+handler = DataHandler_MNIST
 
-class DataHandler_Points(Dataset):
-    def __init__(self, X, Y=None, select=True):
-        
-        self.select = select
-        if not self.select:
-        	self.X = X.astype(np.float32)
-        	self.Y = Y
-        else:
-        	self.X = X.astype(np.float32)  #For unlabeled Data
+X_tr = X[:2000].numpy()
+y_tr = y[:2000].numpy()
+X_unlabeled = X[2000:].numpy()
+y_unlabeled = y[2000:].numpy()
 
-    def __getitem__(self, index):
-    	if not self.select:
-    		x, y = self.X[index], self.Y[index]
-    		return x, y, index
-    	else:
-        	x = self.X[index]              #For unlabeled Data
-        	return x, index
+X_test = X_test[: 1000].numpy()
+y_test = y_test[: 1000].numpy()
 
-    def __len__(self):
-        return len(self.X)
-
-#User Execution
-data_path = '../datasets/iris.csv'
-test_path = '../datasets/iris_test.csv'
-args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
-nclasses = 3    ##Number of unique classes
+nclasses = 10
 n_rounds = 11    ##Number of rounds to run active learning
-budget = 10 		##Number of new data points after every iteration
-strategy_args = {'batch_size' : 2, 'lr' : 0.1} 
+budget = 10 
+print('Nclasses ', nclasses)
 
-df = pd.read_csv(data_path)
-df = df.sample(frac=1).reset_index(drop=True)
-df = df.sample(frac=1).reset_index(drop=True)
-df = df.sample(frac=1).reset_index(drop=True)
-X = df.iloc[:,:-1].to_numpy()
-y = df.iloc[:, -1].to_numpy()
+net = ResNet18(channel=1)
+# net = mlpMod(dim, nclasses, embSize=24)
+strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'PerClass'} 
+strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
-X_tr = X[:20]    #First set of labeled examples
-y_tr = y[:20]
-
-X_unlabeled = X[20:]		#Unlabeled data
-y_unlabeled = y[20:]			
-
-df_test = pd.read_csv(test_path)
-X_test = df_test.iloc[:,:-1].to_numpy()
-y_test = df_test.iloc[:, -1].to_numpy()
-
-nSamps, dim = np.shape(X)
-# net = mlpMod(dim, nclasses, embSize=3)
-net = linMod(dim, nclasses)
-net.apply(init_weights)
-
-# strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'PerClass'} 
-# strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-
-# strategy_args = {'batch_size' : 2}
-# strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy_args = {'batch_size' : 16}
+# strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses)
+# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 # strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
 
 # strategy_args = {'batch_size' : 2, 'n_drop' : 2}
 # strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 # strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
-strategy_args = {'batch_size' : 1, 'tor':1e-4}
-strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy_args = {'batch_size' : 16, 'tor':1e-4}
+# strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
 #Training first set of points
-dt = data_train(X_tr, y_tr, net, DataHandler_Points, args)
+args = {'n_epoch':10, 'lr':float(0.001), 'batch_size':16} 
+dt = data_train(X_tr, y_tr, net, handler, args)
 clf = dt.train()
 strategy.update_model(clf)
 y_pred = strategy.predict(X_test).numpy()
@@ -200,12 +168,9 @@ for rd in range(1, n_rounds):
     clf = dt.train()
     strategy.update_model(clf)
     y_pred = strategy.predict(X_test).numpy()
-    acc[rd] = round(1.0 * (y_test == y_pred).sum().item() / len(y_test), 3)
+    acc[rd] = round((1.0*(y_test == y_pred)).sum().item() / len(y_test), 3)
     print('Testing accuracy:', acc[rd], flush=True)
     # if acc[rd] > 0.98:
     #     print('Testing accuracy reached above 98%, stopping training!')
     #     break
 print('Training Completed')
-# final_df = pd.DataFrame(X_tr)
-# final_df['Target'] = list(y_tr)
-# final_df.to_csv('../final.csv', index=False)

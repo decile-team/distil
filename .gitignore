@@ -1,1 +1,4 @@
 data/
+downloaded_data/
+__pycache__/
+state.pkl
