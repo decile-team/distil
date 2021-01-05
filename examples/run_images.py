@@ -12,13 +12,14 @@ import sys
 sys.path.append('../')
 from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
-                                CoreSet
+                                CoreSet, BADGE
 # from models.linearmodel import mlpMod, linMod, ResNet18
 # from models.linearmodel import linMod
 # from models.mlpmod import mlpMod
 # from models.resnet import ResNet18
+from utils.models.cifar10net import CifarNet
 from utils.models.mnist_net import MnistNet
-from utils.DataHandler import DataHandler_MNIST
+from utils.DataHandler import DataHandler_MNIST, DataHandler_CIFAR10
 from utils.dataset import get_dataset
 
 #custom training
@@ -52,7 +53,7 @@ class data_train:
                 x, y = Variable(x), Variable(y)
             optimizer.zero_grad()
             out = self.clf(x)
-            loss = F.cross_entropy(out, y)
+            loss = F.cross_entropy(out, y.long())
             accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
             loss.backward()
 
@@ -92,19 +93,19 @@ class data_train:
         print('Epoch:', str(epoch),'Training accuracy:',round(accCurrent, 3), flush=True)
         return self.clf
 
-data_set_name = 'MNIST'
+data_set_name = 'CIFAR10'
 download_path = '../downloaded_data/'
 X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 dim = np.shape(X)[1:]
-handler = DataHandler_MNIST
+handler = DataHandler_CIFAR10
 
-X_tr = X[:20].numpy()
-y_tr = y[:20].numpy()
-X_unlabeled = X[200:220].numpy()
-y_unlabeled = y[200:220].numpy()
+X_tr = X[:20]
+y_tr = y[:20]
+X_unlabeled = X[200:220]
+y_unlabeled = y[200:220]
 
-X_test = X_test[: 100].numpy()
-y_test = y_test[: 100].numpy()
+X_test = X_test[: 10]
+y_test = y_test[: 10].numpy()
 
 nclasses = 10
 n_rounds = 11    ##Number of rounds to run active learning
@@ -113,9 +114,12 @@ print('Nclasses ', nclasses)
 
 # net = ResNet18(channel=1)
 # net = mlpMod(dim, nclasses, embSize=24)
-net = MnistNet()
-strategy_args = {'batch_size' : 1, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
-strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
+net = CifarNet()
+strategy_args = {'batch_size' : 64}
+strategy = BADGE(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
+
+# strategy_args = {'batch_size' : 1, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
+# strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
 # strategy_args = {'batch_size' : 16}
 # strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses)

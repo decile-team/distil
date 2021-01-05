@@ -12,7 +12,7 @@ import sys
 sys.path.append('../')
 from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
-                                CoreSet
+                                CoreSet, GLISTER, BADGE
 from utils.models.logreg_net import LogisticRegNet
 from utils.models.simpleNN_net import TwoLayerNet
 
@@ -147,7 +147,7 @@ net = TwoLayerNet(dim, nclasses, dim*2)
 net.apply(init_weights)
 
 strategy_args = {'batch_size' : 2, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
-strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+strategy = BADGE(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
 # strategy_args = {'batch_size' : 2}
 # strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)

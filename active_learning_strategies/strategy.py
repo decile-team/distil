@@ -48,17 +48,25 @@ class Strategy:
         with open(self.filename, 'rb') as f:
             self = pickle.load(f)
 
-    def predict(self,X):
+    def predict(self,X, useloader=True):
         loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
 
         self.model.eval()
         P = torch.zeros(X.shape[0]).long()
         with torch.no_grad():
-            for x, idxs in loader_te:
-                x = x.to(self.device)  
+
+            if useloader:
+                for x, idxs in loader_te:
+                    x = x.to(self.device)  
+                    out = self.model(x)
+                    pred = out.max(1)[1]
+                    P[idxs] = pred.data.cpu()
+            else:
+                x = torch.from_numpy(X)                
                 out = self.model(x)
                 pred = out.max(1)[1]
-                P[idxs] = pred.data.cpu()
+                P = pred.data.cpu()
+
         return P
 
     def predict_prob(self,X):
@@ -143,7 +151,7 @@ class Strategy:
 
                 outputs = torch.zeros(x.shape[0], nLab).to(self.device)
                 if Y is None:
-                    y_trn = self.predict(x.cpu().numpy())
+                    y_trn = self.predict(x.cpu().numpy(), useloader=False)
                 else:
                     y_trn = torch.tensor(Y[idxs])
                 y_trn = y_trn.to(self.device)
