@@ -14,9 +14,10 @@ from active_learning_strategies import FASS, EntropySampling, EntropySamplingDro
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
                                 CoreSet
 # from models.linearmodel import mlpMod, linMod, ResNet18
-from models.linearmodel import linMod
-from models.mlpmod import mlpMod
-from models.resnet import ResNet18
+# from models.linearmodel import linMod
+# from models.mlpmod import mlpMod
+# from models.resnet import ResNet18
+from utils.models.mnist_net import MnistNet
 from utils.DataHandler import DataHandler_MNIST
 from utils.dataset import get_dataset
 
@@ -50,7 +51,7 @@ class data_train:
             else:
                 x, y = Variable(x), Variable(y)
             optimizer.zero_grad()
-            out, e1 = self.clf(x)
+            out = self.clf(x)
             loss = F.cross_entropy(out, y)
             accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
             loss.backward()
@@ -97,22 +98,23 @@ X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 dim = np.shape(X)[1:]
 handler = DataHandler_MNIST
 
-X_tr = X[:2000].numpy()
-y_tr = y[:2000].numpy()
-X_unlabeled = X[2000:].numpy()
-y_unlabeled = y[2000:].numpy()
+X_tr = X[:20].numpy()
+y_tr = y[:20].numpy()
+X_unlabeled = X[200:220].numpy()
+y_unlabeled = y[200:220].numpy()
 
-X_test = X_test[: 1000].numpy()
-y_test = y_test[: 1000].numpy()
+X_test = X_test[: 100].numpy()
+y_test = y_test[: 100].numpy()
 
 nclasses = 10
 n_rounds = 11    ##Number of rounds to run active learning
 budget = 10 
 print('Nclasses ', nclasses)
 
-net = ResNet18(channel=1)
+# net = ResNet18(channel=1)
 # net = mlpMod(dim, nclasses, embSize=24)
-strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'PerClass'} 
+net = MnistNet()
+strategy_args = {'batch_size' : 1, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
 strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
 # strategy_args = {'batch_size' : 16}
