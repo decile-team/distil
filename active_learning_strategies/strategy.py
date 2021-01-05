@@ -61,8 +61,8 @@ class Strategy:
                     out = self.model(x)
                     pred = out.max(1)[1]
                     P[idxs] = pred.data.cpu()
-            else:
-                x = torch.from_numpy(X)                
+            else:            
+                x=X
                 out = self.model(x)
                 pred = out.max(1)[1]
                 P = pred.data.cpu()
@@ -151,7 +151,7 @@ class Strategy:
 
                 outputs = torch.zeros(x.shape[0], nLab).to(self.device)
                 if Y is None:
-                    y_trn = self.predict(x.cpu().numpy(), useloader=False)
+                    y_trn = self.predict(x, useloader=False)
                 else:
                     y_trn = torch.tensor(Y[idxs])
                 y_trn = y_trn.to(self.device)
