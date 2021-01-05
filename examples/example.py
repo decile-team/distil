@@ -146,25 +146,49 @@ def libsvm_file_load(path,dim, save_data=False):
         np.save(target_np_path, Y_label)
     return (X_data, Y_label)
 
+dset_name = 'ijcnn1'
+
 #User Execution
-trn_file = '../datasets/satimage/satimage.scale.trn'
-val_file = '../datasets/satimage/satimage.scale.val'
-tst_file = '../datasets/satimage/satimage.scale.tst'
-data_dims = 36
-num_cls = 6
+if dset_name == "satimage":
+    trn_file = '../datasets/satimage/satimage.scale.trn'
+    val_file = '../datasets/satimage/satimage.scale.val'
+    tst_file = '../datasets/satimage/satimage.scale.tst'
+    data_dims = 36
+    num_cls = 6
 
-x_trn, y_trn = libsvm_file_load(trn_file, dim=data_dims)
-x_val, y_val = libsvm_file_load(val_file, dim=data_dims)
-x_tst, y_tst = libsvm_file_load(tst_file, dim=data_dims)
+    x_trn, y_trn = libsvm_file_load(trn_file, dim=data_dims)
+    x_val, y_val = libsvm_file_load(val_file, dim=data_dims)
+    x_tst, y_tst = libsvm_file_load(tst_file, dim=data_dims)
 
-y_trn -= 1  # First Class should be zero
-y_val -= 1
-y_tst -= 1  # First Class should be zero
+    y_trn -= 1  # First Class should be zero
+    y_val -= 1
+    y_tst -= 1  # First Class should be zero
 
-sc = StandardScaler()
-x_trn = sc.fit_transform(x_trn)
-x_val = sc.transform(x_val)
-x_tst = sc.transform(x_tst)
+    sc = StandardScaler()
+    x_trn = sc.fit_transform(x_trn)
+    x_val = sc.transform(x_val)
+    x_tst = sc.transform(x_tst)
+
+elif dset_name == "ijcnn1":
+    
+    trn_file = '../datasets/ijcnn1/ijcnn1.trn'
+    val_file = '../datasets/ijcnn1/ijcnn1.val'
+    tst_file = '../datasets/ijcnn1/ijcnn1.tst'
+    data_dims = 22
+    num_cls = 2
+    x_trn, y_trn = libsvm_file_load(trn_file, dim=data_dims)
+    x_val, y_val = libsvm_file_load(val_file, dim=data_dims)
+    x_tst, y_tst = libsvm_file_load(tst_file, dim=data_dims)
+    
+    # The class labels are (-1,1). Make them to (0,1)
+    y_trn[y_trn < 0] = 0
+    y_val[y_val < 0] = 0
+    y_tst[y_tst < 0] = 0    
+
+    sc = StandardScaler()
+    x_trn = sc.fit_transform(x_trn)
+    x_val = sc.transform(x_val)
+    x_tst = sc.transform(x_tst)
 
 nSamps, dim = np.shape(x_trn)
 
