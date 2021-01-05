@@ -14,36 +14,7 @@ from sklearn.preprocessing import StandardScaler
 sys.path.append('../')
 from utils.DataHandler import DataHandler_Points
 from active_learning_strategies import GLISTER, BADGE
-
-
-# linear model class
-class linMod(nn.Module):
-    def __init__(self, nc=1, sz=28):
-        super(linMod, self).__init__()
-        self.lm = nn.Linear(int(np.prod(dim)), opts.nClasses)
-    def forward(self, x):
-        x = x.view(-1, int(np.prod(dim)))
-        out = self.lm(x)
-        return out, x
-    def get_embedding_dim(self):
-        return int(np.prod(dim))
-
-class mlpMod(nn.Module):
-    def __init__(self, dim, nClasses, embSize=256):
-        super(mlpMod, self).__init__()
-        self.embSize = embSize
-        self.dim = int(np.prod(dim))
-        self.lm1 = nn.Linear(self.dim, embSize)
-        self.lm2 = nn.Linear(embSize, nClasses)
-
-    def forward(self, x):
-        x = x.view(-1, self.dim)
-        emb = F.relu(self.lm1(x))
-        out = self.lm2(emb)
-        return out, emb
-
-    def get_embedding_dim(self):
-        return self.embSize
+from utils.models.simpleNN_net import TwoLayerNet
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -80,7 +51,7 @@ class data_train:
             else:
                 x, y = Variable(x), Variable(y)
             optimizer.zero_grad()
-            out, e1 = self.clf(x)
+            out = self.clf(x)
             loss = F.cross_entropy(out, y)
             accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
             loss.backward()
@@ -146,7 +117,7 @@ def libsvm_file_load(path,dim, save_data=False):
         np.save(target_np_path, Y_label)
     return (X_data, Y_label)
 
-dset_name = 'ijcnn1'
+dset_name = 'satimage'
 
 #User Execution
 if dset_name == "satimage":
@@ -201,7 +172,7 @@ X_unlabeled = np.delete(x_trn, start_idxs, axis = 0)
 y_tr = y_trn[start_idxs]
 y_unlabeled = np.delete(y_trn, start_idxs, axis = 0)
 
-net = mlpMod(dim, num_cls, embSize=100)
+net = TwoLayerNet(dim, num_cls,100)
 net.apply(init_weights)
 
 strategy_args = {'batch_size' : 100, 'lr':float(0.001)} 

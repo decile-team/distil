@@ -13,7 +13,7 @@ sys.path.append('../')
 from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
                                 CoreSet
-from models import mlpMod, linMod
+from utils.models.logreg_net import LogisticRegNet
 
 
 def init_weights(m):
@@ -51,7 +51,7 @@ class data_train:
             else:
                 x, y = Variable(x), Variable(y)
             optimizer.zero_grad()
-            out, e1 = self.clf(x)
+            out = self.clf(x)
             loss = F.cross_entropy(out, y)
             accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
             loss.backward()
@@ -142,7 +142,7 @@ y_test = df_test.iloc[:, -1].to_numpy()
 
 nSamps, dim = np.shape(X)
 # net = mlpMod(dim, nclasses, embSize=3)
-net = linMod(dim, nclasses)
+net = LogisticRegNet(dim, nclasses)
 net.apply(init_weights)
 
 # strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'PerClass'} 

@@ -56,7 +56,7 @@ class Strategy:
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
-                out, e1 = self.model(x)
+                out = self.model(x)
                 pred = out.max(1)[1]
                 P[idxs] = pred.data.cpu()
         return P
@@ -69,7 +69,7 @@ class Strategy:
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)                  
-                out, e1 = self.model(x)
+                out = self.model(x)
                 prob = F.softmax(out, dim=1)
                 probs[idxs] = prob.cpu().data
         
@@ -86,7 +86,7 @@ class Strategy:
                 for x, idxs in loader_te:
 
                     x = x.to(self.device)   
-                    out, e1 = self.model(x)
+                    out = self.model(x)
                     prob = F.softmax(out, dim=1)
                     probs[idxs] += prob.cpu().data
         probs /= n_drop
@@ -103,7 +103,7 @@ class Strategy:
                 print('n_drop {}/{}'.format(i+1, n_drop))
                 for x, idxs in loader_te:
                     x = x.to(self.device)
-                    out, e1 = self.model(x)
+                    out = self.model(x)
                     probs[i][idxs] += F.softmax(out, dim=1).cpu().data
             return probs
 
@@ -116,7 +116,7 @@ class Strategy:
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)  
-                out, e1 = self.model(x)
+                out, e1 = self.model(x,last=True)
                 embedding[idxs] = e1.data.cpu()
         return embedding
 
@@ -138,7 +138,7 @@ class Strategy:
         with torch.no_grad():
             for x, idxs in loader_te:
                 x = x.to(self.device)
-                out, l1 = self.model(x)
+                out, l1 = self.model(x,last=True)
                 data = F.softmax(out, dim=1)
 
                 outputs = torch.zeros(x.shape[0], nLab).to(self.device)

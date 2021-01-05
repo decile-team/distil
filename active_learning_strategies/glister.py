@@ -107,7 +107,7 @@ class GLISTER(Strategy):
                 for x, y, idxs in loader:
                     x = x.to(self.device)
                     y = y.to(self.device)
-                    init_out, init_l1 = self.model(x)
+                    init_out, init_l1 = self.model(x,last=True)
                     self.emb[idxs] = init_l1 
                     for j in range(self.target_classes):
                         try:
