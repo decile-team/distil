@@ -7,7 +7,35 @@ from datetime import datetime
 from sklearn.metrics import pairwise_distances
 
 class CoreSet(Strategy):
+   """
+    Implementation of CoreSet Strategy.
+    This class extends :class:`selectionstrategies.strategy.Strategy`
+    to include coreset sampling technique to select data points for active learning.
+    
+    Parameters
+    ----------
+    X: numpy array
+        Present training/labeled data   
+    y: numpy array
+        Labels of present training data
+    unlabeled_x: numpy array
+        Data without labels
+    net: class
+        Pytorch Model class
+    handler: class
+        Data Handler, which can load data even without labels.
+    nclasses: int
+        Number of unique target variables
+    args: dict
+        Specify optional parameters
+        
+        batch_size 
+        Batch size to be used inside strategy class (int, optional)
+    """
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+        """
+        Constructor method
+        """
 
         if 'tor' in args:
             self.tor = args['tor']
@@ -17,6 +45,23 @@ class CoreSet(Strategy):
         super(CoreSet, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def furthest_first(self, X, X_set, n):
+        """
+        Selects points with maximum distance
+        
+        Parameters
+        ----------
+        X: numpy array
+            Embeddings of unlabeled set
+        X_set: numpy array
+            Embeddings of labeled set
+        n: int
+            Number of points to return
+        Returns
+        ----------
+        idxs: list
+            List of selected data point indexes with respect to unlabeled_x
+        """ 
+
         m = np.shape(X)[0]
         if np.shape(X_set)[0] == 0:
             min_dist = np.tile(float("inf"), m)
@@ -36,22 +81,23 @@ class CoreSet(Strategy):
         return idxs
 
     def select(self, budget):
-
+        """
+        Select next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of indexes to be returned for next set
+        
+        Returns
+        ----------
+        chosen: list
+            List of selected data point indexes with respect to unlabeled_x
+        """ 
         embedding_unlabeled = self.get_embedding(self.unlabeled_x)
         embedding_unlabeled = embedding_unlabeled.numpy()
         embedding_labeled = self.get_embedding(self.X)
         embedding_labeled = embedding_labeled.numpy()
 
         chosen = self.furthest_first(embedding_unlabeled, embedding_labeled, budget)
-        print(chosen)
-
-        if len(list(set(chosen))) < 10:
-            print(embedding_unlabeled)
-            print('Weights lm1')
-            print(self.model.lm1.weight.data.numpy())
-            print('Weights lm2')
-            print(self.model.lm2.weight.data.numpy())
-            print('Input X')
-            print(self.unlabeled_x)
-
         return chosen

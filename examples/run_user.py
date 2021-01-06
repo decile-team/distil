@@ -143,7 +143,7 @@ y_test = df_test.iloc[:, -1].to_numpy()
 
 nSamps, dim = np.shape(X)
 # net = mlpMod(dim, nclasses, embSize=3)
-print('Dim',dim)
+
 net = TwoLayerNet(dim, nclasses, dim*2)
 net.apply(init_weights)
 
