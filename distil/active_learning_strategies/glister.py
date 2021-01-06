@@ -14,6 +14,44 @@ import math
 import random
 
 class GLISTER(Strategy):
+    """
+    Implementation of GLISTER-ACTIVE Strategy.
+    
+    Parameters
+	----------
+    X: Numpy array 
+        Features of the labled set of points 
+    Y: Numpy array
+        Lables of the labled set of points 
+    unlabeled_x: Numpy array
+        Features of the unlabled set of points 
+    net: class object
+        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
+    handler: class object
+        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
+    nclasses: int 
+        No. of classes in tha dataset
+    args: dictionary
+        This dictionary should have keys 'batch_size' and  'lr'. 'lr' should be the learning rate used for training.
+    valid: boolean
+        Whether validation set is passed or not
+    X_val: Numpy array, optional
+        Features of the points in the validation set. Mandatory if `valid=True`.
+    Y_val:Numpy array, optional
+        Lables of the points in the validation set. Mandatory if `valid=True`.
+    loss_criterion: class object, optional
+        The type of loss criterion. Default is **torch.nn.CrossEntropyLoss()**
+    typeOf: str, optional
+        Determines the type of regulariser to be used. Default is **'none'**.
+        For random regulariser use **'Rand'**.
+        To use Facility Location set functiom as a regulariser use **'FacLoc'**.
+        To use Diversity set functiom as a regulariser use **'Diversity'**.
+    lam: float, optional
+        Determines the amount of regularisation to be applied. Mandatory if is not `typeOf='none'` and by default set to `None`.
+        For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.
+        For both 'Diversity' and 'FacLoc' `lam` determines the weightage given to them while computing the gain
+    """
+    
 
     def __init__(self,X, Y,unlabeled_x, net, handler, nclasses, args,valid,X_val=None,Y_val=None,\
         loss_criterion=nn.CrossEntropyLoss(),typeOf='none',lam=None,kernel_batch_size = 200): # 

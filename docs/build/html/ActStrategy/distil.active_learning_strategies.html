@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Active Learning Strategies &mdash; DISTIL v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="utils" href="distil.utils.html" />
+    <link rel="prev" title="DISTIL" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> DISTIL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">DISTIL</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Active Learning Strategies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.badge">distil.active_learning_strategies.badge module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.core_set">distil.active_learning_strategies.core_set module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling">distil.active_learning_strategies.entropy_sampling module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling_dropout">distil.active_learning_strategies.entropy_sampling_dropout module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.fass">distil.active_learning_strategies.fass module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.glister">GLISTER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence">distil.active_learning_strategies.least_confidence module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence_dropout">distil.active_learning_strategies.least_confidence_dropout module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling">distil.active_learning_strategies.margin_sampling module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling_dropout">distil.active_learning_strategies.margin_sampling_dropout module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.random_sampling">distil.active_learning_strategies.random_sampling module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.strategy">distil.active_learning_strategies.strategy module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.submodular">distil.active_learning_strategies.submodular module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.html">utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DISTIL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">DISTIL</a> &raquo;</li>
+        
+      <li>Active Learning Strategies</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/ActStrategy/distil.active_learning_strategies.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="active-learning-strategies">
+<h1>Active Learning Strategies<a class="headerlink" href="#active-learning-strategies" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-distil.active_learning_strategies.badge">
+<span id="distil-active-learning-strategies-badge-module"></span><h2>distil.active_learning_strategies.badge module<a class="headerlink" href="#module-distil.active_learning_strategies.badge" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.badge.BADGE">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.badge.</code><code class="sig-name descname">BADGE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#BADGE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.BADGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.badge.BADGE.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#BADGE.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.BADGE.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="distil.active_learning_strategies.badge.init_centers">
+<code class="sig-prename descclassname">distil.active_learning_strategies.badge.</code><code class="sig-name descname">init_centers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">K</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#init_centers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.init_centers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.core_set">
+<span id="distil-active-learning-strategies-core-set-module"></span><h2>distil.active_learning_strategies.core_set module<a class="headerlink" href="#module-distil.active_learning_strategies.core_set" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.core_set.CoreSet">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.core_set.</code><code class="sig-name descname">CoreSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/core_set.html#CoreSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.core_set.CoreSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.core_set.CoreSet.furthest_first">
+<code class="sig-name descname">furthest_first</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">X_set</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/core_set.html#CoreSet.furthest_first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.core_set.CoreSet.furthest_first" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.core_set.CoreSet.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/core_set.html#CoreSet.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.core_set.CoreSet.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.entropy_sampling">
+<span id="distil-active-learning-strategies-entropy-sampling-module"></span><h2>distil.active_learning_strategies.entropy_sampling module<a class="headerlink" href="#module-distil.active_learning_strategies.entropy_sampling" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.entropy_sampling.EntropySampling">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.entropy_sampling.</code><code class="sig-name descname">EntropySampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling.html#EntropySampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling.EntropySampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.entropy_sampling.EntropySampling.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling.html#EntropySampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling.EntropySampling.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.entropy_sampling_dropout">
+<span id="distil-active-learning-strategies-entropy-sampling-dropout-module"></span><h2>distil.active_learning_strategies.entropy_sampling_dropout module<a class="headerlink" href="#module-distil.active_learning_strategies.entropy_sampling_dropout" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.entropy_sampling_dropout.</code><code class="sig-name descname">EntropySamplingDropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling_dropout.html#EntropySamplingDropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling_dropout.html#EntropySamplingDropout.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.fass">
+<span id="distil-active-learning-strategies-fass-module"></span><h2>distil.active_learning_strategies.fass module<a class="headerlink" href="#module-distil.active_learning_strategies.fass" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.fass.FASS">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.fass.</code><code class="sig-name descname">FASS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.fass.FASS.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.glister">
+<span id="glister"></span><h2>GLISTER<a class="headerlink" href="#module-distil.active_learning_strategies.glister" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.glister.GLISTER">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.glister.</code><code class="sig-name descname">GLISTER</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">valid</span></em>, <em class="sig-param"><span class="n">X_val</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Y_val</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loss_criterion</span><span class="o">=</span><span class="default_value">CrossEntropyLoss()</span></em>, <em class="sig-param"><span class="n">typeOf</span><span class="o">=</span><span class="default_value">'none'</span></em>, <em class="sig-param"><span class="n">lam</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_batch_size</span><span class="o">=</span><span class="default_value">200</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<p>Implementation of GLISTER-ACTIVE Strategy.</p>
+<dl class="simple">
+<dt>Parameters</dt><dd></dd>
+<dt>X: Numpy array</dt><dd><p>Features of the labled set of points</p>
+</dd>
+<dt>Y: Numpy array</dt><dd><p>Lables of the labled set of points</p>
+</dd>
+<dt>unlabeled_x: Numpy array</dt><dd><p>Features of the unlabled set of points</p>
+</dd>
+<dt>net: class object</dt><dd><p>Model architecture used for training. Could be instance of models defined in <cite>distil.utils.models</cite> or something similar.</p>
+</dd>
+<dt>handler: class object</dt><dd><p>It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p>
+</dd>
+<dt>nclasses: int</dt><dd><p>No. of classes in tha dataset</p>
+</dd>
+<dt>args: dictionary</dt><dd><p>This dictionary should have keys ‘batch_size’ and  ‘lr’. ‘lr’ should be the learning rate used for training.</p>
+</dd>
+<dt>valid: boolean</dt><dd><p>Whether validation set is passed or not</p>
+</dd>
+<dt>X_val: Numpy array, optional</dt><dd><p>Features of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p>
+</dd>
+<dt>Y_val:Numpy array, optional</dt><dd><p>Lables of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p>
+</dd>
+<dt>loss_criterion: class object, optional</dt><dd><p>The type of loss criterion. Default is <strong>torch.nn.CrossEntropyLoss()</strong></p>
+</dd>
+<dt>typeOf: str, optional</dt><dd><p>Determines the type of regulariser to be used. Default is <strong>‘none’</strong>.
+For random regulariser use <strong>‘Rand’</strong>.
+To use Facility Location set functiom as a regulariser use <strong>‘FacLoc’</strong>.
+To use Diversity set functiom as a regulariser use <strong>‘Diversity’</strong>.</p>
+</dd>
+<dt>lam: float, optional</dt><dd><p>Determines the amount of regularisation to be applied. Mandatory if is not <cite>typeOf=’none’</cite> and by default set to <cite>None</cite>.
+For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.
+For both ‘Diversity’ and ‘FacLoc’ <cite>lam</cite> determines the weightage given to them while computing the gain</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.glister.GLISTER.distance">
+<code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER.distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.glister.GLISTER.eval_taylor_modular">
+<code class="sig-name descname">eval_taylor_modular</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grads</span></em>, <em class="sig-param"><span class="n">greedySet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">remset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER.eval_taylor_modular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER.eval_taylor_modular" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.glister.GLISTER.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.least_confidence">
+<span id="distil-active-learning-strategies-least-confidence-module"></span><h2>distil.active_learning_strategies.least_confidence module<a class="headerlink" href="#module-distil.active_learning_strategies.least_confidence" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.least_confidence.LeastConfidence">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.least_confidence.</code><code class="sig-name descname">LeastConfidence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence.html#LeastConfidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence.LeastConfidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.least_confidence.LeastConfidence.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence.html#LeastConfidence.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence.LeastConfidence.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.least_confidence_dropout">
+<span id="distil-active-learning-strategies-least-confidence-dropout-module"></span><h2>distil.active_learning_strategies.least_confidence_dropout module<a class="headerlink" href="#module-distil.active_learning_strategies.least_confidence_dropout" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.least_confidence_dropout.</code><code class="sig-name descname">LeastConfidenceDropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence_dropout.html#LeastConfidenceDropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence_dropout.html#LeastConfidenceDropout.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.margin_sampling">
+<span id="distil-active-learning-strategies-margin-sampling-module"></span><h2>distil.active_learning_strategies.margin_sampling module<a class="headerlink" href="#module-distil.active_learning_strategies.margin_sampling" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.margin_sampling.MarginSampling">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.margin_sampling.</code><code class="sig-name descname">MarginSampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling.html#MarginSampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling.MarginSampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.margin_sampling.MarginSampling.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling.html#MarginSampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling.MarginSampling.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.margin_sampling_dropout">
+<span id="distil-active-learning-strategies-margin-sampling-dropout-module"></span><h2>distil.active_learning_strategies.margin_sampling_dropout module<a class="headerlink" href="#module-distil.active_learning_strategies.margin_sampling_dropout" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.margin_sampling_dropout.</code><code class="sig-name descname">MarginSamplingDropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling_dropout.html#MarginSamplingDropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling_dropout.html#MarginSamplingDropout.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.random_sampling">
+<span id="distil-active-learning-strategies-random-sampling-module"></span><h2>distil.active_learning_strategies.random_sampling module<a class="headerlink" href="#module-distil.active_learning_strategies.random_sampling" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.random_sampling.RandomSampling">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.random_sampling.</code><code class="sig-name descname">RandomSampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/random_sampling.html#RandomSampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.random_sampling.RandomSampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.random_sampling.RandomSampling.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/random_sampling.html#RandomSampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.random_sampling.RandomSampling.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.strategy">
+<span id="distil-active-learning-strategies-strategy-module"></span><h2>distil.active_learning_strategies.strategy module<a class="headerlink" href="#module-distil.active_learning_strategies.strategy" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.strategy.Strategy">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.strategy.</code><code class="sig-name descname">Strategy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.get_embedding">
+<code class="sig-name descname">get_embedding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.get_embedding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.get_embedding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.get_grad_embedding">
+<code class="sig-name descname">get_grad_embedding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_grad</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.get_grad_embedding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.get_grad_embedding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.load_state">
+<code class="sig-name descname">load_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.load_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.load_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">useloader</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.predict_prob">
+<code class="sig-name descname">predict_prob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict_prob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict_prob" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout">
+<code class="sig-name descname">predict_prob_dropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">n_drop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict_prob_dropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout_split">
+<code class="sig-name descname">predict_prob_dropout_split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">n_drop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict_prob_dropout_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout_split" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.save_state">
+<code class="sig-name descname">save_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.save_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.save_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.update_data">
+<code class="sig-name descname">update_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.update_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.update_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.strategy.Strategy.update_model">
+<code class="sig-name descname">update_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">clf</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.update_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.update_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.submodular">
+<span id="distil-active-learning-strategies-submodular-module"></span><h2>distil.active_learning_strategies.submodular module<a class="headerlink" href="#module-distil.active_learning_strategies.submodular" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.submodular.SubmodularFunction">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.submodular.</code><code class="sig-name descname">SubmodularFunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">x_trn</span></em>, <em class="sig-param"><span class="n">y_trn</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">N_trn</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">if_convex</span></em>, <em class="sig-param"><span class="n">submod</span></em>, <em class="sig-param"><span class="n">selection_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.submodular.SubmodularFunction.compute_score">
+<code class="sig-name descname">compute_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_params</span></em>, <em class="sig-param"><span class="n">idxs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.compute_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.compute_score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.submodular.SubmodularFunction.distance">
+<code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.submodular.SubmodularFunction.get_index">
+<code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">data_sub</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.get_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.submodular.SubmodularFunction.lazy_greedy_max">
+<code class="sig-name descname">lazy_greedy_max</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em>, <em class="sig-param"><span class="n">model_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.lazy_greedy_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.lazy_greedy_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-distil.active_learning_strategies" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="distil.utils.html" class="btn btn-neutral float-right" title="utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="DISTIL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
