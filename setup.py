@@ -3,7 +3,7 @@ import setuptools
 
 setup(
     name='decile-distil',
-    version='0.0.1',
+    version='0.0.3',
     author='Apurva Dani, Durga Sivasubramanian, Rishabh Iyer',
     author_email='apurvadani98@gmail.com',
     url='https://github.com/decile-team/distil',
