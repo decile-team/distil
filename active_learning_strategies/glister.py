@@ -55,7 +55,7 @@ class GLISTER(Strategy):
         with torch.no_grad():
             
             new_N = len(self.grads_per_elem)
-            self.sim_mat = torch.zeros([new_N, new_N], dtype=torch.float32)#.to(self.device)
+            self.sim_mat = torch.zeros([new_N, new_N], dtype=torch.float32).to(self.device)
             first_i = True
             for i, g_i in enumerate(g_is, 0):
                 if first_i:
@@ -67,9 +67,9 @@ class GLISTER(Strategy):
 
             if self.typeOf == "FacLoc":
                 const = torch.max(self.sim_mat).item()
-                self.sim_mat = const - self.sim_mat
+                #self.sim_mat = const - self.sim_mat
 
-                self.max_sim = torch.zeros(new_N, dtype=torch.float32)#.to(self.device)
+                self.min_dist = (torch.ones(new_N, dtype=torch.float32)*const).to(self.device)
 
     def _compute_per_element_grads(self):
         
@@ -161,8 +161,9 @@ class GLISTER(Strategy):
 
         with torch.no_grad():
             if self.typeOf == "FacLoc":
-                gains = torch.matmul(grads, self.grads_val_curr) + self.lam*(torch.max(self.max_sim,\
-                    self.sim_mat)- self.max_sim).sum().to(self.device)
+                gains = torch.matmul(grads, self.grads_val_curr) + self.lam*((self.min_dist - \
+                    torch.min(self.min_dist,self.sim_mat[remset])).sum(1)).view(-1, 1).to(self.device)
+                
             elif self.typeOf == "Diversity" and len(greedySet) > 0:
                 gains = torch.matmul(grads, self.grads_val_curr) - \
                     self.lam*self.sim_mat[remset][:, greedySet].sum(1).view(-1, 1).to(self.device)
@@ -203,6 +204,8 @@ class GLISTER(Strategy):
 
             if self.typeOf == "Diversity":
                 gains = self.eval_taylor_modular(self.grads_per_elem[remainSet],greedySet,remainSet)
+            if self.typeOf == "FacLoc":
+                gains = self.eval_taylor_modular(self.grads_per_elem[remainSet],remset=remainSet)
             else:
                 gains = self.eval_taylor_modular(self.grads_per_elem[remainSet])#rem_grads)
                 
@@ -214,7 +217,7 @@ class GLISTER(Strategy):
             self._update_grads_val(self.grads_per_elem[bestId].view(1, -1))
 
             if self.typeOf == "FacLoc":
-                self.max_sim = torch.max(self.max_sim,self.sim_mat[bestId])
+                self.min_dist = torch.min(self.min_dist,self.sim_mat[bestId])
             
         if self.typeOf == 'Rand':
             greedySet.extend(list(np.random.choice(remainSet, size=budget - int(curr_bud),replace=False)))
