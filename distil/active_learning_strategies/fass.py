@@ -12,7 +12,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from matplotlib import pyplot as plt
 import math
 import random
 from torch.distributions import Categorical

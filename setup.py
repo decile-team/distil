@@ -2,8 +2,8 @@ from setuptools import setup
 import setuptools
 
 setup(
-    name='distil',
-    version='0.0.1',
+    name='decile-distil',
+    version='0.0.2',
     author='Apurva Dani, Durga Sivasubramanian, Rishabh Iyer',
     author_email='apurvadani98@gmail.com',
     url='https://github.com/decile-team/distil',
@@ -17,9 +17,6 @@ setup(
         "numba >= 0.43.0",
         "tqdm >= 4.24.0",
         "torch >= 1.4.0",
-        "apricot-select >= 0.6.0",
-        "matplotlib >= 3.3.3",
-        "multipledispatch >=0.6.0",
-        "scikit-learn >=0.23.0"
+        "apricot-select >= 0.6.0"
     ],
 )
