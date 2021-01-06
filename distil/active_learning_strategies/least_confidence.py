@@ -2,7 +2,7 @@ import numpy as np
 from .strategy import Strategy
 
 class LeastConfidence(Strategy):
-   """
+    """
     Implementation of Least Confidence Sampling Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include least confidence technique to select data points for active learning.
@@ -28,20 +28,20 @@ class LeastConfidence(Strategy):
     	Batch size to be used inside strategy class (int, optional)
     """
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-    	"""
-    	Constructor method
-    	"""
+        """
+        Constructor method
+        """
         super(LeastConfidence, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def select(self, budget):
-    	"""
+        """
         Select next set of points
-        
+
         Parameters
         ----------
         budget: int
             Nuber of indexes to be returned for next set
-        
+
         Returns
         ----------
         U_idx: list

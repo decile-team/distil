@@ -7,7 +7,7 @@ from datetime import datetime
 from sklearn.metrics import pairwise_distances
 
 class CoreSet(Strategy):
-   """
+    """
     Implementation of CoreSet Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include coreset sampling technique to select data points for active learning.

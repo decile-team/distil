@@ -4,7 +4,7 @@ import pdb
 
 class MarginSampling(Strategy):
 
-   """
+    """
     Implementation of Margin Sampling Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include margin sampling technique to select data points for active learning.
@@ -30,20 +30,20 @@ class MarginSampling(Strategy):
     	Batch size to be used inside strategy class (int, optional)
     """
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-    	"""
-    	Constructor method
-    	"""
+        """
+        Constructor method
+        """
         super(MarginSampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def select(self, budget):
-    	"""
+        """
         Select next set of points
-        
+
         Parameters
         ----------
         budget: int
             Number of indexes to be returned for next set
-        
+
         Returns
         ----------
         U_idx: list
