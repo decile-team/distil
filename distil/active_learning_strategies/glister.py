@@ -204,7 +204,7 @@ class GLISTER(Strategy):
 
             if self.typeOf == "Diversity":
                 gains = self.eval_taylor_modular(self.grads_per_elem[remainSet],greedySet,remainSet)
-            if self.typeOf == "FacLoc":
+            elif self.typeOf == "FacLoc":
                 gains = self.eval_taylor_modular(self.grads_per_elem[remainSet],remset=remainSet)
             else:
                 gains = self.eval_taylor_modular(self.grads_per_elem[remainSet])#rem_grads)
