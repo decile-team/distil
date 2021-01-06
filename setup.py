@@ -17,9 +17,9 @@ setup(
         "numba >= 0.43.0",
         "tqdm >= 4.24.0",
         "torch >= 1.4.0",
-        "apricot-select >= 0.6.0"
-        "matplotlib >= 3.3.3"
-        "multipledispatch >=0.6.0"
+        "apricot-select >= 0.6.0",
+        "matplotlib >= 3.3.3",
+        "multipledispatch >=0.6.0",
         "scikit-learn >=0.23.0"
     ],
 )
