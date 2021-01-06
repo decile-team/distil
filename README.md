@@ -2,6 +2,6 @@
 Add more details here
 ## Getting Started
 ```
-cd notebooks/
-python run_user.py
+cd examples/
+python example.py
 ```
