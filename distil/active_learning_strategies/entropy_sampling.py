@@ -5,7 +5,7 @@ from .strategy import Strategy
 class EntropySampling(Strategy):
    """
     Implementation of Entropy Sampling Strategy.
-    This class extends :class:`selectionstrategies.strategy.Strategy`
+    This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include entropy sampling technique to select data points for active learning.
     
     Parameters

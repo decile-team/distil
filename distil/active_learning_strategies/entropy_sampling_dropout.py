@@ -5,7 +5,7 @@ from .strategy import Strategy
 class EntropySamplingDropout(Strategy):
    """
     Implementation of Entropy Sampling Dropout Strategy.
-    This class extends :class:`selectionstrategies.strategy.Strategy`
+    This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include entropy sampling with dropout technique to select data points for active learning.
     
     Parameters

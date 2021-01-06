@@ -5,7 +5,7 @@ from .strategy import Strategy
 class MarginSamplingDropout(Strategy):
    """
     Implementation of Margin Sampling Dropout Strategy.
-    This class extends :class:`selectionstrategies.strategy.Strategy`
+    This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include margin sampling dropout technique to select data points for active learning.
     
     Parameters

@@ -4,7 +4,7 @@ from .strategy import Strategy
 class LeastConfidence(Strategy):
    """
     Implementation of Least Confidence Sampling Strategy.
-    This class extends :class:`selectionstrategies.strategy.Strategy`
+    This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include least confidence technique to select data points for active learning.
     
     Parameters
