@@ -10,11 +10,12 @@ import torch.optim as optim
 from torch.autograd import Variable
 import sys
 sys.path.append('../')
-from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
+from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
                                 CoreSet, GLISTER, BADGE
-from utils.models.logreg_net import LogisticRegNet
-from utils.models.simpleNN_net import TwoLayerNet
+from distil.utils.models.logreg_net import LogisticRegNet
+from distil.utils.models.simpleNN_net import TwoLayerNet
+from distil.utils.DataHandler import DataHandler_Points
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -93,26 +94,26 @@ class data_train:
         return self.clf
 
 
-class DataHandler_Points(Dataset):
-    def __init__(self, X, Y=None, select=True):
+# class DataHandler_Points(Dataset):
+#     def __init__(self, X, Y=None, select=True):
         
-        self.select = select
-        if not self.select:
-        	self.X = X.astype(np.float32)
-        	self.Y = Y
-        else:
-        	self.X = X.astype(np.float32)  #For unlabeled Data
+#         self.select = select
+#         if not self.select:
+#         	self.X = X.astype(np.float32)
+#         	self.Y = Y
+#         else:
+#         	self.X = X.astype(np.float32)  #For unlabeled Data
 
-    def __getitem__(self, index):
-    	if not self.select:
-    		x, y = self.X[index], self.Y[index]
-    		return x, y, index
-    	else:
-        	x = self.X[index]              #For unlabeled Data
-        	return x, index
+#     def __getitem__(self, index):
+#     	if not self.select:
+#     		x, y = self.X[index], self.Y[index]
+#     		return x, y, index
+#     	else:
+#         	x = self.X[index]              #For unlabeled Data
+#         	return x, index
 
-    def __len__(self):
-        return len(self.X)
+#     def __len__(self):
+#         return len(self.X)
 
 #User Execution
 data_path = '../datasets/iris.csv'
@@ -146,11 +147,11 @@ print('Dim',dim)
 net = TwoLayerNet(dim, nclasses, dim*2)
 net.apply(init_weights)
 
-strategy_args = {'batch_size' : 2, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
-strategy = BADGE(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy_args = {'batch_size' : 2, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
+# strategy = BADGE(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
-# strategy_args = {'batch_size' : 2}
-# strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
+strategy_args = {'batch_size' : 2}
+strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
 # strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)

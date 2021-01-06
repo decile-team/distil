@@ -1,3 +1,6 @@
+# __init__.py
+# Author: Apurva Dani <apurvadani@gmail.com>
+
 from .fass import FASS
 from .entropy_sampling import EntropySampling
 from .entropy_sampling_dropout import EntropySamplingDropout
@@ -10,3 +13,5 @@ from .margin_sampling_dropout import MarginSamplingDropout
 from .core_set import CoreSet
 from .glister import GLISTER
 from .badge import BADGE
+
+__version__ = '0.0.1'

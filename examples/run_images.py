@@ -10,17 +10,17 @@ import torch.optim as optim
 from torch.autograd import Variable
 import sys
 sys.path.append('../')
-from active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
+from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
                                 CoreSet, BADGE
 # from models.linearmodel import mlpMod, linMod, ResNet18
 # from models.linearmodel import linMod
 # from models.mlpmod import mlpMod
 # from models.resnet import ResNet18
-from utils.models.cifar10net import CifarNet
-from utils.models.mnist_net import MnistNet
-from utils.DataHandler import DataHandler_MNIST, DataHandler_CIFAR10
-from utils.dataset import get_dataset
+from distil.utils.models.cifar10net import CifarNet
+from distil.utils.models.mnist_net import MnistNet
+from distil.utils.DataHandler import DataHandler_MNIST, DataHandler_CIFAR10
+from distil.utils.dataset import get_dataset
 
 #custom training
 class data_train:
@@ -99,13 +99,13 @@ X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 dim = np.shape(X)[1:]
 handler = DataHandler_CIFAR10
 
-X_tr = X[:20]
-y_tr = y[:20]
-X_unlabeled = X[200:220]
-y_unlabeled = y[200:220]
+X_tr = X[:2000]
+y_tr = y[:2000]
+X_unlabeled = X[2000:]
+y_unlabeled = y[2000:]
 
-X_test = X_test[: 10]
-y_test = y_test[: 10].numpy()
+X_test = X_test
+y_test = y_test.numpy()
 
 nclasses = 10
 n_rounds = 11    ##Number of rounds to run active learning

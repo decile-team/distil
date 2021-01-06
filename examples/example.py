@@ -12,9 +12,9 @@ import sys
 from sklearn.preprocessing import StandardScaler
 
 sys.path.append('../')
-from utils.DataHandler import DataHandler_Points
-from active_learning_strategies import GLISTER, BADGE
-from utils.models.simpleNN_net import TwoLayerNet
+from distil.utils.DataHandler import DataHandler_Points
+from distil.active_learning_strategies import GLISTER, BADGE
+from distil.utils.models.simpleNN_net import TwoLayerNet
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -52,7 +52,7 @@ class data_train:
                 x, y = Variable(x), Variable(y)
             optimizer.zero_grad()
             out = self.clf(x)
-            loss = F.cross_entropy(out, y)
+            loss = F.cross_entropy(out, y.long())
             accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
             loss.backward()
 

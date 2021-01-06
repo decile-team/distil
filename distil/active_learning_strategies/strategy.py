@@ -23,7 +23,7 @@ class Strategy:
             args['batch_size'] = 1
         
         if 'filename' not in args:    
-            self.filename = '../datasets/state.pkl'
+            self.filename = '../state.pkl'
         else:
             self.filename = args['filename']
         #print('Use_CUDA ', self.use_cuda)
@@ -49,13 +49,13 @@ class Strategy:
             self = pickle.load(f)
 
     def predict(self,X, useloader=True):
-        loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
-
+    
         self.model.eval()
         P = torch.zeros(X.shape[0]).long()
         with torch.no_grad():
 
             if useloader:
+                loader_te = DataLoader(self.handler(X),shuffle=False, batch_size = self.args['batch_size'])
                 for x, idxs in loader_te:
                     x = x.to(self.device)  
                     out = self.model(x)
@@ -154,7 +154,7 @@ class Strategy:
                     y_trn = self.predict(x, useloader=False)
                 else:
                     y_trn = torch.tensor(Y[idxs])
-                y_trn = y_trn.to(self.device)
+                y_trn = y_trn.to(self.device).long()
                 outputs.scatter_(1, y_trn.view(-1, 1), 1)
                 l0_grads = data - outputs
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
