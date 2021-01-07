@@ -10,3 +10,5 @@ tqdm>=4.24.0
 sphinxcontrib-napoleon
 sphinxcontrib-bibtex
 sphinx-rtd-theme
+pandas
+torchvision
