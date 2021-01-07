@@ -8,7 +8,7 @@ from sklearn.metrics import pairwise_distances
 
 class CoreSet(Strategy):
     """
-    Implementation of CoreSet Strategy.
+    Implementation of CoreSet :footcite:`sener2018active` Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include coreset sampling technique to select data points for active learning.
     

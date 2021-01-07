@@ -1,15 +1,14 @@
 Active Learning Strategies
 ===========================================
 
-distil.active\_learning\_strategies.badge module
+BADGE
 ------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.badge
    :members:
-   :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.core\_set module
+Core-Set Approch
 ----------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.core_set
@@ -17,7 +16,7 @@ distil.active\_learning\_strategies.core\_set module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.entropy\_sampling module
+Entropy Sampling 
 ------------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.entropy_sampling
@@ -25,7 +24,7 @@ distil.active\_learning\_strategies.entropy\_sampling module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.entropy\_sampling\_dropout module
+Entropy Sampling with Dropout
 ---------------------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.entropy_sampling_dropout
@@ -46,10 +45,9 @@ GLISTER
 
 .. automodule:: distil.active_learning_strategies.glister
    :members:
-   :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.least\_confidence module
+Least Confidence 
 ------------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.least_confidence
@@ -57,7 +55,7 @@ distil.active\_learning\_strategies.least\_confidence module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.least\_confidence\_dropout module
+Least Confidence with Dropout 
 ---------------------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.least_confidence_dropout
@@ -65,7 +63,7 @@ distil.active\_learning\_strategies.least\_confidence\_dropout module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.margin\_sampling module
+Margin Sampling 
 -----------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.margin_sampling
@@ -73,7 +71,7 @@ distil.active\_learning\_strategies.margin\_sampling module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.margin\_sampling\_dropout module
+Margin sampling with Dropout 
 --------------------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.margin_sampling_dropout
@@ -81,7 +79,7 @@ distil.active\_learning\_strategies.margin\_sampling\_dropout module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.random\_sampling module
+Random Sampling
 -----------------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.random_sampling
@@ -89,13 +87,6 @@ distil.active\_learning\_strategies.random\_sampling module
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.strategy module
----------------------------------------------------
-
-.. automodule:: distil.active_learning_strategies.strategy
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 distil.active\_learning\_strategies.submodular module
 -----------------------------------------------------
@@ -104,3 +95,9 @@ distil.active\_learning\_strategies.submodular module
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+REFERENCES
+-----------
+
+.. footbibliography::
