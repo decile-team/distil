@@ -18,8 +18,43 @@ from torch.distributions import Categorical
 from .submodular import SubmodularFunction
 
 class FASS(Strategy):
+    """
+    Implementation of Entropy Sampling Dropout Strategy.
+    This class extends :class:`active_learning_strategies.strategy.Strategy`
+    to include entropy sampling with dropout technique to select data points for active learning.
+    
+    Parameters
+    ----------
+    X: numpy array
+        Present training/labeled data   
+    y: numpy array
+        Labels of present training data
+    unlabeled_x: numpy array
+        Data without labels
+    net: class
+        Pytorch Model class
+    handler: class
+        Data Handler, which can load data even without labels.
+    nclasses: int
+        Number of unique target variables
+    args: dict
+        Specify optional parameters
+        
+        batch_size 
+        Batch size to be used inside strategy class (int, optional)
+
+        submod: str
+        Choice of submodular function - 'facility_location' | 'graph_cut' | 'saturated_coverage' | 'sum_redundancy' | 'feature_based'
+        
+        selection_type: str
+        Choice of selection strategy - 'PerClass' | 'Supervised'
+    """
 
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+
+        """
+        Constructor method
+        """
         
         if 'submod' in args:
             self.submod = args['submod']
@@ -33,6 +68,19 @@ class FASS(Strategy):
         super(FASS, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
 
     def select(self, budget):
+        """
+        Select next set of points
+
+        Parameters
+        ----------
+        budget: int
+            Number of indexes to be returned for next set
+
+        Returns
+        ----------
+        return_indices: list
+            List of selected data point indexes with respect to unlabeled_x
+        """ 
 
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
 

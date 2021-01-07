@@ -78,6 +78,7 @@ class data_train:
             self.clf =  self.net.apply(weight_reset)
 
         optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
+        print('Handler ', type(self.X), type(self.Y))
         loader_tr = DataLoader(self.handler(self.X, self.Y, False))
         epoch = 1
         accCurrent = 0

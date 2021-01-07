@@ -13,6 +13,32 @@ import pandas as pd
 
 class SubmodularFunction():
 
+    """
+    Implementation of Submodular Function.
+    This class allows you to use different submodular functions
+            
+    Parameters
+    ----------
+    device: str
+        Device to be used, cpu|gpu
+    x_trn: torch tensor
+        Data on which submodular optimization should be applied
+    y_trn: torch tensor
+        Labels of the data 
+    model: class
+        Model architecture used for training
+    N_trn: int
+        Number of samples in dataset
+    batch_size: int
+        Batch size to be used for optimization
+    if_convex: bool
+        If convex or not
+    submod: str
+        Choice of submodular function
+    selection_type: str
+        Type of selection - 'PerClass' | 'Supervised' 
+    """
+
     def __init__(self, device, x_trn, y_trn, model, N_trn, batch_size, if_convex, submod, selection_type):
         self.x_trn = x_trn
         self.y_trn = y_trn
@@ -25,6 +51,23 @@ class SubmodularFunction():
         self.selection_type = selection_type
 
     def distance(self, x, y, exp=2):
+        """
+        Compute the distance.
+ 
+        Parameters
+        ----------
+        x: Tensor
+            First input tensor
+        y: Tensor
+            Second input tensor
+        exp: float, optional
+            The exponent value (default: 2)
+            
+        Returns
+        ----------
+        dist: Tensor
+            Output tensor 
+        """
         n = x.size(0)
         m = y.size(0)
         d = x.size(1)
@@ -34,6 +77,21 @@ class SubmodularFunction():
         return dist
 
     def get_index(self, data, data_sub):
+        """
+        Returns indexes of the rows.
+ 
+        Parameters
+        ----------
+        data: numpy array
+            Array to find indexes from
+        data_sub: numpy array
+            Array of data points to find indexes for
+            
+        Returns
+        ----------
+        greedyList: list
+            List of indexes 
+        """
 
         greedyList = []
         for row in data_sub:
@@ -47,6 +105,17 @@ class SubmodularFunction():
 
 
     def compute_score(self, model_params, idxs):
+
+        """
+        Compute the score of the indices.
+        Parameters
+        ----------
+        model_params: OrderedDict
+            Python dictionary object containing models parameters
+        idxs: list
+            The indices
+        """
+
         self.model.load_state_dict(model_params)
         self.N = 0
         g_is = []
@@ -79,6 +148,23 @@ class SubmodularFunction():
         self.dist_mat = self.dist_mat.cpu().numpy()
 
     def lazy_greedy_max(self, budget, model_params):
+
+        """
+        Data selection method using different submodular optimization
+        functions.
+ 
+        Parameters
+        ----------
+        budget: int
+            The number of data points to be selected
+        model_params: OrderedDict
+            Python dictionary object containing models parameters
+        
+        Returns
+        ----------
+        total_greedy_list: list
+            List containing indices of the best datapoints 
+        """
 
         classes, no_elements = torch.unique(self.y_trn, return_counts=True)
         len_unique_elements = no_elements.shape[0]

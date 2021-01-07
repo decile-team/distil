@@ -99,6 +99,7 @@ X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 dim = np.shape(X)[1:]
 handler = DataHandler_CIFAR10
 
+print(type(X), type(y), type(X_test), type(y_test))
 X_tr = X[:2000]
 y_tr = y[:2000]
 X_unlabeled = X[2000:]

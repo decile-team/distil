@@ -6,6 +6,28 @@ from PIL import Image
 from torchvision import transforms
 
 def get_dataset(name, path):
+    """
+    Loads dataset
+
+    Parameters
+    ----------
+    name: str
+        Name of the dataset to be loaded. Supports MNIST and CIFAR10
+    path: str
+        Path to save the downloaded dataset
+
+    Returns
+    ----------
+    X_tr: numpy array
+        Train set
+    Y_tr: torch tensor
+        Training Labels
+    X_te: numpy array
+        Test Set
+    Y_te: torch tensor
+        Test labels
+
+    """
     
     if name == 'MNIST':
         return get_MNIST(path)
@@ -13,6 +35,26 @@ def get_dataset(name, path):
         return get_CIFAR10(path)
 
 def get_MNIST(path):
+    """
+    Downloads MNIST dataset
+
+    Parameters
+    ----------
+    path: str
+        Path to save the downloaded dataset
+
+    Returns
+    ----------
+    X_tr: numpy array
+        Train set
+    Y_tr: torch tensor
+        Training Labels
+    X_te: numpy array
+        Test Set
+    Y_te: torch tensor
+        Test labels
+
+    """
     raw_tr = datasets.MNIST(path + '/MNIST', train=True, download=True)
     raw_te = datasets.MNIST(path + '/MNIST', train=False, download=True)
     X_tr = raw_tr.train_data
@@ -22,6 +64,26 @@ def get_MNIST(path):
     return X_tr, Y_tr, X_te, Y_te
 
 def get_CIFAR10(path):
+    """
+    Downloads CIFAR10 dataset
+
+    Parameters
+    ----------
+    path: str
+        Path to save the downloaded dataset
+
+    Returns
+    ----------
+    X_tr: numpy array
+        Train set
+    Y_tr: torch tensor
+        Training Labels
+    X_te: numpy array
+        Test Set
+    Y_te: torch tensor
+        Test labels
+
+    """
     data_tr = datasets.CIFAR10(path + '/CIFAR10', train=True, download=True)
     data_te = datasets.CIFAR10(path + '/CIFAR10', train=False, download=True)
     X_tr = data_tr.data
@@ -30,32 +92,3 @@ def get_CIFAR10(path):
     Y_te = torch.from_numpy(np.array(data_te.targets))
     return X_tr, Y_tr, X_te, Y_te
     return X_tr, Y_tr, X_te, Y_te
-
-# def get_handler(name):
-#     if name == 'MNIST':
-#         return DataHandler3
-#     elif name == 'FashionMNIST':
-#         return DataHandler1
-#     elif name == 'SVHN':
-#         return DataHandler2
-#     elif name == 'CIFAR10':
-#         return DataHandler3
-#     else:
-#         return DataHandler4
-
-
-# class DataHandler3(Dataset):
-#     def __init__(self, X, Y, transform=None):
-#         self.X = X
-#         self.Y = Y
-#         self.transform = transform
-
-#     def __getitem__(self, index):
-#         x, y = self.X[index], self.Y[index]
-#         if self.transform is not None:
-#             x = Image.fromarray(x)
-#             x = self.transform(x)
-#         return x, y, index
-
-#     def __len__(self):
-#         return len(self.X)

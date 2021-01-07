@@ -4,7 +4,24 @@ from PIL import Image
 from torchvision import transforms
 
 class DataHandler_Points(Dataset):
+    """
+    Data Handler to load data points.
+    This class extends :class:`torch.utils.data.Dataset` to handle 
+    loading data even without labels
+
+    Parameters
+    ----------
+    X: numpy array
+        Data to be loaded   
+    y: numpy array, optional
+        Labels to be loaded (default: None)
+    select: bool
+        True if loading data without labels, False otherwise
+    """
     def __init__(self, X, Y=None, select=True):
+        """
+        Constructor
+        """
         
         self.select = select
         if not self.select:
@@ -25,8 +42,25 @@ class DataHandler_Points(Dataset):
         return len(self.X)
 
 class DataHandler_MNIST(Dataset):
+    """
+    Data Handler to load MNIST dataset.
+    This class extends :class:`torch.utils.data.Dataset` to handle 
+    loading data even without labels
+
+    Parameters
+    ----------
+    X: numpy array
+        Data to be loaded   
+    y: numpy array, optional
+        Labels to be loaded (default: None)
+    select: bool
+        True if loading data without labels, False otherwise
+    """
 
     def __init__(self, X, Y=None, select=True):
+        """
+        Constructor
+        """
         self.select = select
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         if not self.select:
@@ -54,8 +88,25 @@ class DataHandler_MNIST(Dataset):
         return len(self.X)
 
 class DataHandler_CIFAR10(Dataset):
+    """
+    Data Handler to load CIFAR10 dataset.
+    This class extends :class:`torch.utils.data.Dataset` to handle 
+    loading data even without labels
+
+    Parameters
+    ----------
+    X: numpy array
+        Data to be loaded   
+    y: numpy array, optional
+        Labels to be loaded (default: None)
+    select: bool
+        True if loading data without labels, False otherwise
+    """
 
     def __init__(self, X, Y=None, select=True):
+        """
+        Constructor
+        """
         self.select = select
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))])
         if not self.select:
