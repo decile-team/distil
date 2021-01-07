@@ -34,7 +34,7 @@ class SubmodularFunction():
     if_convex: bool
         If convex or not
     submod: str
-        Choice of submodular function
+        Choice of submodular function - 'facility_location' | 'graph_cut' | 'saturated_coverage' | 'sum_redundancy' | 'feature_based'
     selection_type: str
         Type of selection - 'PerClass' | 'Supervised' 
     """
