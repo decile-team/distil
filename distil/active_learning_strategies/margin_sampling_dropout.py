@@ -7,7 +7,7 @@ class MarginSamplingDropout(Strategy):
     Implementation of Margin Sampling Dropout Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include margin sampling dropout technique to select data points for active learning.
-    
+
     Parameters
     ----------
     X: numpy array
@@ -24,7 +24,7 @@ class MarginSamplingDropout(Strategy):
         Number of unique target variables
     args: dict
         Specify optional parameters
-         
+            
         batch_size 
         Batch size to be used inside strategy class (int, optional)
 
