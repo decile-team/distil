@@ -73,11 +73,48 @@ def init_centers(X, K):
 
 class BADGE(Strategy):
 
+    """
+    Implementation of Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE) 
+    :footcite:`DBLP:journals/corr/abs-1906-03671` Strategy. This class extends :
+    class:`active_learning_strategies.strategy.Strategy`.
+    
+    Parameters
+    ----------
+
+    X: Numpy array 
+        Features of the labled set of points 
+    Y: Numpy array
+        Lables of the labled set of points 
+    unlabeled_x: Numpy array
+        Features of the unlabled set of points 
+    net: class object
+        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
+    handler: class object
+        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
+    nclasses: int 
+        No. of classes in tha dataset
+    args: dictionary
+        This dictionary should have 'batch_size' as a key. 
+    """
+
     def __init__(self, X, Y, unlabeled_x, net, handler,nclasses, args):
 
         super(BADGE, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
 
     def select(self, budget):
+        """
+        Select next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of indexes to be returned for next set
+        
+        Returns
+        ----------
+        chosen: list
+            List of selected data point indexes with respect to unlabeled_x
+        """ 
 
         gradEmbedding = self.get_grad_embedding(self.unlabeled_x,bias_grad=False)
         chosen = init_centers(gradEmbedding.cpu().numpy(), budget)

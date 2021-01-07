@@ -3,7 +3,6 @@ import torch
 from .strategy import Strategy
 
 class EntropySampling(Strategy):
-
     """
     Implementation of Entropy Sampling Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
@@ -18,19 +17,18 @@ class EntropySampling(Strategy):
     unlabeled_x: numpy array
         Data without labels
     net: class
-    	Pytorch Model class
+        Pytorch Model class
     handler: class
-    	Data Handler, which can load data even without labels.
+        Data Handler, which can load data even without labels.
     nclasses: int
-    	Number of unique target variables
+        Number of unique target variables
     args: dict
-    	Specify optional parameters
-    	
-    	batch_size 
-    	Batch size to be used inside strategy class (int, optional)
+        Specify optional parameters
+        
+        batch_size 
+        Batch size to be used inside strategy class (int, optional)
     """
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-        
         """
         Constructor method
         """

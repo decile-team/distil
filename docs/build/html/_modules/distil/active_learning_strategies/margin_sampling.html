@@ -156,16 +156,56 @@
 <span class="kn">import</span> <span class="nn">pdb</span>
 
 <div class="viewcode-block" id="MarginSampling"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling.MarginSampling">[docs]</a><span class="k">class</span> <span class="nc">MarginSampling</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Margin Sampling Strategy.</span>
+<span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`</span>
+<span class="sd">    to include margin sampling technique to select data points for active learning.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">    X: numpy array</span>
+<span class="sd">        Present training/labeled data   </span>
+<span class="sd">    y: numpy array</span>
+<span class="sd">        Labels of present training data</span>
+<span class="sd">    unlabeled_x: numpy array</span>
+<span class="sd">        Data without labels</span>
+<span class="sd">    net: class</span>
+<span class="sd">    	Pytorch Model class</span>
+<span class="sd">    handler: class</span>
+<span class="sd">    	Data Handler, which can load data even without labels.</span>
+<span class="sd">    nclasses: int</span>
+<span class="sd">    	Number of unique target variables</span>
+<span class="sd">    args: dict</span>
+<span class="sd">    	Specify optional parameters</span>
+<span class="sd">    	 </span>
+<span class="sd">    	batch_size </span>
+<span class="sd">    	Batch size to be used inside strategy class (int, optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MarginSampling</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MarginSampling.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling.MarginSampling.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select next set of points</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        budget: int</span>
+<span class="sd">            Number of indexes to be returned for next set</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        U_idx: list</span>
+<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_prob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">)</span>
         <span class="n">probs_sorted</span><span class="p">,</span> <span class="n">idxs</span> <span class="o">=</span> <span class="n">probs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">U</span> <span class="o">=</span> <span class="n">probs_sorted</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">probs_sorted</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">U_idx</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">sort</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[:</span><span class="n">budget</span><span class="p">]</span> 
-        <span class="nb">print</span><span class="p">(</span><span class="n">U_idx</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">U_idx</span></div></div>
 </pre></div>
 

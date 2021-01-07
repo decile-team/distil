@@ -1,8 +1,21 @@
 distil.utils.models package
 ===========================
 
-Submodules
-----------
+distil.utils.models.logreg\_net module
+--------------------------------------
+
+.. automodule:: distil.utils.models.logreg_net
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+distil.utils.models.mnist\_net module
+-------------------------------------
+
+.. automodule:: distil.utils.models.mnist_net
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 distil.utils.models.cifar10net module
 -------------------------------------
@@ -68,21 +81,7 @@ distil.utils.models.lenet module
    :undoc-members:
    :show-inheritance:
 
-distil.utils.models.logreg\_net module
---------------------------------------
 
-.. automodule:: distil.utils.models.logreg_net
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-distil.utils.models.mnist\_net module
--------------------------------------
-
-.. automodule:: distil.utils.models.mnist_net
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 distil.utils.models.mobilenet module
 ------------------------------------
@@ -180,10 +179,3 @@ distil.utils.models.vgg module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: distil.utils.models
-   :members:
-   :undoc-members:
-   :show-inheritance:

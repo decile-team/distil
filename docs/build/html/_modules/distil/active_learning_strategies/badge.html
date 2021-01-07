@@ -193,7 +193,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">ConvergenceWarning</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
 
-<div class="viewcode-block" id="init_centers"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.badge.init_centers">[docs]</a><span class="k">def</span> <span class="nf">init_centers</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">init_centers</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">X</span><span class="p">])</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
     <span class="n">indsAll</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span><span class="p">]</span>
@@ -222,15 +222,52 @@
     <span class="n">val</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">gram</span><span class="p">)</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="n">vgt</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mf">1e-2</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">indsAll</span></div>
+    <span class="k">return</span> <span class="n">indsAll</span>
 
 <div class="viewcode-block" id="BADGE"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.badge.BADGE">[docs]</a><span class="k">class</span> <span class="nc">BADGE</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE) </span>
+<span class="sd">    :footcite:`DBLP:journals/corr/abs-1906-03671` Strategy. This class extends :</span>
+<span class="sd">    class:`active_learning_strategies.strategy.Strategy`.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    X: Numpy array </span>
+<span class="sd">        Features of the labled set of points </span>
+<span class="sd">    Y: Numpy array</span>
+<span class="sd">        Lables of the labled set of points </span>
+<span class="sd">    unlabeled_x: Numpy array</span>
+<span class="sd">        Features of the unlabled set of points </span>
+<span class="sd">    net: class object</span>
+<span class="sd">        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.</span>
+<span class="sd">    handler: class object</span>
+<span class="sd">        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.</span>
+<span class="sd">    nclasses: int </span>
+<span class="sd">        No. of classes in tha dataset</span>
+<span class="sd">    args: dictionary</span>
+<span class="sd">        This dictionary should have &#39;batch_size&#39; as a key. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span><span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">BADGE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span><span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BADGE.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.badge.BADGE.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select next set of points</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        budget: int</span>
+<span class="sd">            Number of indexes to be returned for next set</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        chosen: list</span>
+<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
 
         <span class="n">gradEmbedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">,</span><span class="n">bias_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">chosen</span> <span class="o">=</span> <span class="n">init_centers</span><span class="p">(</span><span class="n">gradEmbedding</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">budget</span><span class="p">)</span>

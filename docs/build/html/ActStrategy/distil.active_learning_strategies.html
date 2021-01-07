@@ -88,20 +88,19 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">DISTIL</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Active Learning Strategies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.badge">distil.active_learning_strategies.badge module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.core_set">distil.active_learning_strategies.core_set module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling">distil.active_learning_strategies.entropy_sampling module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling_dropout">distil.active_learning_strategies.entropy_sampling_dropout module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.badge">BADGE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.core_set">Core-Set Approch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling">Entropy Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling_dropout">Entropy Sampling with Dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.fass">distil.active_learning_strategies.fass module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.glister">GLISTER</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence">distil.active_learning_strategies.least_confidence module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence_dropout">distil.active_learning_strategies.least_confidence_dropout module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling">distil.active_learning_strategies.margin_sampling module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling_dropout">distil.active_learning_strategies.margin_sampling_dropout module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.random_sampling">distil.active_learning_strategies.random_sampling module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.strategy">distil.active_learning_strategies.strategy module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence">Least Confidence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence_dropout">Least Confidence with Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling">Margin Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling_dropout">Margin sampling with Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.random_sampling">Random Sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.submodular">distil.active_learning_strategies.submodular module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">REFERENCES</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="distil.utils.html">utils</a></li>
@@ -179,67 +178,204 @@
   <div class="section" id="active-learning-strategies">
 <h1>Active Learning Strategies<a class="headerlink" href="#active-learning-strategies" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-distil.active_learning_strategies.badge">
-<span id="distil-active-learning-strategies-badge-module"></span><h2>distil.active_learning_strategies.badge module<a class="headerlink" href="#module-distil.active_learning_strategies.badge" title="Permalink to this headline">¶</a></h2>
+<span id="badge"></span><h2>BADGE<a class="headerlink" href="#module-distil.active_learning_strategies.badge" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.badge.BADGE">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.badge.</code><code class="sig-name descname">BADGE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#BADGE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.BADGE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE)
+<a class="footnote-reference brackets" href="#dblp-journals-corr-abs-1906-03671" id="id1">1</a> Strategy. This class extends :
+class:<cite>active_learning_strategies.strategy.Strategy</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>Numpy array</em>) – Features of the labled set of points</p></li>
+<li><p><strong>Y</strong> (<em>Numpy array</em>) – Lables of the labled set of points</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>Numpy array</em>) – Features of the unlabled set of points</p></li>
+<li><p><strong>net</strong> (<em>class object</em>) – Model architecture used for training. Could be instance of models defined in <cite>distil.utils.models</cite> or something similar.</p></li>
+<li><p><strong>handler</strong> (<em>class object</em>) – It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – No. of classes in tha dataset</p></li>
+<li><p><strong>args</strong> (<em>dictionary</em>) – This dictionary should have ‘batch_size’ as a key.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.badge.BADGE.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#BADGE.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.BADGE.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chosen</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
-<dl class="py function">
-<dt id="distil.active_learning_strategies.badge.init_centers">
-<code class="sig-prename descclassname">distil.active_learning_strategies.badge.</code><code class="sig-name descname">init_centers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">K</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#init_centers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.init_centers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </div>
 <div class="section" id="module-distil.active_learning_strategies.core_set">
-<span id="distil-active-learning-strategies-core-set-module"></span><h2>distil.active_learning_strategies.core_set module<a class="headerlink" href="#module-distil.active_learning_strategies.core_set" title="Permalink to this headline">¶</a></h2>
+<span id="core-set-approch"></span><h2>Core-Set Approch<a class="headerlink" href="#module-distil.active_learning_strategies.core_set" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.core_set.CoreSet">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.core_set.</code><code class="sig-name descname">CoreSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/core_set.html#CoreSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.core_set.CoreSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of CoreSet <a class="footnote-reference brackets" href="#sener2018active" id="id2">2</a> Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include coreset sampling technique to select data points for active learning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Present training/labeled data</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – Labels of present training data</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>numpy array</em>) – Data without labels</p></li>
+<li><p><strong>net</strong> (<em>class</em>) – Pytorch Model class</p></li>
+<li><p><strong>handler</strong> (<em>class</em>) – Data Handler, which can load data even without labels.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – Number of unique target variables</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – <p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.core_set.CoreSet.furthest_first">
 <code class="sig-name descname">furthest_first</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">X_set</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/core_set.html#CoreSet.furthest_first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.core_set.CoreSet.furthest_first" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Selects points with maximum distance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Embeddings of unlabeled set</p></li>
+<li><p><strong>X_set</strong> (<em>numpy array</em>) – Embeddings of labeled set</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Number of points to return</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>idxs</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="distil.active_learning_strategies.core_set.CoreSet.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/core_set.html#CoreSet.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.core_set.CoreSet.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chosen</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.entropy_sampling">
-<span id="distil-active-learning-strategies-entropy-sampling-module"></span><h2>distil.active_learning_strategies.entropy_sampling module<a class="headerlink" href="#module-distil.active_learning_strategies.entropy_sampling" title="Permalink to this headline">¶</a></h2>
+<span id="entropy-sampling"></span><h2>Entropy Sampling<a class="headerlink" href="#module-distil.active_learning_strategies.entropy_sampling" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.entropy_sampling.EntropySampling">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.entropy_sampling.</code><code class="sig-name descname">EntropySampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling.html#EntropySampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling.EntropySampling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Entropy Sampling Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include entropy sampling technique to select data points for active learning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Present training/labeled data</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – Labels of present training data</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>numpy array</em>) – Data without labels</p></li>
+<li><p><strong>net</strong> (<em>class</em>) – Pytorch Model class</p></li>
+<li><p><strong>handler</strong> (<em>class</em>) – Data Handler, which can load data even without labels.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – Number of unique target variables</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – <p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.entropy_sampling.EntropySampling.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling.html#EntropySampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling.EntropySampling.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>U_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.entropy_sampling_dropout">
-<span id="distil-active-learning-strategies-entropy-sampling-dropout-module"></span><h2>distil.active_learning_strategies.entropy_sampling_dropout module<a class="headerlink" href="#module-distil.active_learning_strategies.entropy_sampling_dropout" title="Permalink to this headline">¶</a></h2>
+<span id="entropy-sampling-with-dropout"></span><h2>Entropy Sampling with Dropout<a class="headerlink" href="#module-distil.active_learning_strategies.entropy_sampling_dropout" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.entropy_sampling_dropout.</code><code class="sig-name descname">EntropySamplingDropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling_dropout.html#EntropySamplingDropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Entropy Sampling Dropout Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include entropy sampling with dropout technique to select data points for active learning.</p>
+<dl>
+<dt>Parameters</dt><dd></dd>
+<dt>X: numpy array</dt><dd><p>Present training/labeled data</p>
+</dd>
+<dt>y: numpy array</dt><dd><p>Labels of present training data</p>
+</dd>
+<dt>unlabeled_x: numpy array</dt><dd><p>Data without labels</p>
+</dd>
+<dt>net: class</dt><dd><p>Pytorch Model class</p>
+</dd>
+<dt>handler: class</dt><dd><p>Data Handler, which can load data even without labels.</p>
+</dd>
+<dt>nclasses: int</dt><dd><p>Number of unique target variables</p>
+</dd>
+<dt>args: dict</dt><dd><p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+<p>n_drop
+Dropout value to be used (int, optional)</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/entropy_sampling_dropout.html#EntropySamplingDropout.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.entropy_sampling_dropout.EntropySamplingDropout.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>U_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -249,7 +385,7 @@
 <dl class="py class">
 <dt id="distil.active_learning_strategies.fass.FASS">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.fass.</code><code class="sig-name descname">FASS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.fass.FASS.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS.select" title="Permalink to this definition">¶</a></dt>
@@ -263,190 +399,287 @@
 <dl class="py class">
 <dt id="distil.active_learning_strategies.glister.GLISTER">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.glister.</code><code class="sig-name descname">GLISTER</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">valid</span></em>, <em class="sig-param"><span class="n">X_val</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Y_val</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loss_criterion</span><span class="o">=</span><span class="default_value">CrossEntropyLoss()</span></em>, <em class="sig-param"><span class="n">typeOf</span><span class="o">=</span><span class="default_value">'none'</span></em>, <em class="sig-param"><span class="n">lam</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_batch_size</span><span class="o">=</span><span class="default_value">200</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
-<p>Implementation of GLISTER-ACTIVE Strategy.</p>
-<dl class="simple">
-<dt>Parameters</dt><dd></dd>
-<dt>X: Numpy array</dt><dd><p>Features of the labled set of points</p>
-</dd>
-<dt>Y: Numpy array</dt><dd><p>Lables of the labled set of points</p>
-</dd>
-<dt>unlabeled_x: Numpy array</dt><dd><p>Features of the unlabled set of points</p>
-</dd>
-<dt>net: class object</dt><dd><p>Model architecture used for training. Could be instance of models defined in <cite>distil.utils.models</cite> or something similar.</p>
-</dd>
-<dt>handler: class object</dt><dd><p>It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p>
-</dd>
-<dt>nclasses: int</dt><dd><p>No. of classes in tha dataset</p>
-</dd>
-<dt>args: dictionary</dt><dd><p>This dictionary should have keys ‘batch_size’ and  ‘lr’. ‘lr’ should be the learning rate used for training.</p>
-</dd>
-<dt>valid: boolean</dt><dd><p>Whether validation set is passed or not</p>
-</dd>
-<dt>X_val: Numpy array, optional</dt><dd><p>Features of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p>
-</dd>
-<dt>Y_val:Numpy array, optional</dt><dd><p>Lables of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p>
-</dd>
-<dt>loss_criterion: class object, optional</dt><dd><p>The type of loss criterion. Default is <strong>torch.nn.CrossEntropyLoss()</strong></p>
-</dd>
-<dt>typeOf: str, optional</dt><dd><p>Determines the type of regulariser to be used. Default is <strong>‘none’</strong>.
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of GLISTER-ACTIVE Strategy <a class="footnote-reference brackets" href="#killamsetty2020glister" id="id3">3</a>.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>Numpy array</em>) – Features of the labled set of points</p></li>
+<li><p><strong>Y</strong> (<em>Numpy array</em>) – Lables of the labled set of points</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>Numpy array</em>) – Features of the unlabled set of points</p></li>
+<li><p><strong>net</strong> (<em>class object</em>) – Model architecture used for training. Could be instance of models defined in <cite>distil.utils.models</cite> or something similar.</p></li>
+<li><p><strong>handler</strong> (<em>class object</em>) – It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – No. of classes in tha dataset</p></li>
+<li><p><strong>args</strong> (<em>dictionary</em>) – This dictionary should have keys ‘batch_size’ and  ‘lr’. ‘lr’ should be the learning rate used for training.</p></li>
+<li><p><strong>valid</strong> (<em>boolean</em>) – Whether validation set is passed or not</p></li>
+<li><p><strong>X_val</strong> (<em>Numpy array</em><em>, </em><em>optional</em>) – Features of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p></li>
+<li><p><strong>Y_val</strong> (<em>Numpy array</em><em>, </em><em>optional</em>) – Lables of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p></li>
+<li><p><strong>loss_criterion</strong> (<em>class object</em><em>, </em><em>optional</em>) – The type of loss criterion. Default is <strong>torch.nn.CrossEntropyLoss()</strong></p></li>
+<li><p><strong>typeOf</strong> (<em>str</em><em>, </em><em>optional</em>) – Determines the type of regulariser to be used. Default is <strong>‘none’</strong>.
 For random regulariser use <strong>‘Rand’</strong>.
 To use Facility Location set functiom as a regulariser use <strong>‘FacLoc’</strong>.
-To use Diversity set functiom as a regulariser use <strong>‘Diversity’</strong>.</p>
-</dd>
-<dt>lam: float, optional</dt><dd><p>Determines the amount of regularisation to be applied. Mandatory if is not <cite>typeOf=’none’</cite> and by default set to <cite>None</cite>.
+To use Diversity set functiom as a regulariser use <strong>‘Diversity’</strong>.</p></li>
+<li><p><strong>lam</strong> (<em>float</em><em>, </em><em>optional</em>) – Determines the amount of regularisation to be applied. Mandatory if is not <cite>typeOf=’none’</cite> and by default set to <cite>None</cite>.
 For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.
-For both ‘Diversity’ and ‘FacLoc’ <cite>lam</cite> determines the weightage given to them while computing the gain</p>
+For both ‘Diversity’ and ‘FacLoc’ <cite>lam</cite> determines the weightage given to them while computing the gain</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="distil.active_learning_strategies.glister.GLISTER.distance">
-<code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER.distance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.glister.GLISTER.eval_taylor_modular">
-<code class="sig-name descname">eval_taylor_modular</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grads</span></em>, <em class="sig-param"><span class="n">greedySet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">remset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER.eval_taylor_modular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER.eval_taylor_modular" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="distil.active_learning_strategies.glister.GLISTER.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/glister.html#GLISTER.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.glister.GLISTER.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chosen</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.least_confidence">
-<span id="distil-active-learning-strategies-least-confidence-module"></span><h2>distil.active_learning_strategies.least_confidence module<a class="headerlink" href="#module-distil.active_learning_strategies.least_confidence" title="Permalink to this headline">¶</a></h2>
+<span id="least-confidence"></span><h2>Least Confidence<a class="headerlink" href="#module-distil.active_learning_strategies.least_confidence" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.least_confidence.LeastConfidence">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.least_confidence.</code><code class="sig-name descname">LeastConfidence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence.html#LeastConfidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence.LeastConfidence" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Least Confidence Sampling Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include least confidence technique to select data points for active learning.</p>
+<dl>
+<dt>Parameters</dt><dd></dd>
+<dt>X: numpy array</dt><dd><p>Present training/labeled data</p>
+</dd>
+<dt>y: numpy array</dt><dd><p>Labels of present training data</p>
+</dd>
+<dt>unlabeled_x: numpy array</dt><dd><p>Data without labels</p>
+</dd>
+<dt>net: class</dt><dd><p>Pytorch Model class</p>
+</dd>
+<dt>handler: class</dt><dd><p>Data Handler, which can load data even without labels.</p>
+</dd>
+<dt>nclasses: int</dt><dd><p>Number of unique target variables</p>
+</dd>
+<dt>args: dict</dt><dd><p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.least_confidence.LeastConfidence.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence.html#LeastConfidence.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence.LeastConfidence.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Nuber of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>U_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.least_confidence_dropout">
-<span id="distil-active-learning-strategies-least-confidence-dropout-module"></span><h2>distil.active_learning_strategies.least_confidence_dropout module<a class="headerlink" href="#module-distil.active_learning_strategies.least_confidence_dropout" title="Permalink to this headline">¶</a></h2>
+<span id="least-confidence-with-dropout"></span><h2>Least Confidence with Dropout<a class="headerlink" href="#module-distil.active_learning_strategies.least_confidence_dropout" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.least_confidence_dropout.</code><code class="sig-name descname">LeastConfidenceDropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence_dropout.html#LeastConfidenceDropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Least Confidence Dropout Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include least confidence dropout technique to select data points for active learning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Present training/labeled data</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – Labels of present training data</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>numpy array</em>) – Data without labels</p></li>
+<li><p><strong>net</strong> (<em>class</em>) – Pytorch Model class</p></li>
+<li><p><strong>handler</strong> (<em>class</em>) – Data Handler, which can load data even without labels.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – Number of unique target variables</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – <p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+<p>n_drop
+Dropout value to be used (int, optional)</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence_dropout.html#LeastConfidenceDropout.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence_dropout.LeastConfidenceDropout.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Nuber of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>U_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.margin_sampling">
-<span id="distil-active-learning-strategies-margin-sampling-module"></span><h2>distil.active_learning_strategies.margin_sampling module<a class="headerlink" href="#module-distil.active_learning_strategies.margin_sampling" title="Permalink to this headline">¶</a></h2>
+<span id="margin-sampling"></span><h2>Margin Sampling<a class="headerlink" href="#module-distil.active_learning_strategies.margin_sampling" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.margin_sampling.MarginSampling">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.margin_sampling.</code><code class="sig-name descname">MarginSampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling.html#MarginSampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling.MarginSampling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Margin Sampling Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include margin sampling technique to select data points for active learning.</p>
+<dl>
+<dt>Parameters</dt><dd></dd>
+<dt>X: numpy array</dt><dd><p>Present training/labeled data</p>
+</dd>
+<dt>y: numpy array</dt><dd><p>Labels of present training data</p>
+</dd>
+<dt>unlabeled_x: numpy array</dt><dd><p>Data without labels</p>
+</dd>
+<dt>net: class</dt><dd><p>Pytorch Model class</p>
+</dd>
+<dt>handler: class</dt><dd><p>Data Handler, which can load data even without labels.</p>
+</dd>
+<dt>nclasses: int</dt><dd><p>Number of unique target variables</p>
+</dd>
+<dt>args: dict</dt><dd><p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.margin_sampling.MarginSampling.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling.html#MarginSampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling.MarginSampling.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>U_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.margin_sampling_dropout">
-<span id="distil-active-learning-strategies-margin-sampling-dropout-module"></span><h2>distil.active_learning_strategies.margin_sampling_dropout module<a class="headerlink" href="#module-distil.active_learning_strategies.margin_sampling_dropout" title="Permalink to this headline">¶</a></h2>
+<span id="margin-sampling-with-dropout"></span><h2>Margin sampling with Dropout<a class="headerlink" href="#module-distil.active_learning_strategies.margin_sampling_dropout" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.margin_sampling_dropout.</code><code class="sig-name descname">MarginSamplingDropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling_dropout.html#MarginSamplingDropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Margin Sampling Dropout Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include margin sampling dropout technique to select data points for active learning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Present training/labeled data</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – Labels of present training data</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>numpy array</em>) – Data without labels</p></li>
+<li><p><strong>net</strong> (<em>class</em>) – Pytorch Model class</p></li>
+<li><p><strong>handler</strong> (<em>class</em>) – Data Handler, which can load data even without labels.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – Number of unique target variables</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – <p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+<p>n_drop
+Dropout value to be used (int, optional)</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/margin_sampling_dropout.html#MarginSamplingDropout.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>U_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.random_sampling">
-<span id="distil-active-learning-strategies-random-sampling-module"></span><h2>distil.active_learning_strategies.random_sampling module<a class="headerlink" href="#module-distil.active_learning_strategies.random_sampling" title="Permalink to this headline">¶</a></h2>
+<span id="random-sampling"></span><h2>Random Sampling<a class="headerlink" href="#module-distil.active_learning_strategies.random_sampling" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.random_sampling.RandomSampling">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.random_sampling.</code><code class="sig-name descname">RandomSampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/random_sampling.html#RandomSampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.random_sampling.RandomSampling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#distil.active_learning_strategies.strategy.Strategy" title="distil.active_learning_strategies.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Random Sampling Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include random sampling technique to select data points for active learning.</p>
+<dl>
+<dt>Parameters</dt><dd></dd>
+<dt>X: numpy array</dt><dd><p>Present training/labeled data</p>
+</dd>
+<dt>y: numpy array</dt><dd><p>Labels of present training data</p>
+</dd>
+<dt>unlabeled_x: numpy array</dt><dd><p>Data without labels</p>
+</dd>
+<dt>net: class</dt><dd><p>Pytorch Model class</p>
+</dd>
+<dt>handler: class</dt><dd><p>Data Handler, which can load data even without labels.</p>
+</dd>
+<dt>nclasses: int</dt><dd><p>Number of unique target variables</p>
+</dd>
+<dt>args: dict</dt><dd><p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.random_sampling.RandomSampling.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/random_sampling.html#RandomSampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.random_sampling.RandomSampling.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>rand_idx</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
-
-</div>
-<div class="section" id="module-distil.active_learning_strategies.strategy">
-<span id="distil-active-learning-strategies-strategy-module"></span><h2>distil.active_learning_strategies.strategy module<a class="headerlink" href="#module-distil.active_learning_strategies.strategy" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="distil.active_learning_strategies.strategy.Strategy">
-<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.strategy.</code><code class="sig-name descname">Strategy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.get_embedding">
-<code class="sig-name descname">get_embedding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.get_embedding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.get_embedding" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.get_grad_embedding">
-<code class="sig-name descname">get_grad_embedding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_grad</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.get_grad_embedding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.get_grad_embedding" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.load_state">
-<code class="sig-name descname">load_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.load_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.load_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">useloader</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.predict_prob">
-<code class="sig-name descname">predict_prob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict_prob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict_prob" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout">
-<code class="sig-name descname">predict_prob_dropout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">n_drop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict_prob_dropout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout_split">
-<code class="sig-name descname">predict_prob_dropout_split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">n_drop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.predict_prob_dropout_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.predict_prob_dropout_split" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.save_state">
-<code class="sig-name descname">save_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.save_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.save_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.update_data">
-<code class="sig-name descname">update_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.update_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.update_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.active_learning_strategies.strategy.Strategy.update_model">
-<code class="sig-name descname">update_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">clf</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/strategy.html#Strategy.update_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.strategy.Strategy.update_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -480,8 +713,20 @@ For both ‘Diversity’ and ‘FacLoc’ <cite>lam</cite> determines the weight
 </dd></dl>
 
 </div>
-<div class="section" id="module-distil.active_learning_strategies">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-distil.active_learning_strategies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="references">
+<h2>REFERENCES<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p><dl class="footnote brackets">
+<dt class="label" id="dblp-journals-corr-abs-1906-03671"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Jordan T. Ash, Chicheng Zhang, Akshay Krishnamurthy, John Langford, and Alekh Agarwal. Deep batch active learning by diverse, uncertain gradient lower bounds. <em>CoRR</em>, 2019. URL: <a class="reference external" href="http://arxiv.org/abs/1906.03671">http://arxiv.org/abs/1906.03671</a>, <a class="reference external" href="https://arxiv.org/abs/1906.03671">arXiv:1906.03671</a>.</p>
+</dd>
+<dt class="label" id="sener2018active"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Ozan Sener and Silvio Savarese. Active learning for convolutional neural networks: a core-set approach. 2018. <a class="reference external" href="https://arxiv.org/abs/1708.00489">arXiv:1708.00489</a>.</p>
+</dd>
+<dt class="label" id="killamsetty2020glister"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p>Krishnateja Killamsetty, Durga Sivasubramanian, Ganesh Ramakrishnan, and Rishabh Iyer. Glister: generalization based data subset selection for efficient and robust learning. 2020. <a class="reference external" href="https://arxiv.org/abs/2012.10630">arXiv:2012.10630</a>.</p>
+</dd>
+</dl>
+</p>
 </div>
 </div>
 

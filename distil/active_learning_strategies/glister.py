@@ -15,10 +15,12 @@ import random
 
 class GLISTER(Strategy):
     """
-    Implementation of GLISTER-ACTIVE Strategy.
+    Implementation of GLISTER-ACTIVE Strategy :footcite:`killamsetty2020glister`. 
+    This class extends :class:`active_learning_strategies.strategy.Strategy`.
     
     Parameters
-	----------
+    ----------
+
     X: Numpy array 
         Features of the labled set of points 
     Y: Numpy array
@@ -210,6 +212,20 @@ class GLISTER(Strategy):
         return gains
     
     def select(self, budget):
+
+        """
+        Select next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of indexes to be returned for next set
+        
+        Returns
+        ----------
+        chosen: list
+            List of selected data point indexes with respect to unlabeled_x
+        """ 
 
         self._compute_per_element_grads()
         self._update_grads_val(first_init=True)
