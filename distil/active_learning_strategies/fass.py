@@ -19,9 +19,8 @@ from .submodular import SubmodularFunction
 
 class FASS(Strategy):
     """
-    Implementation of Entropy Sampling Dropout Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling with dropout technique to select data points for active learning.
+    Implementation of FASS strategy:footcite:`pmlr-v37-wei15` to select data points for active learning.
+    This class extends :class:`active_learning_strategies.strategy.Strategy`.
     
     Parameters
     ----------

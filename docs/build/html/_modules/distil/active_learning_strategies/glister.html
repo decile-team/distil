@@ -183,11 +183,13 @@
 <span class="sd">    net: class object</span>
 <span class="sd">        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.</span>
 <span class="sd">    handler: class object</span>
-<span class="sd">        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.</span>
+<span class="sd">        It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.</span>
 <span class="sd">    nclasses: int </span>
 <span class="sd">        No. of classes in tha dataset</span>
 <span class="sd">    args: dictionary</span>
-<span class="sd">        This dictionary should have keys &#39;batch_size&#39; and  &#39;lr&#39;. &#39;lr&#39; should be the learning rate used for training.</span>
+<span class="sd">        This dictionary should have keys &#39;batch_size&#39; and  &#39;lr&#39;. </span>
+<span class="sd">        &#39;lr&#39; should be the learning rate used for training. &#39;batch_size&#39;  &#39;batch_size&#39; should be such </span>
+<span class="sd">        that one can exploit the benefits of tensorization while honouring the resourse constraits.</span>
 <span class="sd">    valid: boolean</span>
 <span class="sd">        Whether validation set is passed or not</span>
 <span class="sd">    X_val: Numpy array, optional</span>
@@ -204,7 +206,11 @@
 <span class="sd">    lam: float, optional</span>
 <span class="sd">        Determines the amount of regularisation to be applied. Mandatory if is not `typeOf=&#39;none&#39;` and by default set to `None`.</span>
 <span class="sd">        For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.</span>
-<span class="sd">        For both &#39;Diversity&#39; and &#39;FacLoc&#39; `lam` determines the weightage given to them while computing the gain</span>
+<span class="sd">        For both &#39;Diversity&#39; and &#39;FacLoc&#39;, `lam` determines the weightage given to them while computing the gain.</span>
+<span class="sd">    kernel_batch_size: int, optional</span>
+<span class="sd">        For &#39;Diversity&#39; and &#39;FacLoc&#39; regualrizer versions, similarity kernel is to be computed, which </span>
+<span class="sd">        entails creating a 3d torch tensor of dimenssions kernel_batch_size*kernel_batch_size*(feature\ dimenssion)$. </span>
+<span class="sd">        Again kernel_batch_size should be such that one can exploit the benefits of tensorization while honouring the resourse constraits. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
 

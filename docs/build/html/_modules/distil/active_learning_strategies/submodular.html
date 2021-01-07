@@ -166,6 +166,32 @@
 
 <div class="viewcode-block" id="SubmodularFunction"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.submodular.SubmodularFunction">[docs]</a><span class="k">class</span> <span class="nc">SubmodularFunction</span><span class="p">():</span>
 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Submodular Function.</span>
+<span class="sd">    This class allows you to use different submodular functions</span>
+<span class="sd">            </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device: str</span>
+<span class="sd">        Device to be used, cpu|gpu</span>
+<span class="sd">    x_trn: torch tensor</span>
+<span class="sd">        Data on which submodular optimization should be applied</span>
+<span class="sd">    y_trn: torch tensor</span>
+<span class="sd">        Labels of the data </span>
+<span class="sd">    model: class</span>
+<span class="sd">        Model architecture used for training</span>
+<span class="sd">    N_trn: int</span>
+<span class="sd">        Number of samples in dataset</span>
+<span class="sd">    batch_size: int</span>
+<span class="sd">        Batch size to be used for optimization</span>
+<span class="sd">    if_convex: bool</span>
+<span class="sd">        If convex or not</span>
+<span class="sd">    submod: str</span>
+<span class="sd">        Choice of submodular function - &#39;facility_location&#39; | &#39;graph_cut&#39; | &#39;saturated_coverage&#39; | &#39;sum_redundancy&#39; | &#39;feature_based&#39;</span>
+<span class="sd">    selection_type: str</span>
+<span class="sd">        Type of selection - &#39;PerClass&#39; | &#39;Supervised&#39; </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">x_trn</span><span class="p">,</span> <span class="n">y_trn</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">N_trn</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">if_convex</span><span class="p">,</span> <span class="n">submod</span><span class="p">,</span> <span class="n">selection_type</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_trn</span> <span class="o">=</span> <span class="n">x_trn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_trn</span> <span class="o">=</span> <span class="n">y_trn</span>
@@ -178,6 +204,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">selection_type</span> <span class="o">=</span> <span class="n">selection_type</span>
 
 <div class="viewcode-block" id="SubmodularFunction.distance"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.submodular.SubmodularFunction.distance">[docs]</a>    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">exp</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the distance.</span>
+<span class="sd"> </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: Tensor</span>
+<span class="sd">            First input tensor</span>
+<span class="sd">        y: Tensor</span>
+<span class="sd">            Second input tensor</span>
+<span class="sd">        exp: float, optional</span>
+<span class="sd">            The exponent value (default: 2)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dist: Tensor</span>
+<span class="sd">            Output tensor </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -187,6 +230,21 @@
         <span class="k">return</span> <span class="n">dist</span></div>
 
 <div class="viewcode-block" id="SubmodularFunction.get_index"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.submodular.SubmodularFunction.get_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_sub</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns indexes of the rows.</span>
+<span class="sd"> </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: numpy array</span>
+<span class="sd">            Array to find indexes from</span>
+<span class="sd">        data_sub: numpy array</span>
+<span class="sd">            Array of data points to find indexes for</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        greedyList: list</span>
+<span class="sd">            List of indexes </span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">greedyList</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_sub</span><span class="p">:</span>
@@ -200,6 +258,17 @@
 
 
 <div class="viewcode-block" id="SubmodularFunction.compute_score"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.submodular.SubmodularFunction.compute_score">[docs]</a>    <span class="k">def</span> <span class="nf">compute_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_params</span><span class="p">,</span> <span class="n">idxs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the score of the indices.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model_params: OrderedDict</span>
+<span class="sd">            Python dictionary object containing models parameters</span>
+<span class="sd">        idxs: list</span>
+<span class="sd">            The indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">model_params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">g_is</span> <span class="o">=</span> <span class="p">[]</span>
@@ -232,6 +301,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dist_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_mat</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SubmodularFunction.lazy_greedy_max"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.submodular.SubmodularFunction.lazy_greedy_max">[docs]</a>    <span class="k">def</span> <span class="nf">lazy_greedy_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="n">model_params</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Data selection method using different submodular optimization</span>
+<span class="sd">        functions.</span>
+<span class="sd"> </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        budget: int</span>
+<span class="sd">            The number of data points to be selected</span>
+<span class="sd">        model_params: OrderedDict</span>
+<span class="sd">            Python dictionary object containing models parameters</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        total_greedy_list: list</span>
+<span class="sd">            List containing indices of the best datapoints </span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">classes</span><span class="p">,</span> <span class="n">no_elements</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_trn</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">len_unique_elements</span> <span class="o">=</span> <span class="n">no_elements</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

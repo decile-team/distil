@@ -159,6 +159,28 @@
 <span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">transforms</span>
 
 <div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        Name of the dataset to be loaded. Supports MNIST and CIFAR10</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;MNIST&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -166,6 +188,26 @@
         <span class="k">return</span> <span class="n">get_CIFAR10</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="get_MNIST"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_MNIST">[docs]</a><span class="k">def</span> <span class="nf">get_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads MNIST dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">raw_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">raw_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">X_tr</span> <span class="o">=</span> <span class="n">raw_tr</span><span class="o">.</span><span class="n">train_data</span>
@@ -175,6 +217,26 @@
     <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
 
 <div class="viewcode-block" id="get_CIFAR10"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_CIFAR10">[docs]</a><span class="k">def</span> <span class="nf">get_CIFAR10</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads CIFAR10 dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR10&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR10&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span>
@@ -183,35 +245,6 @@
     <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_te</span><span class="o">.</span><span class="n">targets</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span>
     <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
-
-<span class="c1"># def get_handler(name):</span>
-<span class="c1">#     if name == &#39;MNIST&#39;:</span>
-<span class="c1">#         return DataHandler3</span>
-<span class="c1">#     elif name == &#39;FashionMNIST&#39;:</span>
-<span class="c1">#         return DataHandler1</span>
-<span class="c1">#     elif name == &#39;SVHN&#39;:</span>
-<span class="c1">#         return DataHandler2</span>
-<span class="c1">#     elif name == &#39;CIFAR10&#39;:</span>
-<span class="c1">#         return DataHandler3</span>
-<span class="c1">#     else:</span>
-<span class="c1">#         return DataHandler4</span>
-
-
-<span class="c1"># class DataHandler3(Dataset):</span>
-<span class="c1">#     def __init__(self, X, Y, transform=None):</span>
-<span class="c1">#         self.X = X</span>
-<span class="c1">#         self.Y = Y</span>
-<span class="c1">#         self.transform = transform</span>
-
-<span class="c1">#     def __getitem__(self, index):</span>
-<span class="c1">#         x, y = self.X[index], self.Y[index]</span>
-<span class="c1">#         if self.transform is not None:</span>
-<span class="c1">#             x = Image.fromarray(x)</span>
-<span class="c1">#             x = self.transform(x)</span>
-<span class="c1">#         return x, y, index</span>
-
-<span class="c1">#     def __len__(self):</span>
-<span class="c1">#         return len(self.X)</span>
 </pre></div>
 
            </div>
