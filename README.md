@@ -1,7 +1,6 @@
 # DISTIL: Deep dIverSified inTeractIve Learning
 DISTIL implements a number of state of the art active learning algorithms. Some of the algorithms currently implemented with DISTIL include:
 
-- 
 - Uncertainty Sampling [1]
 - Margin Sampling [2]
 - Least Confidence Sampling [2]
