@@ -6,8 +6,8 @@ DISTIL implements a number of state of the art active learning algorithms. Some 
 - Margin Sampling [2]
 - Least Confidence Sampling [2]
 - FASS [3]
-- BADGE [2]
-- GLISTER_ACTIVE [1]
+- BADGE [4]
+- GLISTER ACTIVE [6]
 - CoreSets based Active Learning [5]
 - Ramdom Sampling
 - Submodular Sampling [3,6,7]
