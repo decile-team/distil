@@ -32,7 +32,7 @@ Entropy Sampling with Dropout
    :undoc-members:
    :show-inheritance:
 
-distil.active\_learning\_strategies.fass module
+FASS
 -----------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.fass
@@ -88,7 +88,7 @@ Random Sampling
    :show-inheritance:
 
 
-distil.active\_learning\_strategies.submodular module
+Submodular set functions
 -----------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.submodular

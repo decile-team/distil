@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="distil.utils.models package" href="distil.utils.models.html" />
+    <link rel="next" title="Models" href="distil.utils.models.html" />
     <link rel="prev" title="Active Learning Strategies" href="distil.active_learning_strategies.html" /> 
 </head>
 
@@ -89,10 +89,9 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">DISTIL</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="distil.active_learning_strategies.html">Active Learning Strategies</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="distil.utils.models.html">distil.utils.models package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.utils.DataHandler">distil.utils.DataHandler module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.utils.dataset">distil.utils.dataset module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.utils">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distil.utils.models.html">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.utils.DataHandler">DataHandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.utils.dataset">Dataset</a></li>
 </ul>
 </li>
 </ul>
@@ -170,77 +169,138 @@
 <h1>utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="distil.utils.models.html">distil.utils.models package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.cifar10net">distil.utils.models.cifar10net module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.densenet">distil.utils.models.densenet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.dla">distil.utils.models.dla module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.dla_simple">distil.utils.models.dla_simple module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.dpn">distil.utils.models.dpn module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.efficientnet">distil.utils.models.efficientnet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.googlenet">distil.utils.models.googlenet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.lenet">distil.utils.models.lenet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.logreg_net">distil.utils.models.logreg_net module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.mnist_net">distil.utils.models.mnist_net module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.mobilenet">distil.utils.models.mobilenet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.mobilenetv2">distil.utils.models.mobilenetv2 module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.pnasnet">distil.utils.models.pnasnet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.preact_resnet">distil.utils.models.preact_resnet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.regnet">distil.utils.models.regnet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.resnet">distil.utils.models.resnet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.resnext">distil.utils.models.resnext module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.senet">distil.utils.models.senet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.shufflenet">distil.utils.models.shufflenet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.shufflenetv2">distil.utils.models.shufflenetv2 module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.simpleNN_net">distil.utils.models.simpleNN_net module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.vgg">distil.utils.models.vgg module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="distil.utils.models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.logreg_net">Logisitic Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.simpleNN_net">Simple Neural Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.mnist_net">MNIST_NET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.cifar10net">CIFAR10Net module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.models.html#module-distil.utils.models.resnet">ResNet</a></li>
 </ul>
 </li>
 </ul>
 </div>
-<hr class="docutils" />
 <div class="section" id="module-distil.utils.DataHandler">
-<span id="distil-utils-datahandler-module"></span><h2>distil.utils.DataHandler module<a class="headerlink" href="#module-distil.utils.DataHandler" title="Permalink to this headline">¶</a></h2>
+<span id="datahandler"></span><h2>DataHandler<a class="headerlink" href="#module-distil.utils.DataHandler" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.utils.DataHandler.DataHandler_CIFAR10">
 <em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_CIFAR10</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_CIFAR10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_CIFAR10" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load CIFAR10 dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt id="distil.utils.DataHandler.DataHandler_MNIST">
 <em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_MNIST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load MNIST dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt id="distil.utils.DataHandler.DataHandler_Points">
 <em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_Points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_Points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_Points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load data points.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-distil.utils.dataset">
-<span id="distil-utils-dataset-module"></span><h2>distil.utils.dataset module<a class="headerlink" href="#module-distil.utils.dataset" title="Permalink to this headline">¶</a></h2>
+<span id="dataset"></span><h2>Dataset<a class="headerlink" href="#module-distil.utils.dataset" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="distil.utils.dataset.get_CIFAR10">
 <code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_CIFAR10</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_CIFAR10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_CIFAR10" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Downloads CIFAR10 dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="distil.utils.dataset.get_MNIST">
 <code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_MNIST" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Downloads MNIST dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="distil.utils.dataset.get_dataset">
 <code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_dataset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the dataset to be loaded. Supports MNIST and CIFAR10</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
-</div>
-<div class="section" id="module-distil.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-distil.utils" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -250,7 +310,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="distil.utils.models.html" class="btn btn-neutral float-right" title="distil.utils.models package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="distil.utils.models.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="distil.active_learning_strategies.html" class="btn btn-neutral float-left" title="Active Learning Strategies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

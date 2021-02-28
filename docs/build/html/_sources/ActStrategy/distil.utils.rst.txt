@@ -7,9 +7,7 @@ utils
    distil.utils.models
 
 
-----------
-
-distil.utils.DataHandler module
+DataHandler
 -------------------------------
 
 .. automodule:: distil.utils.DataHandler
@@ -17,7 +15,7 @@ distil.utils.DataHandler module
    :undoc-members:
    :show-inheritance:
 
-distil.utils.dataset module
+Dataset
 ---------------------------
 
 .. automodule:: distil.utils.dataset
@@ -25,10 +23,3 @@ distil.utils.dataset module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: distil.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

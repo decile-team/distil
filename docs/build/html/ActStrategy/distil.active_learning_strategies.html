@@ -92,14 +92,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.core_set">Core-Set Approch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling">Entropy Sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.entropy_sampling_dropout">Entropy Sampling with Dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.fass">distil.active_learning_strategies.fass module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.fass">FASS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.glister">GLISTER</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence">Least Confidence</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.least_confidence_dropout">Least Confidence with Dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling">Margin Sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling_dropout">Margin sampling with Dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.random_sampling">Random Sampling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.submodular">distil.active_learning_strategies.submodular module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.submodular">Submodular set functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#references">REFERENCES</a></li>
 </ul>
 </li>
@@ -381,15 +381,49 @@ Dropout value to be used (int, optional)</p>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.fass">
-<span id="distil-active-learning-strategies-fass-module"></span><h2>distil.active_learning_strategies.fass module<a class="headerlink" href="#module-distil.active_learning_strategies.fass" title="Permalink to this headline">¶</a></h2>
+<span id="fass"></span><h2>FASS<a class="headerlink" href="#module-distil.active_learning_strategies.fass" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.fass.FASS">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.fass.</code><code class="sig-name descname">FASS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of FASS strategy:footcite:<cite>pmlr-v37-wei15</cite> to select data points for active learning.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Present training/labeled data</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – Labels of present training data</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>numpy array</em>) – Data without labels</p></li>
+<li><p><strong>net</strong> (<em>class</em>) – Pytorch Model class</p></li>
+<li><p><strong>handler</strong> (<em>class</em>) – Data Handler, which can load data even without labels.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – Number of unique target variables</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – <p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+<p>submod: str
+Choice of submodular function - ‘facility_location’ | ‘graph_cut’ | ‘saturated_coverage’ | ‘sum_redundancy’ | ‘feature_based’</p>
+<p>selection_type: str
+Choice of selection strategy - ‘PerClass’ | ‘Supervised’</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.fass.FASS.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>return_indices</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -409,9 +443,11 @@ This class extends <code class="xref py py-class docutils literal notranslate"><
 <li><p><strong>Y</strong> (<em>Numpy array</em>) – Lables of the labled set of points</p></li>
 <li><p><strong>unlabeled_x</strong> (<em>Numpy array</em>) – Features of the unlabled set of points</p></li>
 <li><p><strong>net</strong> (<em>class object</em>) – Model architecture used for training. Could be instance of models defined in <cite>distil.utils.models</cite> or something similar.</p></li>
-<li><p><strong>handler</strong> (<em>class object</em>) – It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p></li>
+<li><p><strong>handler</strong> (<em>class object</em>) – It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p></li>
 <li><p><strong>nclasses</strong> (<em>int</em>) – No. of classes in tha dataset</p></li>
-<li><p><strong>args</strong> (<em>dictionary</em>) – This dictionary should have keys ‘batch_size’ and  ‘lr’. ‘lr’ should be the learning rate used for training.</p></li>
+<li><p><strong>args</strong> (<em>dictionary</em>) – This dictionary should have keys ‘batch_size’ and  ‘lr’.
+‘lr’ should be the learning rate used for training. ‘batch_size’  ‘batch_size’ should be such
+that one can exploit the benefits of tensorization while honouring the resourse constraits.</p></li>
 <li><p><strong>valid</strong> (<em>boolean</em>) – Whether validation set is passed or not</p></li>
 <li><p><strong>X_val</strong> (<em>Numpy array</em><em>, </em><em>optional</em>) – Features of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p></li>
 <li><p><strong>Y_val</strong> (<em>Numpy array</em><em>, </em><em>optional</em>) – Lables of the points in the validation set. Mandatory if <cite>valid=True</cite>.</p></li>
@@ -422,7 +458,10 @@ To use Facility Location set functiom as a regulariser use <strong>‘FacLoc’<
 To use Diversity set functiom as a regulariser use <strong>‘Diversity’</strong>.</p></li>
 <li><p><strong>lam</strong> (<em>float</em><em>, </em><em>optional</em>) – Determines the amount of regularisation to be applied. Mandatory if is not <cite>typeOf=’none’</cite> and by default set to <cite>None</cite>.
 For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.
-For both ‘Diversity’ and ‘FacLoc’ <cite>lam</cite> determines the weightage given to them while computing the gain</p></li>
+For both ‘Diversity’ and ‘FacLoc’, <cite>lam</cite> determines the weightage given to them while computing the gain.</p></li>
+<li><p><strong>kernel_batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – For ‘Diversity’ and ‘FacLoc’ regualrizer versions, similarity kernel is to be computed, which
+entails creating a 3d torch tensor of dimenssions kernel_batch_size*kernel_batch_size*(featuredimenssion)$.
+Again kernel_batch_size should be such that one can exploit the benefits of tensorization while honouring the resourse constraits.</p></li>
 </ul>
 </dd>
 </dl>
@@ -685,30 +724,99 @@ Batch size to be used inside strategy class (int, optional)</p>
 
 </div>
 <div class="section" id="module-distil.active_learning_strategies.submodular">
-<span id="distil-active-learning-strategies-submodular-module"></span><h2>distil.active_learning_strategies.submodular module<a class="headerlink" href="#module-distil.active_learning_strategies.submodular" title="Permalink to this headline">¶</a></h2>
+<span id="submodular-set-functions"></span><h2>Submodular set functions<a class="headerlink" href="#module-distil.active_learning_strategies.submodular" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="distil.active_learning_strategies.submodular.SubmodularFunction">
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.submodular.</code><code class="sig-name descname">SubmodularFunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">x_trn</span></em>, <em class="sig-param"><span class="n">y_trn</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">N_trn</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">if_convex</span></em>, <em class="sig-param"><span class="n">submod</span></em>, <em class="sig-param"><span class="n">selection_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implementation of Submodular Function.
+This class allows you to use different submodular functions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>str</em>) – Device to be used, cpu|gpu</p></li>
+<li><p><strong>x_trn</strong> (<em>torch tensor</em>) – Data on which submodular optimization should be applied</p></li>
+<li><p><strong>y_trn</strong> (<em>torch tensor</em>) – Labels of the data</p></li>
+<li><p><strong>model</strong> (<em>class</em>) – Model architecture used for training</p></li>
+<li><p><strong>N_trn</strong> (<em>int</em>) – Number of samples in dataset</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Batch size to be used for optimization</p></li>
+<li><p><strong>if_convex</strong> (<em>bool</em>) – If convex or not</p></li>
+<li><p><strong>submod</strong> (<em>str</em>) – Choice of submodular function - ‘facility_location’ | ‘graph_cut’ | ‘saturated_coverage’ | ‘sum_redundancy’ | ‘feature_based’</p></li>
+<li><p><strong>selection_type</strong> (<em>str</em>) – Type of selection - ‘PerClass’ | ‘Supervised’</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.submodular.SubmodularFunction.compute_score">
 <code class="sig-name descname">compute_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_params</span></em>, <em class="sig-param"><span class="n">idxs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.compute_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.compute_score" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the score of the indices.
+:param model_params: Python dictionary object containing models parameters
+:type model_params: OrderedDict
+:param idxs: The indices
+:type idxs: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="distil.active_learning_strategies.submodular.SubmodularFunction.distance">
 <code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.distance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – First input tensor</p></li>
+<li><p><strong>y</strong> (<em>Tensor</em>) – Second input tensor</p></li>
+<li><p><strong>exp</strong> (<em>float</em><em>, </em><em>optional</em>) – The exponent value (default: 2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dist</strong> – Output tensor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="distil.active_learning_strategies.submodular.SubmodularFunction.get_index">
 <code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">data_sub</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.get_index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns indexes of the rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy array</em>) – Array to find indexes from</p></li>
+<li><p><strong>data_sub</strong> (<em>numpy array</em>) – Array of data points to find indexes for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>greedyList</strong> – List of indexes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="distil.active_learning_strategies.submodular.SubmodularFunction.lazy_greedy_max">
 <code class="sig-name descname">lazy_greedy_max</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em>, <em class="sig-param"><span class="n">model_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submodular.html#SubmodularFunction.lazy_greedy_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submodular.SubmodularFunction.lazy_greedy_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Data selection method using different submodular optimization
+functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>budget</strong> (<em>int</em>) – The number of data points to be selected</p></li>
+<li><p><strong>model_params</strong> (<em>OrderedDict</em>) – Python dictionary object containing models parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>total_greedy_list</strong> – List containing indices of the best datapoints</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

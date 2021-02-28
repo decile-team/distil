@@ -30,11 +30,13 @@ class GLISTER(Strategy):
     net: class object
         Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
     handler: class object
-        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
+        It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
     nclasses: int 
         No. of classes in tha dataset
     args: dictionary
-        This dictionary should have keys 'batch_size' and  'lr'. 'lr' should be the learning rate used for training.
+        This dictionary should have keys 'batch_size' and  'lr'. 
+        'lr' should be the learning rate used for training. 'batch_size'  'batch_size' should be such 
+        that one can exploit the benefits of tensorization while honouring the resourse constraits.
     valid: boolean
         Whether validation set is passed or not
     X_val: Numpy array, optional
@@ -51,7 +53,12 @@ class GLISTER(Strategy):
     lam: float, optional
         Determines the amount of regularisation to be applied. Mandatory if is not `typeOf='none'` and by default set to `None`.
         For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.
-        For both 'Diversity' and 'FacLoc' `lam` determines the weightage given to them while computing the gain
+        For both 'Diversity' and 'FacLoc', `lam` determines the weightage given to them while computing the gain.
+    kernel_batch_size: int, optional
+        For 'Diversity' and 'FacLoc' regualrizer versions, similarity kernel is to be computed, which 
+        entails creating a 3d torch tensor of dimenssions kernel_batch_size*kernel_batch_size*
+        feature dimenssion.Again kernel_batch_size should be such that one can exploit the benefits of 
+        tensorization while honouring the resourse constraits. 
     """
     
 
