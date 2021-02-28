@@ -15,7 +15,8 @@ from torch.utils.data import DataLoader
 import math
 import random
 from torch.distributions import Categorical
-from .submodular import SubmodularFunction
+sys.path.append('../')
+from distil.utils.submodular import SubmodularFunction
 
 class FASS(Strategy):
     """

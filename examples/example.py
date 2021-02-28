@@ -15,82 +15,12 @@ sys.path.append('../')
 from distil.utils.DataHandler import DataHandler_Points
 from distil.active_learning_strategies import GLISTER, BADGE
 from distil.utils.models.simpleNN_net import TwoLayerNet
+from distil.utils.TrainHelper import data_train
 
 def init_weights(m):
     if type(m) == nn.Linear:
         torch.nn.init.xavier_uniform_(m.weight)
         m.bias.data.fill_(0.01)
-
-#custom training
-class data_train:
-
-    def __init__(self, X, Y, net, handler, args):
-
-        self.X = X
-        self.Y = Y
-        self.net = net
-        self.handler = handler
-        self.args = args
-        self.n_pool = len(Y)
-        self.use_cuda = torch.cuda.is_available()
-
-    def update_index(self, idxs_lb):
-        self.idxs_lb = idxs_lb
-
-    def update_data(self, X, Y):
-    	self.X = X
-    	self.Y = Y
-
-    def _train(self, epoch, loader_tr, optimizer):
-        self.clf.train()
-        accFinal = 0.
-
-        for batch_id, (x, y, idxs) in enumerate(loader_tr):
-            if self.use_cuda:
-                x, y = Variable(x.cuda()), Variable(y.cuda())
-            else:
-                x, y = Variable(x), Variable(y)
-            optimizer.zero_grad()
-            out = self.clf(x)
-            loss = F.cross_entropy(out, y.long())
-            accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
-            loss.backward()
-
-            # clamp gradients, just in case
-            # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
-
-            optimizer.step()
-        return accFinal / len(loader_tr.dataset.X)
-
-    
-    def train(self):
-
-        print('Training..')
-        def weight_reset(m):
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                m.reset_parameters()
-
-        n_epoch = self.args['n_epoch']
-        if self.use_cuda:
-            self.clf =  self.net.apply(weight_reset).cuda()
-        else:
-            self.clf =  self.net.apply(weight_reset)
-
-        optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
-        loader_tr = DataLoader(self.handler(self.X, self.Y, False))
-        epoch = 1
-        accCurrent = 0
-        while accCurrent < 0.95 and epoch < n_epoch: 
-            accCurrent = self._train(epoch, loader_tr, optimizer)
-            epoch += 1
-            # print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
-            
-            if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging
-                self.clf = self.net.apply(weight_reset)
-                optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
-
-        print('Epoch:', str(epoch),'Training accuracy:',round(accCurrent, 3), flush=True)
-        return self.clf
 
 def libsvm_file_load(path,dim, save_data=False):
     data = []
@@ -183,12 +113,12 @@ typeOf='Diversity',lam=10)
 #valid,X_val=None,Y_val=None,loss_criterion=nn.CrossEntropyLoss(),typeOf='none',lam=None,\
 #    kernel_batch_size = 200
 
-args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
+train_args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
 n_rounds = 10    ##Number of rounds to run ac
 budget = 32    ##Number of new data points after every iteration
 
 #Training first set of points
-dt = data_train(X_tr, y_tr, net, DataHandler_Points, args)
+dt = data_train(X_tr, y_tr, net, DataHandler_Points, train_args)
 clf = dt.train()
 strategy.update_model(clf)
 y_pred = strategy.predict(x_tst).numpy()

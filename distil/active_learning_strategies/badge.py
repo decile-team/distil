@@ -40,7 +40,10 @@ from sklearn.metrics.pairwise import rbf_kernel as rbf
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.metrics import pairwise_distances
 
+
 def init_centers(X, K):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    pdist = nn.PairwiseDistance(p=2)
     ind = np.argmax([np.linalg.norm(s, 2) for s in X])
     mu = [X[ind]]
     indsAll = [ind]
@@ -49,14 +52,19 @@ def init_centers(X, K):
     #print('#Samps\tTotal Distance')
     while len(mu) < K:
         if len(mu) == 1:
-            D2 = pairwise_distances(X, mu).ravel().astype(float)
+            t0 = time.time()
+            D2 = pdist(torch.from_numpy(X).to(device), torch.from_numpy(mu[-1]).to(device))
+            D2 = torch.flatten(D2)
+            D2 = D2.cpu().numpy().astype(float)
         else:
-            newD = pairwise_distances(X, [mu[-1]]).ravel().astype(float)
+            newD = pdist(torch.from_numpy(X).to(device), torch.from_numpy(mu[-1]).to(device))
+            newD = torch.flatten(newD)
+            newD = newD.cpu().numpy().astype(float)
             for i in range(len(X)):
                 if D2[i] >  newD[i]:
                     centInds[i] = cent
                     D2[i] = newD[i]
-        #print(str(len(mu)) + '\t' + str(sum(D2)), flush=True)
+
         if sum(D2) == 0.0: pdb.set_trace()
         D2 = D2.ravel().astype(float)
         Ddist = (D2 ** 2)/ sum(D2 ** 2)
