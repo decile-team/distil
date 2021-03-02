@@ -90,7 +90,7 @@ class Strategy:
         probs = torch.zeros([X.shape[0], self.target_classes])
         with torch.no_grad():
             for i in range(n_drop):
-                print('n_drop {}/{}'.format(i+1, n_drop))
+                # print('n_drop {}/{}'.format(i+1, n_drop))
                 for x, idxs in loader_te:
 
                     x = x.to(self.device)   
@@ -108,7 +108,7 @@ class Strategy:
         probs = torch.zeros([n_drop, X.shape[0], self.target_classes])
         with torch.no_grad():
             for i in range(n_drop):
-                print('n_drop {}/{}'.format(i+1, n_drop))
+                # print('n_drop {}/{}'.format(i+1, n_drop))
                 for x, idxs in loader_te:
                     x = x.to(self.device)
                     out = self.model(x)

@@ -82,7 +82,6 @@ class data_train:
             self.clf =  self.net.apply(weight_reset)
 
         optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
-        print('Handler ', type(self.X), type(self.Y))
         if 'batch_size' in self.args:
             batch_size = self.args['batch_size']
         else:

@@ -55,3 +55,52 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 2. https://colab.research.google.com/drive/15427CIEy6rIDwfTWsprUH6yPfufjjY56?usp=sharing
 
 3. https://colab.research.google.com/drive/1PaMne-hsAMlzZt6Aul3kZbOezx-2CgKc?usp=sharing
+
+## Evaluation of Active Learning Strategies
+### CIFAR10
+
+| Strategy | Accuracy |
+| --- | --- |
+| BADGE | 0.699 | 
+| FASS | 0.691 | 
+| Entropy Sampling | 0.688 | 
+| Glister | 0.676 | 
+| Random Sampling | 0.648 | 
+| Margin Sampling | 0.638 | 
+| Coreset | 0.632 | 
+
+### MNIST
+
+| Strategy | Accuracy |
+| --- | --- |
+| Margin Sampling |	0.993 |
+| Entropy Sampling | 0.993 |
+| BADGE | 0.992 | 
+| Glister |	0.992 |
+| Coreset |	0.991 |
+| FASS |	0.99 |
+| Random Sampling |	0.98 |
+
+###OPENML - 6
+
+| Strategy | Accuracy |
+| --- | --- |
+| Glister | 0.938 |
+| BADGE | 0.938 |
+| FASS | 0.935 |
+| Margin Sampling |	0.934 |
+| Coreset |	0.925 |
+| Entropy Sampling | 0.924 |
+| Random Sampling |	0.911 |
+
+## Testing Individual strategy
+If there are any changes made in the strategy, it can be tested using distil.utils.TestStrategy
+```
+from distil.utils.TestStrategy import test_strategy
+test_strategy('badge')
+```
+## Mailing List
+To receive updates about distil and be a part of the community, join the Decile_DISTIL_Dev group.
+```
+https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
+```
