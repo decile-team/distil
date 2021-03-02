@@ -81,7 +81,7 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 | FASS |	0.99 |
 | Random Sampling |	0.98 |
 
-###OPENML - 6
+### OPENML-6
 
 | Strategy | Accuracy |
 | --- | --- |
