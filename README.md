@@ -104,3 +104,6 @@ To receive updates about distil and be a part of the community, join the Decile_
 ```
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
+
+## Where can DISTIL be used?
+DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
