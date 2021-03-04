@@ -38,6 +38,9 @@ class data_train:
         self.args = args
         self.n_pool = len(Y)
         self.use_cuda = torch.cuda.is_available()
+        
+        if 'islogs' not in args:
+            self.args['islogs'] = False
 
     def update_index(self, idxs_lb):
         self.idxs_lb = idxs_lb
@@ -75,6 +78,7 @@ class data_train:
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
                 m.reset_parameters()
 
+        train_logs = []
         n_epoch = self.args['n_epoch']
         if self.use_cuda:
             self.clf =  self.net.apply(weight_reset).cuda()
@@ -94,10 +98,14 @@ class data_train:
             accCurrent = self._train(epoch, loader_tr, optimizer)
             epoch += 1
             # print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
-            
+            log_string = 'Epoch:' + str(epoch) + '- training accuracy:'+str(accCurrent)+'- training loss:'+str(lossCurrent)
+            train_logs.append(log_string)
             if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging
                 self.clf = self.net.apply(weight_reset)
                 optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
 
         print('Epoch:', str(epoch),'Training accuracy:',round(accCurrent, 3), flush=True)
-        return self.clf
+        if self.args['islogs']:
+            return self.clf, train_logs
+        else:
+            return self.clf
