@@ -11,25 +11,6 @@ DISTIL implements a number of state of the art active learning algorithms. Some 
 - Ramdom Sampling
 - Submodular Sampling [3,6,7]
 
-
-Publications:
-
-[1] Settles, Burr. Active learning literature survey. University of Wisconsin-Madison Department of Computer Sciences, 2009.
-
-[2] Wang, Dan, and Yi Shang. "A new active labeling method for deep learning." 2014 International joint conference on neural networks (IJCNN). IEEE, 2014
-
-[3] Kai Wei, Rishabh Iyer, Jeff Bilmes, Submodularity in data subset selection and active learning, International Conference on Machine Learning (ICML) 2015
-
-[4] Jordan T. Ash, Chicheng Zhang, Akshay Krishnamurthy, John Langford, and Alekh Agarwal. Deep batch active learning by diverse, uncertain gradient lower bounds. CoRR, 2019. URL: http://arxiv.org/abs/1906.03671, arXiv:1906.03671.
-
-[5] Sener, Ozan, and Silvio Savarese. "Active learning for convolutional neural networks: A core-set approach." ICLR 2018.
-
-[6] Krishnateja Killamsetty, Durga Sivasubramanian, Ganesh Ramakrishnan, and Rishabh Iyer, GLISTER: Generalization based Data Subset Selection for Efficient and Robust Learning, 35th AAAI Conference on Artificial Intelligence, AAAI 2021 
-
-[7] Vishal Kaushal, Rishabh Iyer, Suraj Kothiwade, Rohan Mahadev, Khoshrav Doctor, and Ganesh Ramakrishnan, Learning From Less Data: A Unified Data Subset Selection and Active Learning Framework for Computer Vision, 7th IEEE Winter Conference on Applications of Computer Vision (WACV), 2019 Hawaii, USA
-
-[8] Wei, Kai, et al. "Submodular subset selection for large-scale speech training data." 2014 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2014.
-
 ## Installation
 The latest version of  DISTIL package can be installed using the following command:
 
@@ -57,7 +38,13 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 3. https://colab.research.google.com/drive/1PaMne-hsAMlzZt6Aul3kZbOezx-2CgKc?usp=sharing
 
 ## Evaluation of Active Learning Strategies
+### Experimentation Method
+The model was first trained on randomly selected n points where n is the budget of the experiment. For each set of new points added, the model was trained from scratch till the training accuracy crossed 95%.
+
 ### CIFAR10
+Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (30%)
+
+![CIFAR10 Plot](./experiment_plots/cifar10_plot.png?raw=true)
 
 | Strategy | Accuracy |
 | --- | --- |
@@ -70,6 +57,9 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 | Coreset | 0.632 | 
 
 ### MNIST
+Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
+
+![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
 | Strategy | Accuracy |
 | --- | --- |
@@ -82,6 +72,9 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 | Random Sampling |	0.98 |
 
 ### OPENML-6
+Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
+
+![OPENML6 Plot](./experiment_plots/openml6_plot.png?raw=true)
 
 | Strategy | Accuracy |
 | --- | --- |
@@ -107,3 +100,21 @@ https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join
 
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
+
+## Publications
+
+[1] Settles, Burr. Active learning literature survey. University of Wisconsin-Madison Department of Computer Sciences, 2009.
+
+[2] Wang, Dan, and Yi Shang. "A new active labeling method for deep learning." 2014 International joint conference on neural networks (IJCNN). IEEE, 2014
+
+[3] Kai Wei, Rishabh Iyer, Jeff Bilmes, Submodularity in data subset selection and active learning, International Conference on Machine Learning (ICML) 2015
+
+[4] Jordan T. Ash, Chicheng Zhang, Akshay Krishnamurthy, John Langford, and Alekh Agarwal. Deep batch active learning by diverse, uncertain gradient lower bounds. CoRR, 2019. URL: http://arxiv.org/abs/1906.03671, arXiv:1906.03671.
+
+[5] Sener, Ozan, and Silvio Savarese. "Active learning for convolutional neural networks: A core-set approach." ICLR 2018.
+
+[6] Krishnateja Killamsetty, Durga Sivasubramanian, Ganesh Ramakrishnan, and Rishabh Iyer, GLISTER: Generalization based Data Subset Selection for Efficient and Robust Learning, 35th AAAI Conference on Artificial Intelligence, AAAI 2021 
+
+[7] Vishal Kaushal, Rishabh Iyer, Suraj Kothiwade, Rohan Mahadev, Khoshrav Doctor, and Ganesh Ramakrishnan, Learning From Less Data: A Unified Data Subset Selection and Active Learning Framework for Computer Vision, 7th IEEE Winter Conference on Applications of Computer Vision (WACV), 2019 Hawaii, USA
+
+[8] Wei, Kai, et al. "Submodular subset selection for large-scale speech training data." 2014 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2014.
