@@ -5,7 +5,7 @@ DISTIL implements a number of state of the art active learning algorithms. Some 
 - Margin Sampling [2]
 - Least Confidence Sampling [2]
 - FASS [3]
-- [https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.badge](BADGE) [4]
+- [BADGE [4]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.badge)
 - GLISTER ACTIVE [6]
 - CoreSets based Active Learning [5]
 - Ramdom Sampling
