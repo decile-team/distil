@@ -68,7 +68,7 @@ class data_train:
             # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
 
             optimizer.step()
-        return accFinal / len(loader_tr.dataset.X)
+        return accFinal / len(loader_tr.dataset.X), loss
 
     
     def train(self):
@@ -95,9 +95,9 @@ class data_train:
         epoch = 1
         accCurrent = 0
         while accCurrent < 0.95 and epoch < n_epoch: 
-            accCurrent = self._train(epoch, loader_tr, optimizer)
+            accCurrent, lossCurrent = self._train(epoch, loader_tr, optimizer)
             epoch += 1
-            # print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
+            print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
             log_string = 'Epoch:' + str(epoch) + '- training accuracy:'+str(accCurrent)+'- training loss:'+str(lossCurrent)
             train_logs.append(log_string)
             if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging
