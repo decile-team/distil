@@ -285,29 +285,11 @@ class SubmodularFunction():
 
         if self.selection_type == 'Full':
         
-            # total_idxs = 0
-            # for n_element in no_elements:
-            #     final_per_class_bud.append(min(per_class_bud, torch.IntTensor.item(n_element)))
-            #     total_idxs += min(per_class_bud, torch.IntTensor.item(n_element))
-            
-            # if total_idxs < budget:
-            #     bud_difference = budget - total_idxs
-            #     for i in range(len_unique_elements):
-            #         available_idxs = torch.IntTensor.item(no_elements[sorted_indices[i]])-per_class_bud 
-            #         final_per_class_bud[sorted_indices[i]] += min(bud_difference, available_idxs)
-            #         total_idxs += min(bud_difference, available_idxs)
-            #         bud_difference = budget - total_idxs
-            #         if bud_difference == 0:
-            #             break
 
             total_greedy_list = []
-            # for i in range(len_unique_elements):
-            # idxs = torch.where(self.y_trn == classes[i])[0]
-            print(self.x_trn.shape)
             idx_end = self.x_trn.shape[0] - 1
             idxs = torch.linspace(0, idx_end, self.x_trn.shape[0]).long()
-            print(idxs)
-            print('Index shape', idxs.shape)
+
             if self.submod == 'facility_location':
                 self.compute_score(model_params, idxs)
                 fl = apricot.functions.facilityLocation.FacilityLocationSelection(random_state=0, metric='precomputed',
@@ -334,7 +316,6 @@ class SubmodularFunction():
 
             else:  
 
-                print('Dist mat', self.dist_mat.shape)
                 sim_sub = fl.fit_transform(self.dist_mat)
                 total_greedy_list = list(np.argmax(sim_sub, axis=1))
 
