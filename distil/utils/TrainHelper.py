@@ -9,17 +9,7 @@ import torch
 import torch.optim as optim
 from torch.autograd import Variable
 import sys
-sys.path.append('../')
-# from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
-#                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
-#                                 CoreSet, GLISTER, BADGE, AdversarialBIM, AdversarialDeepFool, KMeansSampling, BaselineSampling, \
-#                                   BALDDropout      
-
-from distil.active_learning_strategies import BALDDropout
-from distil.utils.models.logreg_net import LogisticRegNet
-from distil.utils.models.simpleNN_net import TwoLayerNet
-from distil.utils.DataHandler import DataHandler_Points
-
+sys.path.append('../')  
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -41,6 +31,15 @@ class data_train:
         
         if 'islogs' not in args:
             self.args['islogs'] = False
+        
+        if 'isverbose' not in args:
+            self.args['isverbose'] = False
+        
+        if 'isreset' not in args:
+            self.args['isreset'] = True
+
+        if 'max_accuracy' not in args:
+            self.args['max_accuracy'] = 0.95
 
     def update_index(self, idxs_lb):
         self.idxs_lb = idxs_lb
@@ -80,10 +79,20 @@ class data_train:
 
         train_logs = []
         n_epoch = self.args['n_epoch']
-        if self.use_cuda:
-            self.clf =  self.net.apply(weight_reset).cuda()
+        
+        if self.args['isreset']:
+            if self.use_cuda:
+                self.clf =  self.net.apply(weight_reset).cuda()
+            else:
+                self.clf =  self.net.apply(weight_reset)
         else:
-            self.clf =  self.net.apply(weight_reset)
+            try:
+                self.clf
+            except:
+                if self.use_cuda:
+                    self.clf =  self.net.apply(weight_reset).cuda()
+                else:
+                    self.clf =  self.net.apply(weight_reset)
 
         optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
         if 'batch_size' in self.args:
@@ -94,10 +103,12 @@ class data_train:
         loader_tr = DataLoader(self.handler(self.X, self.Y, False), batch_size=batch_size)
         epoch = 1
         accCurrent = 0
-        while accCurrent < 0.95 and epoch < n_epoch: 
+        while accCurrent < self.args['max_accuracy'] and epoch < n_epoch: 
             accCurrent, lossCurrent = self._train(epoch, loader_tr, optimizer)
             epoch += 1
-            print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
+            if(self.args['isverbose']):
+                print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
+
             log_string = 'Epoch:' + str(epoch) + '- training accuracy:'+str(accCurrent)+'- training loss:'+str(lossCurrent)
             train_logs.append(log_string)
             if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging

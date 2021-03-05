@@ -36,7 +36,7 @@ class SubmodularFunction():
     submod: str
         Choice of submodular function - 'facility_location' | 'graph_cut' | 'saturated_coverage' | 'sum_redundancy' | 'feature_based'
     selection_type: str
-        Type of selection - 'PerClass' | 'Supervised' 
+        Type of selection - 'PerClass' | 'Supervised' | 'Full'
     """
 
     def __init__(self, device, x_trn, y_trn, model, N_trn, batch_size, if_convex, submod, selection_type):
@@ -281,6 +281,62 @@ class SubmodularFunction():
                                                                                   n_samples=budget)
                 sim_sub = fl.fit_transform(sparse_simmat)
                 total_greedy_list = list(np.array(np.argmax(sim_sub, axis=1)).reshape(-1))
+
+
+        if self.selection_type == 'Full':
+        
+            # total_idxs = 0
+            # for n_element in no_elements:
+            #     final_per_class_bud.append(min(per_class_bud, torch.IntTensor.item(n_element)))
+            #     total_idxs += min(per_class_bud, torch.IntTensor.item(n_element))
+            
+            # if total_idxs < budget:
+            #     bud_difference = budget - total_idxs
+            #     for i in range(len_unique_elements):
+            #         available_idxs = torch.IntTensor.item(no_elements[sorted_indices[i]])-per_class_bud 
+            #         final_per_class_bud[sorted_indices[i]] += min(bud_difference, available_idxs)
+            #         total_idxs += min(bud_difference, available_idxs)
+            #         bud_difference = budget - total_idxs
+            #         if bud_difference == 0:
+            #             break
+
+            total_greedy_list = []
+            # for i in range(len_unique_elements):
+            # idxs = torch.where(self.y_trn == classes[i])[0]
+            print(self.x_trn.shape)
+            idx_end = self.x_trn.shape[0] - 1
+            idxs = torch.linspace(0, idx_end, self.x_trn.shape[0]).long()
+            print(idxs)
+            print('Index shape', idxs.shape)
+            if self.submod == 'facility_location':
+                self.compute_score(model_params, idxs)
+                fl = apricot.functions.facilityLocation.FacilityLocationSelection(random_state=0, metric='precomputed',
+                                                                              n_samples=budget)
+            elif self.submod == 'graph_cut':
+                self.compute_score(model_params, idxs)
+                fl = apricot.functions.graphCut.GraphCutSelection(random_state=0, metric='precomputed',
+                                                                              n_samples=budget)
+            elif self.submod == 'saturated_coverage':
+                self.compute_score(model_params, idxs)
+                fl = apricot.functions.saturatedCoverage.SaturatedCoverageSelection(random_state=0, metric='precomputed',
+                                                                              n_samples=budget)
+            elif self.submod == 'sum_redundancy':
+                self.compute_score(model_params, idxs)
+                fl = apricot.functions.sumRedundancy.SumRedundancySelection(random_state=0, metric='precomputed',
+                                                                              n_samples=budget)
+            elif self.submod == 'feature_based':
+                fl = apricot.functions.featureBased.FeatureBasedSelection(random_state=0, n_samples=budget)
+
+            if self.submod == 'feature_based':
+
+                x_sub = fl.fit_transform(self.x_trn.numpy())
+                total_greedy_list = self.get_index(self.x_trn.numpy(), x_sub)
+
+            else:  
+
+                print('Dist mat', self.dist_mat.shape)
+                sim_sub = fl.fit_transform(self.dist_mat)
+                total_greedy_list = list(np.argmax(sim_sub, axis=1))
 
 
         return total_greedy_list

@@ -87,7 +87,7 @@ class FASS(Strategy):
         submod_choices = ['facility_location', 'graph_cut', 'saturated_coverage', 'sum_redundancy', 'feature_based']
         if self.submod not in submod_choices:
             raise ValueError('Submodular function is invalid, Submodular functions can only be '+ str(submod_choices))
-        selection_type = ['PerClass', 'Supervised']
+        selection_type = ['PerClass', 'Supervised', 'Full']
         if self.selection_type not in selection_type:
             raise ValueError('Selection type is invalid, Selection type can only be '+ str(selection_type))
 
