@@ -12,11 +12,11 @@ from .margin_sampling_dropout import MarginSamplingDropout
 from .core_set import CoreSet
 from .glister import GLISTER
 from .badge import BADGE
-from .submod_sampling import SubmodSampling
 from .adversarial_bim import AdversarialBIM
 from .adversarial_deepfool import AdversarialDeepFool
 from .kmeans_sampling import KMeansSampling
 from .baseline_sampling import BaselineSampling
 from .bayesian_active_learning_disagreement_dropout import BALDDropout
+from .submod_sampling import SubmodSampling
 
 __version__ = '0.0.1'

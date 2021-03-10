@@ -170,8 +170,10 @@ class DisparityFunction(SimilarityComputation):
 
             current_values = np.zeros(self.N_trn)
 
+            #print(sparse_simmat.indptr)
+
             current_values[sparse_simmat.indices[:sparse_simmat.indptr[1]]] =\
-                 sparse_simmat[:sparse_simmat.indptr[1]]  
+                 sparse_simmat.data[:sparse_simmat.indptr[1]].todense()   
 
             current_values[0] = np.inf          
 
@@ -186,14 +188,14 @@ class DisparityFunction(SimilarityComputation):
                 if self.dis_type == "sum":
                     current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
                         sparse_simmat.indptr[best_id+1]]] += \
-                        sparse_simmat[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]]
+                        sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense() 
                         
                 elif self.dis_type == "min":
                     current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
                         sparse_simmat.indptr[best_id+1]]] = \
                         np.maximum(current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
                         sparse_simmat.indptr[best_id+1]]],\
-                        sparse_simmat[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]])
+                        sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense())
 
                 numSelected +=1           
             

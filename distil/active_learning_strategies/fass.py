@@ -107,7 +107,7 @@ class FASS(Strategy):
 
         submodular = SubmodularFunction(device, curr_X_trn_embeddings[indices], predicted_y[indices],\
             curr_X_trn.shape[0], 32, self.submod, self.selection_type)
-        dsf_idxs_flag_val = submodular.lazy_greedy_max(budget, cached_state_dict)
+        dsf_idxs_flag_val = submodular.lazy_greedy_max(budget)
 
         #Mapping to original indices
         return_indices = []
