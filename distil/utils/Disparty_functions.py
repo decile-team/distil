@@ -172,30 +172,34 @@ class DisparityFunction(SimilarityComputation):
 
             #print(sparse_simmat.indptr)
 
-            current_values[sparse_simmat.indices[:sparse_simmat.indptr[1]]] =\
-                 sparse_simmat.data[:sparse_simmat.indptr[1]].todense()   
+            #current_values[sparse_simmat.indices[:sparse_simmat.indptr[1]]] =\ 
+            #     sparse_simmat.data[:sparse_simmat.indptr[1]].todense()  
+
+            current_values = (sparse_simmat.data[0,:].todense()).flatten()
 
             current_values[0] = np.inf          
 
             while(numSelected < budget): 
 
-                best_id = torch.argmin(current_values).item()
+                best_id = np.argmin(current_values).item()
                 greedySet.append(best_id) 
                 remset.remove(best_id)  
 
                 current_values[best_id] = np.inf     
 
                 if self.dis_type == "sum":
-                    current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
-                        sparse_simmat.indptr[best_id+1]]] += \
-                        sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense() 
+                    #current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
+                    #    sparse_simmat.indptr[best_id+1]]] += \
+                    #    sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense() 
+                    current_values += (sparse_simmat[best_id,:].todense()).flatten()  
                         
                 elif self.dis_type == "min":
-                    current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
-                        sparse_simmat.indptr[best_id+1]]] = \
-                        np.maximum(current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
-                        sparse_simmat.indptr[best_id+1]]],\
-                        sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense())
+                    #current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
+                    #    sparse_simmat.indptr[best_id+1]]] = \
+                    #    np.maximum(current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
+                    #    sparse_simmat.indptr[best_id+1]]],\
+                    #    sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense())
+                    current_values = np.maximum(current_values,(sparse_simmat[best_id,:].todense()).flatten())
 
                 numSelected +=1           
             
