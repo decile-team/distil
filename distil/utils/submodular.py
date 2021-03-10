@@ -8,7 +8,8 @@ import math
 import copy
 from scipy.sparse import csr_matrix
 
-from Similarity_mat import SimilarityComputation
+from .Similarity_mat import SimilarityComputation
+
 
 class SubmodularFunction(SimilarityComputation):
 
