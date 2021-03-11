@@ -202,7 +202,7 @@ class DisparityFunction(SimilarityComputation):
                     #    sparse_simmat.indptr[best_id+1]]],\
                     #    sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense())
                     
-                    Od_row = sparse_simmat[best_id,:].todense()
+                    Td_row = sparse_simmat[best_id,:].todense()
                     current_values = np.maximum(current_values,np.ravel(Td_row.sum(axis=0)))
 
                 numSelected +=1           
