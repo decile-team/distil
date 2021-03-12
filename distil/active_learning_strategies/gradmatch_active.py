@@ -18,7 +18,7 @@ class GradMatchActive(Strategy):
         self.selection_type = selection_type
         self.linear_layer = linear_layer
 
-    def select(self, budget, validation_type, use_weights):
+    def select(self, budget, use_weights):
         
         # Compute hypothesize labels using model
         hypothesized_labels = self.predict(self.unlabeled_x)
@@ -26,7 +26,6 @@ class GradMatchActive(Strategy):
         # Create a DataLoader from hypothesized labels and unlabeled points that will work with CORDS
         cords_handler = SupervisedSelectHandler(self.handler(self.unlabeled_x, hypothesized_labels.numpy(), False))        
         trainloader = DataLoader(cords_handler, shuffle=False, batch_size = self.args['batch_size'])
-
 
         validloader = trainloader
 

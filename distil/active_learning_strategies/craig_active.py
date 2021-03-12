@@ -17,7 +17,7 @@ class CRAIGActive(Strategy):
         self.selection_type = selection_type
         self.linear_layer = linear_layer
 
-    def select(self, budget, validation_type):
+    def select(self, budget):
         
         # Compute hypothesize labels using model
         hypothesized_labels = self.predict(self.unlabeled_x)
