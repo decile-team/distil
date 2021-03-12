@@ -73,10 +73,10 @@ def init_centers(X, K):
         mu.append(X[ind])
         indsAll.append(ind)
         cent += 1
-    gram = np.matmul(X[indsAll], X[indsAll].T)
-    val, _ = np.linalg.eig(gram)
-    val = np.abs(val)
-    vgt = val[val > 1e-2]
+    #gram = np.matmul(X[indsAll], X[indsAll].T)
+    #val, _ = np.linalg.eig(gram)
+    #val = np.abs(val)
+    #vgt = val[val > 1e-2]
     return indsAll
 
 class BADGE(Strategy):
