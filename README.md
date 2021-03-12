@@ -32,6 +32,18 @@
 
 
 # IN this README
+- [What is DISTIL?](#what-is-distil?)
+- [Where can DISTIL be used?](#where-can-distil-be-used?)
+- [Installation](#installation)
+- [Package Requirements](#package-requirements)
+- [Documentation](#documentation)
+- [Demo Notebooks](#demo-notebooks)
+- [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
+- [Testing Individual strategy](#testing-individual-strategy)
+- [Mailing List](#mailing-list)
+- [Publications](#publications)
+
+## What is DISTIL?
 DISTIL implements a number of state of the art active learning algorithms. Some of the algorithms currently implemented with DISTIL include:
 
 - [Uncertainty Sampling [1]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.entropy_sampling)
@@ -43,6 +55,9 @@ DISTIL implements a number of state of the art active learning algorithms. Some 
 - [CoreSets based Active Learning [5]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.core_set)
 - [Ramdom Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.random_sampling)
 - Submodular Sampling [3,6,7]
+
+## Where can DISTIL be used?
+DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
 
 ## Installation
 The latest version of  DISTIL package can be installed using the following command:
@@ -62,6 +77,9 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 4) "tqdm >= 4.24.0",
 5) "torch >= 1.4.0",
 6) "apricot-select >= 0.6.0"
+
+## Documentation
+Learn more about distil at our [documentation]https://decile-team-distil.readthedocs.io/en/latest/).
 
 ## Demo Notebooks
 1. https://colab.research.google.com/drive/10WkyKlOxSixrMHvA9wEHcd0l5HugnChN?usp=sharing
@@ -130,9 +148,6 @@ To receive updates about distil and be a part of the community, join the Decile_
 ```
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
-
-## Where can DISTIL be used?
-DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
 
 ## Publications
 
