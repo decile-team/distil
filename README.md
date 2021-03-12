@@ -65,10 +65,10 @@ The latest version of  DISTIL package can be installed using the following comma
 ```python
 pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 ```
----
 ### NOTE
-Please make sure to enter the space between simple/ and decile-distil in the above command while installing CORDS package
----
+```
+Please make sure to enter the space between simple/ and decile-distil in the above command while installing DISTIL package
+```
 
 ## Package Requirements
 1) "numpy >= 1.14.2",
