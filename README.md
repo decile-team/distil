@@ -31,7 +31,7 @@
 </h3>
 
 
-# IN this README
+# In this README
 - [What is DISTIL?](#what-is-distil?)
 - [Where can DISTIL be used?](#where-can-distil-be-used?)
 - [Installation](#installation)
