@@ -1,4 +1,37 @@
-# DISTIL: Deep dIverSified inTeractIve Learning
+<p align="center">
+    <br>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        <img src="https://github.com/decile-team/distil/tree/main/experiment_plots/distil_logo.png" width="500"/>
+    </br>
+    <br>
+        <strong> Deep dIverSified inTeractIve Learning </strong>
+    </br>
+</p>
+
+<p align="center">
+    <a href="https://github.com/decile-team/distil/blob/main/LICENSE">
+        <img alt="GitHub" src="https://img.shields.io/github/license/decile-team/distil?color=blue">
+    </a>
+    <a href="https://decile.org/">
+        <img alt="Decile" src="https://img.shields.io/badge/website-online-green">
+    </a>  
+    <a href="https://decile-team-distil.readthedocs.io/en/latest/index.html">
+        <img alt="Documentation" src="https://img.shields.io/badge/docs-passing-brightgreen">
+    </a>
+    <a href="#">
+        <img alt="GitHub Stars" src="https://img.shields.io/github/stars/decile-team/distil">
+    </a>
+    <a href="#">
+        <img alt="GitHub Forks" src="https://img.shields.io/github/forks/decile-team/distil">
+    </a>
+</p>
+
+<h3 align="center">
+<p>Label only the required data and reduce labeling cost and time.
+</h3>
+
+
+# IN this README
 DISTIL implements a number of state of the art active learning algorithms. Some of the algorithms currently implemented with DISTIL include:
 
 - [Uncertainty Sampling [1]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.entropy_sampling)
