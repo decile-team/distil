@@ -72,4 +72,4 @@ def calculate_class_budgets(budget, num_classes, trn_lbls, N_trn):
         for i in range(num_classes):
             class_budgets[i] = floored_class_budgets[i][1]
                 
-        return 
+        return class_budgets

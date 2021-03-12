@@ -10,6 +10,9 @@ from torch.utils.data import Dataset
 from torch.utils.data import Subset
 from torch.utils.data.sampler import SubsetRandomSampler
 
+from .calculate_class_budgets import calculate_class_budgets
+from .gradmatch_solvers import OrthogonalMP_REG_Parallel, Fixed_Weight_Greedy_Parallel
+
 class DataSelectionStrategy(object):
     """
     Implementation of Data Selection Strategy class which serves as base class for other
@@ -292,7 +295,7 @@ class OMPGradMatchStrategy(DataSelectionStrategy):
         """
         Constructor method
         """
-        super().__init__(trainloader, valloader, model, num_classes, linear_layer)
+        super().__init__(trainloader, valloader, model, num_classes, linear_layer, loss_type, device)
         self.loss_type = loss_type
         self.eta = eta  # step size for the one step gradient update
         self.device = device
@@ -326,7 +329,6 @@ class OMPGradMatchStrategy(DataSelectionStrategy):
         gammas: weights tensors
             Tensor containing weights of each instance
         """
-        omp_start_time = time.time()
         self.update_model(model_params)
 
         if self.selection_type == 'PerClass':
@@ -380,7 +382,6 @@ class OMPGradMatchStrategy(DataSelectionStrategy):
                 idxs.extend(tmp)
                 gammas.extend(list(gammas_temp[i] * np.ones(len(tmp))))
 
-        omp_end_time = time.time()
         diff = budget - len(idxs)
 
         if diff > 0:
@@ -396,7 +397,6 @@ class OMPGradMatchStrategy(DataSelectionStrategy):
             idxs = list(np.array(idxs)[rand_indices])
             gammas = list(np.array(gammas)[rand_indices])
 
-        print("OMP algorithm Subset Selection time is: ", omp_end_time - omp_start_time)
         return idxs, gammas
     
 class FixedWeightGradMatchStrategy(DataSelectionStrategy):
@@ -475,7 +475,6 @@ class FixedWeightGradMatchStrategy(DataSelectionStrategy):
         gammas: weights tensors
             Tensor containing weights of each instance
         """
-        omp_start_time = time.time()
         self.update_model(model_params)
 
         if self.selection_type == 'PerClass':
@@ -525,7 +524,7 @@ class FixedWeightGradMatchStrategy(DataSelectionStrategy):
             else:
                 val_set_size = self.trn_gradients.shape[0]
                 sum_val_grad = torch.sum(trn_gradients, dim=0)
-            idxs_temp, gammas_temp = self.fixed_weight_wrapper(torch.transpose(trn_gradients, 0, 1),
+            idxs_temp = self.fixed_weight_wrapper(torch.transpose(trn_gradients, 0, 1),
                                                      sum_val_grad, val_set_size, math.ceil(budget/self.trainloader.batch_size))
             batch_wise_indices = list(self.trainloader.batch_sampler)
             for i in range(len(idxs_temp)):
@@ -533,7 +532,6 @@ class FixedWeightGradMatchStrategy(DataSelectionStrategy):
                 idxs.extend(tmp)
 
         # Account for the labeled set weights/indices by adding labeled_set_size to budget.
-        omp_end_time = time.time()
         diff = budget - len(idxs)
 
         if diff > 0:
@@ -546,7 +544,6 @@ class FixedWeightGradMatchStrategy(DataSelectionStrategy):
             rand_indices = np.random.permutation(len(idxs))
             idxs = list(np.array(idxs)[rand_indices])
 
-        print("Fixed Weight Greedy algorithm Subset Selection time is: ", omp_end_time - omp_start_time)
         return idxs
 
 class CRAIGStrategy(DataSelectionStrategy):
@@ -773,12 +770,14 @@ class CRAIGStrategy(DataSelectionStrategy):
         total_greedy_list = []
         gammas = []
         if self.selection_type == 'PerClass':
+            self.get_labels(False)
+            class_budgets = calculate_class_budgets(budget, self.num_classes, self.trn_lbls, self.N_trn)
+            
             for i in range(self.num_classes):
                 idxs = torch.where(labels == i)[0]
                 self.compute_score(model_params, idxs)
                 fl = apricot.functions.facilityLocation.FacilityLocationSelection(random_state=0, metric='precomputed',
-                                                                                  n_samples=math.ceil(
-                                                                                      budget * len(idxs) / self.N_trn),
+                                                                                  n_samples=class_budgets[i],
                                                                                   optimizer=self.optimizer)
                 sim_sub = fl.fit_transform(self.dist_mat)
                 greedyList = list(np.argmax(sim_sub, axis=1))

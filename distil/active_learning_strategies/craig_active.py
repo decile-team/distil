@@ -35,6 +35,6 @@ class CRAIGActive(Strategy):
 
         # Create CORDS CRAIGStrategy to select datapoints
         setf_model = CRAIGStrategy(trainloader, validloader, self.model, self.criterion, self.device, self.target_classes, self.linear_layer, False, self.selection_type)
-        subset_idxs, _ = setf_model.select(budget, clone_dict, "lazy")
+        subset_idxs, _ = setf_model.select(budget, clone_dict)
         self.model.load_state_dict(cached_state_dict)
         return subset_idxs
