@@ -32,8 +32,8 @@
 
 
 # In this README
-- [What is DISTIL?](#what-is-distil?)
-- [Where can DISTIL be used?](#where-can-distil-be-used?)
+- [What is DISTIL?](#what-is-distil)
+- [Where can DISTIL be used?](#where-can-distil-be-used)
 - [Installation](#installation)
 - [Package Requirements](#package-requirements)
 - [Documentation](#documentation)
@@ -66,8 +66,8 @@ The latest version of  DISTIL package can be installed using the following comma
 pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 ```
 ---
-**NOTE:**
-  Please make sure to enter the space between simple/ and decile-distil in the above command while installing CORDS package
+### NOTE
+Please make sure to enter the space between simple/ and decile-distil in the above command while installing CORDS package
 ---
 
 ## Package Requirements
@@ -79,7 +79,7 @@ pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
 6) "apricot-select >= 0.6.0"
 
 ## Documentation
-Learn more about distil at our [documentation]https://decile-team-distil.readthedocs.io/en/latest/).
+Learn more about distil at our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
 
 ## Demo Notebooks
 1. https://colab.research.google.com/drive/10WkyKlOxSixrMHvA9wEHcd0l5HugnChN?usp=sharing
