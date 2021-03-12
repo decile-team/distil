@@ -10,9 +10,6 @@ from torch.utils.data import Dataset
 from torch.utils.data import Subset
 from torch.utils.data.sampler import SubsetRandomSampler
 
-from .utils import OrthogonalMP_REG_Parallel, Fixed_Weight_Greedy_Parallel
-from .utils import calculate_class_budgets
-
 class DataSelectionStrategy(object):
     """
     Implementation of Data Selection Strategy class which serves as base class for other

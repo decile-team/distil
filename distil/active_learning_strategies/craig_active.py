@@ -2,8 +2,8 @@ import copy
 
 from torch.utils.data import DataLoader
 from .strategy import Strategy
-from ..utils import CRAIGStrategy
-from ..utils import SupervisedSelectHandler
+from ..utils.supervised_strategy_wrappers import CRAIGStrategy
+from ..utils.supervised_strategy_wrappers import SupervisedSelectHandler
 
 # Define a GradMatch Active strategy
 class CRAIGActive(Strategy):

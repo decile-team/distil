@@ -2,9 +2,9 @@ import copy
 
 from torch.utils.data import DataLoader
 from .strategy import Strategy
-from ..utils import FixedWeightGradMatchStrategy
-from ..utils import OMPGradMatchStrategy
-from ..utils import SupervisedSelectHandler
+from ..utils.supervised_strategy_wrappers import FixedWeightGradMatchStrategy
+from ..utils.supervised_strategy_wrappers import OMPGradMatchStrategy
+from ..utils.supervised_strategy_wrappers import SupervisedSelectHandler
     
 # Define a GradMatch Active strategy
 class GradMatchActive(Strategy):
