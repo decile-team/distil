@@ -10,10 +10,10 @@ import torch.optim as optim
 from torch.autograd import Variable
 import sys
 sys.path.append('../')
-# from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
-#                                 LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
-#                                 CoreSet, GLISTER, BADGE, AdversarialBIM, AdversarialDeepFool, KMeansSampling, BaselineSampling, \
-#                                   BALDDropout      
+from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
+                                LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
+                                CoreSet, GLISTER, BADGE, AdversarialBIM, AdversarialDeepFool, KMeansSampling, BaselineSampling, \
+                                  BALDDropout      
 
 from distil.active_learning_strategies import FASS
 from distil.utils.models.logreg_net import LogisticRegNet
