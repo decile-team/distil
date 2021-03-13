@@ -42,6 +42,7 @@
 - [Testing Individual strategy](#testing-individual-strategy)
 - [Mailing List](#mailing-list)
 - [Publications](#publications)
+- [Acknowledgement](#acknowledgement)
 
 ## What is DISTIL?
 DISTIL implements a number of state of the art active learning algorithms. Some of the algorithms currently implemented with DISTIL include:
@@ -55,6 +56,12 @@ DISTIL implements a number of state of the art active learning algorithms. Some 
 - [CoreSets based Active Learning [5]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.core_set)
 - [Ramdom Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.random_sampling)
 - Submodular Sampling [3,6,7]
+- Adversarial Bim
+- Adversarial DeepFool
+- Baseline Sampling
+- BALD
+- Kmeans Sampling
+- Least Confidence
 
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
@@ -166,3 +173,6 @@ https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join
 [7] Vishal Kaushal, Rishabh Iyer, Suraj Kothiwade, Rohan Mahadev, Khoshrav Doctor, and Ganesh Ramakrishnan, Learning From Less Data: A Unified Data Subset Selection and Active Learning Framework for Computer Vision, 7th IEEE Winter Conference on Applications of Computer Vision (WACV), 2019 Hawaii, USA
 
 [8] Wei, Kai, et al. "Submodular subset selection for large-scale speech training data." 2014 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2014.
+
+## Acknowledgement
+This library takes inspiration and also uses pieces of code from [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning) and [JordanAsh's Badge repository](https://github.com/JordanAsh/badge).
