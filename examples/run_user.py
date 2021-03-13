@@ -102,7 +102,7 @@ for rd in range(1, n_rounds):
     print('-------------------------------------------------')
     idx = strategy.select(budget)
     print('New data points added -', len(idx))
-    strategy.save_state()
+    strategy.save_state('./state.pkl')
 
     #Adding new points to training set
     X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
@@ -116,7 +116,7 @@ for rd in range(1, n_rounds):
     print('Number of unlabeled points -', X_unlabeled.shape[0])
 
     #Reload state and start training
-    strategy.load_state()
+    strategy.load_state('./state.pkl')
     strategy.update_data(X_tr, y_tr, X_unlabeled)
     dt.update_data(X_tr, y_tr)
 

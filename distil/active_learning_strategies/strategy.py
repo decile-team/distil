@@ -8,6 +8,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from copy import deepcopy
 import pickle
+import warnings
 
 class Strategy:
     def __init__(self,X, Y, unlabeled_x, net, handler, nclasses, args={}): #
@@ -22,10 +23,6 @@ class Strategy:
         if 'batch_size' not in args:
             args['batch_size'] = 1
         
-        if 'filename' not in args:    
-            self.filename = '../state.pkl'
-        else:
-            self.filename = args['filename']
         #print('Use_CUDA ', self.use_cuda)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -40,12 +37,15 @@ class Strategy:
     def update_model(self, clf):
         self.model = clf
 
-    def save_state(self):
-        with open(self.filename, 'wb') as f:
+    def save_state(self, filename):
+
+
+        with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
-    def load_state(self):
-        with open(self.filename, 'rb') as f:
+    def load_state(self, filename):
+
+        with open(filename, 'rb') as f:
             self = pickle.load(f)
 
     def predict(self,X, useloader=True):

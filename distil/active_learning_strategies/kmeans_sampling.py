@@ -3,6 +3,7 @@ from .strategy import Strategy
 from sklearn.cluster import KMeans
 
 class KMeansSampling(Strategy):
+    
     """
     Implementation of KMeans Sampling Strategy.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
@@ -28,15 +29,16 @@ class KMeansSampling(Strategy):
         batch_size 
         Batch size to be used inside strategy class (int, optional)
     """
-	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-		"""
+
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+    	"""
         Constructor method
         """
-		super(KMeansSampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
+    	super(KMeansSampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
 
-	def select(self, budget):
-
-		"""
+    def select(self, budget):
+        
+    	"""
         Select next set of points
 
         Parameters
@@ -50,15 +52,15 @@ class KMeansSampling(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """
 
-		embedding = self.get_embedding(self.unlabeled_x)
-		embedding = embedding.numpy()
-		cluster_learner = KMeans(n_clusters=budget)
-		cluster_learner.fit(embedding)
-		
-		cluster_idxs = cluster_learner.predict(embedding)
-		centers = cluster_learner.cluster_centers_[cluster_idxs]
-		dis = (embedding - centers)**2
-		dis = dis.sum(axis=1)
-		q_idxs = np.array([np.arange(embedding.shape[0])[cluster_idxs==i][dis[cluster_idxs==i].argmin()] for i in range(budget)])
+    	embedding = self.get_embedding(self.unlabeled_x)
+    	embedding = embedding.numpy()
+    	cluster_learner = KMeans(n_clusters=budget)
+    	cluster_learner.fit(embedding)
+    	
+    	cluster_idxs = cluster_learner.predict(embedding)
+    	centers = cluster_learner.cluster_centers_[cluster_idxs]
+    	dis = (embedding - centers)**2
+    	dis = dis.sum(axis=1)
+    	q_idxs = np.array([np.arange(embedding.shape[0])[cluster_idxs==i][dis[cluster_idxs==i].argmin()] for i in range(budget)])
 
-		return q_idxs
+    	return q_idxs

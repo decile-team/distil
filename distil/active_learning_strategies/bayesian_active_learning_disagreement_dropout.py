@@ -31,18 +31,19 @@ class BALDDropout(Strategy):
         n_drop
         Dropout value to be used (int, optional)
     """
-	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+        
         """
         Constructor method
         """
-		if 'n_drop' in args:
-			self.n_drop = args['n_drop']
-		else:
-			self.n_drop = 10
+        if 'n_drop' in args:
+            self.n_drop = args['n_drop']
+        else:
+            self.n_drop = 10
+        super(BALDDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
 
-		super(BALDDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
+    def select(self, budget):
 
-	def select(self, budget):
         """
         Select next set of points
 
@@ -56,11 +57,12 @@ class BALDDropout(Strategy):
         idxs: list
             List of selected data point indexes with respect to unlabeled_x
         """	
-		probs = self.predict_prob_dropout_split(self.unlabeled_x, self.n_drop)
-		pb = probs.mean(0)
-		entropy1 = (-pb*torch.log(pb)).sum(1)
-		entropy2 = (-probs*torch.log(probs)).sum(2).mean(0)
-		U = entropy2 - entropy1
-		idxs = U.sort()[1][:budget]
+		
+        probs = self.predict_prob_dropout_split(self.unlabeled_x, self.n_drop)
+        pb = probs.mean(0)
+        entropy1 = (-pb*torch.log(pb)).sum(1)
+        entropy2 = (-probs*torch.log(probs)).sum(2).mean(0)
+        U = entropy2 - entropy1
+        idxs = U.sort()[1][:budget]
 
-		return idxs
+        return idxs

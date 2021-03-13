@@ -5,38 +5,41 @@ from .strategy import Strategy
 
 class AdversarialBIM(Strategy):
 	def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-    """
-    Implementation of Adversial Bim Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling technique to select data points for active learning.
 
-    Parameters
-    ----------
-    X: numpy array
-        Present training/labeled data   
-    y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
-    nclasses: int
-        Number of unique target variables
-    args: dict
-        Specify optional parameters
-        
-        batch_size 
-        Batch size to be used inside strategy class (int, optional)
+		"""
+		Implementation of Adversial Bim Strategy.
+		This class extends :class:`active_learning_strategies.strategy.Strategy`
+		to include entropy sampling technique to select data points for active learning.
 
-        eps
-        epsilon value for gradients
-    """
+		Parameters
+		----------
+		X: numpy array
+		    Present training/labeled data   
+		y: numpy array
+		    Labels of present training data
+		unlabeled_x: numpy array
+		    Data without labels
+		net: class
+		    Pytorch Model class
+		handler: class
+		    Data Handler, which can load data even without labels.
+		nclasses: int
+		    Number of unique target variables
+		args: dict
+		    Specify optional parameters
+		    
+		    batch_size 
+		    Batch size to be used inside strategy class (int, optional)
+
+		    eps
+		    epsilon value for gradients
+		"""
+		
 		if 'eps' in args:
 			self.eps = args['eps']
 		else:
 			self.eps = 0.05
+		
 		super(AdversarialBIM, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
 
 	def cal_dis(self, x):
