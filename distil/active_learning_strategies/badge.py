@@ -13,6 +13,8 @@ from copy import copy as copy
 from copy import deepcopy as deepcopy
 import torch
 from torch import nn
+import random
+import math
 
 from torch.nn import functional as F
 import argparse
@@ -108,6 +110,75 @@ class BADGE(Strategy):
     def __init__(self, X, Y, unlabeled_x, net, handler,nclasses, args):
 
         super(BADGE, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
+
+    def select_per_batch(self, budget, batch_size):
+        """
+        Select points to label by using per-batch BADGE strategy
+
+        Parameters
+        ----------
+        budget : int
+            Number of indices to be selected from unlabeled set
+        batch_size : TYPE
+            Size of batches to form
+
+        Returns
+        -------
+        chosen: list
+            List of selected data point indices with respect to unlabeled_x
+
+        """
+        
+        # Compute gradient embeddings of each unlabeled point
+        grad_embedding = self.get_grad_embedding(self.unlabeled_x,bias_grad=False)
+        
+        # Calculate number of batches to choose from, embedding dimension, and adjusted budget
+        num_batches = math.ceil(grad_embedding.shape[0] / batch_size)
+        embed_dim = grad_embedding.shape[1]
+        batch_budget = math.ceil(budget / batch_size)
+        
+        # Instantiate list of lists of indices drawn from the possible range of the gradient embedding
+        batch_indices_list = []
+        draw_without_replacement = range(grad_embedding.shape[0])
+        
+        while len(draw_without_replacement) > 0:
+            
+            if len(draw_without_replacement) < batch_size:
+                batch_random_sample = draw_without_replacement
+            else:
+                batch_random_sample = random.sample(draw_without_replacement, batch_size)
+        
+            batch_indices_list.append(batch_random_sample)
+            
+            for index in batch_random_sample:
+                draw_without_replacement.remove(index)
+        
+        # Instantiate batch average tensor
+        gradBatchEmbedding = torch.zeros([num_batches, embed_dim])
+        
+        # Calculate the average vector embedding of each batch
+        for i in range(num_batches):
+            
+            indices = batch_indices_list[i]
+            vec_avg = torch.zeros(embed_dim)
+            for index in indices:
+                vec_avg = vec_avg + grad_embedding[index]
+            vec_avg = vec_avg / len(indices)
+            
+            gradBatchEmbedding[i] = vec_avg
+
+        # Perform initial centers problem using new budget
+        chosen_batch = init_centers(gradBatchEmbedding.cpu().numpy(), batch_budget)
+        
+        # For each chosen batch, construct the list of indices to return.
+        chosen = []
+        
+        for batch_index in chosen_batch:
+            
+            indices_to_add = batch_indices_list[batch_index]
+            chosen.extend(indices_to_add)
+
+        return chosen
 
     def select(self, budget):
         """
