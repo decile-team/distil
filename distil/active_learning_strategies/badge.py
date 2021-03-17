@@ -129,6 +129,11 @@ class BADGE(Strategy):
 
         """
         
+        if torch.cuda.is_available():
+            device = "cuda"
+        else:
+            device = "cpu"
+        
         # Compute gradient embeddings of each unlabeled point
         grad_embedding = self.get_grad_embedding(self.unlabeled_x,bias_grad=False)
         
@@ -139,7 +144,7 @@ class BADGE(Strategy):
         
         # Instantiate list of lists of indices drawn from the possible range of the gradient embedding
         batch_indices_list = []
-        draw_without_replacement = range(grad_embedding.shape[0])
+        draw_without_replacement = list(range(grad_embedding.shape[0]))
         
         while len(draw_without_replacement) > 0:
             
@@ -154,13 +159,13 @@ class BADGE(Strategy):
                 draw_without_replacement.remove(index)
         
         # Instantiate batch average tensor
-        gradBatchEmbedding = torch.zeros([num_batches, embed_dim])
+        gradBatchEmbedding = torch.zeros([num_batches, embed_dim]).to(device)
         
         # Calculate the average vector embedding of each batch
         for i in range(num_batches):
             
             indices = batch_indices_list[i]
-            vec_avg = torch.zeros(embed_dim)
+            vec_avg = torch.zeros(embed_dim).to(device)
             for index in indices:
                 vec_avg = vec_avg + grad_embedding[index]
             vec_avg = vec_avg / len(indices)
