@@ -157,8 +157,7 @@ class SubmodSampling(Strategy):
                 
                 simil.compute_score([i for i in range(len(predicted_y))])
 
-                greedyList = dpp(simil.dist_mat.cpu().numpy(),final_per_class_bud[i])
-                greedySet.extend(idxs[greedyList])    
+                greedySet = dpp(simil.dist_mat.cpu().numpy(),budget)    
 
             elif self.selection_type == 'Supervised':
                  raise ValueError('Please use Full or PerClass')

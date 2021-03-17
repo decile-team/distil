@@ -20,7 +20,6 @@ class GLISTER(Strategy):
     
     Parameters
     ----------
-
     X: Numpy array 
         Features of the labled set of points 
     Y: Numpy array
