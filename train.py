@@ -75,6 +75,7 @@ class TrainClassifier:
 			download_path = './downloaded_data/'
 			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 			handler = DataHandler_CIFAR10
+			y_test = y_test.numpy()
 
 		elif data_config['name'] == 'mnist':
 			data_set_name = 'MNIST'
