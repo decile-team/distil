@@ -1,0 +1,38 @@
+{
+
+	"model": {
+		"architecture": "two_layer_net",
+		"input_dim": 36,
+		"target_classes": 10,
+		"hidden_units_1": 100
+	},
+
+	"train_parameters": {
+		"lr": 0.001,
+		"batch_size": 32,
+		"n_epoch": 150,
+		"max_accuracy": 0.95,
+		"isreset": true,
+		"islogs":true,
+		"logs_location": "./logs.txt"
+	},
+	
+	"active_learning":{
+		"strategy": "entropy_sampling",
+		"budget": 32,
+		"rounds": 10,
+		"initial_points":32,
+		
+		"strategy_args":{	
+			"batch_size" : 100, 
+			"lr":0.001
+		}
+	},
+	"dataset":{
+		"name":"satimage"
+	},
+	"logs" : {
+		"islogs":true,
+		"location": "./logs.txt"
+	}
+}
