@@ -99,11 +99,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling">Margin Sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.margin_sampling_dropout">Margin sampling with Dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.random_sampling">Random Sampling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#submodular-set-functions">Submodular set functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.submod_sampling">Submodular Sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.adversarial_bim">Adversarial BIM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.adversarial_deepfool">Adversarial DeepFool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout">Bayesian Active Learning Disagreement Dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.kmeans_sampling">KMeans Sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-distil.active_learning_strategies.baseline_sampling">Baseline Sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#references">REFERENCES</a></li>
 </ul>
 </li>
@@ -716,8 +717,53 @@ Batch size to be used inside strategy class (int, optional)</p>
 </dd></dl>
 
 </div>
-<div class="section" id="submodular-set-functions">
-<h2>Submodular set functions<a class="headerlink" href="#submodular-set-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-distil.active_learning_strategies.submod_sampling">
+<span id="submodular-sampling"></span><h2>Submodular Sampling<a class="headerlink" href="#module-distil.active_learning_strategies.submod_sampling" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.submod_sampling.SubmodSampling">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.submod_sampling.</code><code class="sig-name descname">SubmodSampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">typeOf</span></em>, <em class="sig-param"><span class="n">selection_type</span></em>, <em class="sig-param"><span class="n">if_grad</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">kernel_batch_size</span><span class="o">=</span><span class="default_value">200</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submod_sampling.html#SubmodSampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submod_sampling.SubmodSampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>Numpy array</em>) – Features of the labled set of points</p></li>
+<li><p><strong>Y</strong> (<em>Numpy array</em>) – Lables of the labled set of points</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>Numpy array</em>) – Features of the unlabled set of points</p></li>
+<li><p><strong>net</strong> (<em>class object</em>) – Model architecture used for training. Could be instance of models defined in <cite>distil.utils.models</cite> or something similar.</p></li>
+<li><p><strong>handler</strong> (<em>class object</em>) – It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in <cite>distil.utils.DataHandler</cite> or something similar.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – No. of classes in tha dataset</p></li>
+<li><p><strong>typeOf</strong> (<em>str</em>) – Choice of submodular function - ‘facility_location’ | ‘graph_cut’ | ‘saturated_coverage’ | ‘sum_redundancy’ | ‘feature_based’            | ‘Disparity-min’ | ‘Disparity-sum’ | ‘DPP’</p></li>
+<li><p><strong>selection_type</strong> (<em>str</em>) – selection strategy - ‘Full’ <a href="#id4"><span class="problematic" id="id5">|</span></a>’PerClass’ | ‘Supervised’</p></li>
+<li><p><strong>if_grad</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Determines if gradients to be used for subset selection. Default is False.</p></li>
+<li><p><strong>args</strong> (<em>dictionary</em>) – This dictionary should have keys ‘batch_size’ and  ‘lr’.
+‘lr’ should be the learning rate used for training. ‘batch_size’  ‘batch_size’ should be such
+that one</p></li>
+<li><p><strong>kernel_batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – For ‘Diversity’ and ‘FacLoc’ regualrizer versions, similarity kernel is to be computed, which
+entails creating a 3d torch tensor of dimenssions kernel_batch_size*kernel_batch_size*
+feature dimenssion.Again kernel_batch_size should be such that one can exploit the benefits of
+tensorization while honouring the resourse constraits.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.submod_sampling.SubmodSampling.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/submod_sampling.html#SubmodSampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.submod_sampling.SubmodSampling.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chosen</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-distil.active_learning_strategies.adversarial_bim">
 <span id="adversarial-bim"></span><h2>Adversarial BIM<a class="headerlink" href="#module-distil.active_learning_strategies.adversarial_bim" title="Permalink to this headline">¶</a></h2>
@@ -733,7 +779,19 @@ Batch size to be used inside strategy class (int, optional)</p>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.adversarial_bim.AdversarialBIM.select">
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/adversarial_bim.html#AdversarialBIM.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.adversarial_bim.AdversarialBIM.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>idxs</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -880,6 +938,66 @@ Batch size to be used inside strategy class (int, optional)</p>
 </dd></dl>
 
 </dd></dl>
+
+</div>
+<div class="section" id="module-distil.active_learning_strategies.baseline_sampling">
+<span id="baseline-sampling"></span><h2>Baseline Sampling<a class="headerlink" href="#module-distil.active_learning_strategies.baseline_sampling" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="distil.active_learning_strategies.baseline_sampling.BaselineSampling">
+<em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.baseline_sampling.</code><code class="sig-name descname">BaselineSampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/baseline_sampling.html#BaselineSampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.baseline_sampling.BaselineSampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
+<p>Implementation of Baseline Sampling Strategy.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
+to include entropy sampling technique to select data points for active learning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Present training/labeled data</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – Labels of present training data</p></li>
+<li><p><strong>unlabeled_x</strong> (<em>numpy array</em>) – Data without labels</p></li>
+<li><p><strong>net</strong> (<em>class</em>) – Pytorch Model class</p></li>
+<li><p><strong>handler</strong> (<em>class</em>) – Data Handler, which can load data even without labels.</p></li>
+<li><p><strong>nclasses</strong> (<em>int</em>) – Number of unique target variables</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – <p>Specify optional parameters</p>
+<p>batch_size
+Batch size to be used inside strategy class (int, optional)</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="distil.active_learning_strategies.baseline_sampling.BaselineSampling.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/baseline_sampling.html#BaselineSampling.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.baseline_sampling.BaselineSampling.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select next set of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chosen</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="distil.active_learning_strategies.baseline_sampling.gram_aug">
+<code class="sig-prename descclassname">distil.active_learning_strategies.baseline_sampling.</code><code class="sig-name descname">gram_aug</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">L_Y</span></em>, <em class="sig-param"><span class="n">L_Y_inv</span></em>, <em class="sig-param"><span class="n">b_u</span></em>, <em class="sig-param"><span class="n">c_u</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/baseline_sampling.html#gram_aug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.baseline_sampling.gram_aug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="distil.active_learning_strategies.baseline_sampling.gram_red">
+<code class="sig-prename descclassname">distil.active_learning_strategies.baseline_sampling.</code><code class="sig-name descname">gram_red</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">L_inv</span></em>, <em class="sig-param"><span class="n">u_loc</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/baseline_sampling.html#gram_red"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.baseline_sampling.gram_red" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="distil.active_learning_strategies.baseline_sampling.sample_k_imp">
+<code class="sig-prename descclassname">distil.active_learning_strategies.baseline_sampling.</code><code class="sig-name descname">sample_k_imp</code><span class="sig-paren">(</span><em class="sig-param">Phi</em>, <em class="sig-param">k</em>, <em class="sig-param">max_iter</em>, <em class="sig-param">rng=&lt;module 'numpy.random' from 'r:\\virtualenv\\alt_badge\\lib\\site-packages\\numpy\\random\\__init__.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/baseline_sampling.html#sample_k_imp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.baseline_sampling.sample_k_imp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="references">

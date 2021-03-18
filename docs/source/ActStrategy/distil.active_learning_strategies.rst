@@ -87,10 +87,10 @@ Random Sampling
    :undoc-members:
    :show-inheritance:
 
-Submodular set functions
+Submodular Sampling
 -----------------------------------------------------
 
-.. automodule:: distil.active_learning_strategies.submodular
+.. automodule:: distil.active_learning_strategies.submod_sampling
    :members:
    :undoc-members:
    :show-inheritance:
@@ -126,6 +126,15 @@ KMeans Sampling
    :members:
    :undoc-members:
    :show-inheritance:
+
+Baseline Sampling
+-----------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.baseline_sampling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 REFERENCES
 -----------

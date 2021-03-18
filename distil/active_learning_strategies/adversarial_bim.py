@@ -63,7 +63,19 @@ class AdversarialBIM(Strategy):
 		return (eta*eta).sum()
 
 	def select(self, budget):
-	
+		"""
+		Select next set of points
+
+		Parameters
+		----------
+		budget: int
+		    Number of indexes to be returned for next set
+
+		Returns
+		----------
+		idxs: list
+		    List of selected data point indexes with respect to unlabeled_x
+		"""	
 		self.model.cpu()
 		self.model.eval()
 		dis = np.zeros(self.unlabeled_x.shape[0])

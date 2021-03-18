@@ -216,7 +216,19 @@
 		<span class="k">return</span> <span class="p">(</span><span class="n">eta</span><span class="o">*</span><span class="n">eta</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AdversarialBIM.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.adversarial_bim.AdversarialBIM.select">[docs]</a>	<span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
-	
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Select next set of points</span>
+
+<span class="sd">		Parameters</span>
+<span class="sd">		----------</span>
+<span class="sd">		budget: int</span>
+<span class="sd">		    Number of indexes to be returned for next set</span>
+
+<span class="sd">		Returns</span>
+<span class="sd">		----------</span>
+<span class="sd">		idxs: list</span>
+<span class="sd">		    List of selected data point indexes with respect to unlabeled_x</span>
+<span class="sd">		&quot;&quot;&quot;</span>	
 		<span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 		<span class="n">dis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
