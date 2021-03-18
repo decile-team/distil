@@ -1,7 +1,7 @@
 <p align="center">
     <br>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_logo.png" width="500"/>
+        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_logo_transparent.png" width="500"/>
     </br>
     <br>
         <strong> Deep dIverSified inTeractIve Learning </strong>
