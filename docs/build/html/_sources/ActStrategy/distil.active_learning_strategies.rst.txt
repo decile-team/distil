@@ -87,7 +87,6 @@ Random Sampling
    :undoc-members:
    :show-inheritance:
 
-
 Submodular set functions
 -----------------------------------------------------
 
@@ -96,6 +95,37 @@ Submodular set functions
    :undoc-members:
    :show-inheritance:
 
+Adversarial BIM
+-----------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.adversarial_bim
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Adversarial DeepFool
+-----------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.adversarial_deepfool
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Bayesian Active Learning Disagreement Dropout
+-----------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+KMeans Sampling
+-----------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.kmeans_sampling
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 REFERENCES
 -----------
