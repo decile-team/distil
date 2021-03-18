@@ -45,7 +45,15 @@
 - [Acknowledgement](#acknowledgement)
 
 ## What is DISTIL?
-DISTIL implements a number of state of the art active learning algorithms. Some of the algorithms currently implemented with DISTIL include:
+DISTIL implements a number of state of the art active learning algorithms. The following are the goals that DISTIL tries to acheive:
+<p align="center"><i><b>Reducing Labeling Time</b></i></p>
+<p align="center"><i><b>Reducing Labeling Man Power & Costs</b></i></p>
+<p align="center"><i><b>Reducing Amount of Data to be Labeled</b></i></p>
+<p align="center"><i><b>Reducing End to End Training Time</b></i></p>
+<p align="center"><i><b>Reducing Energy Requirement</b></i></p>
+<p align="center"><i><b>Reducing Resource (GPU) Requirement and Costs</b></i></p>
+
+Some of the algorithms currently implemented with DISTIL include:
 
 - [Uncertainty Sampling [1]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.entropy_sampling)
 - [Margin Sampling [2]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.margin_sampling)
@@ -56,12 +64,18 @@ DISTIL implements a number of state of the art active learning algorithms. Some 
 - [CoreSets based Active Learning [5]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.core_set)
 - [Ramdom Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.random_sampling)
 - Submodular Sampling [3,6,7]
+- Adversarial DeepFool [9]
+- BALD [10]
+- Kmeans Sampling [5]
 - Adversarial Bim
-- Adversarial DeepFool
 - Baseline Sampling
-- BALD
-- Kmeans Sampling
-- Least Confidence
+
+We are continuously incorporating newer and better selection strategies into DISTIL. Some of the features of DISTIL includes:
+- Minimal changes to add it to the existing training structure.
+- Independent of the training strategy used.
+- Achieving similar test accuracy with less amount of training data.
+- Huge reduction in labelling cost and time.
+- Access to various active learning strategies with just one line of code.
 
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
@@ -173,6 +187,10 @@ https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join
 [7] Vishal Kaushal, Rishabh Iyer, Suraj Kothiwade, Rohan Mahadev, Khoshrav Doctor, and Ganesh Ramakrishnan, Learning From Less Data: A Unified Data Subset Selection and Active Learning Framework for Computer Vision, 7th IEEE Winter Conference on Applications of Computer Vision (WACV), 2019 Hawaii, USA
 
 [8] Wei, Kai, et al. "Submodular subset selection for large-scale speech training data." 2014 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2014.
+
+[9] Ducoffe, Melanie, and Frederic Precioso. "Adversarial active learning for deep networks: a margin based approach." arXiv preprint arXiv:1802.09841 (2018).
+
+[10] Gal, Yarin, Riashat Islam, and Zoubin Ghahramani. "Deep bayesian active learning with image data." International Conference on Machine Learning. PMLR, 2017.
 
 ## Acknowledgement
 This library takes inspiration and also uses pieces of code from [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning) and [JordanAsh's Badge repository](https://github.com/JordanAsh/badge).
