@@ -84,7 +84,10 @@ def get_CIFAR10(path):
         Test labels
 
     """
-    data_tr = datasets.CIFAR10(path + '/CIFAR10', train=True, download=True)
+    
+    # Introduce a training transform that provides generalization in training to the test data.
+    training_gen_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor()])
+    data_tr = datasets.CIFAR10(path + '/CIFAR10', train=True, download=True, transform=training_gen_transform)
     data_te = datasets.CIFAR10(path + '/CIFAR10', train=False, download=True)
     X_tr = data_tr.data
     Y_tr = torch.from_numpy(np.array(data_tr.targets))
