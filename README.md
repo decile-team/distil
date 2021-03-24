@@ -39,7 +39,7 @@
 - [Documentation](#documentation)
 - [Demo Notebooks](#demo-notebooks)
 - [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
-- [Testing Individual strategy](#testing-individual-strategy)
+- [Testing Individual strategy and Running Examples](#testing-individual-strategy-and-running-examples)
 - [Mailing List](#mailing-list)
 - [Publications](#publications)
 - [Acknowledgement](#acknowledgement)
@@ -158,7 +158,7 @@ Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%
 | Entropy Sampling | 0.924 |
 | Random Sampling |	0.911 |
 
-## Testing Individual strategy & Running Examples
+## Testing Individual strategy and Running Examples
 Before running the examples or test, please clone the dataset repository, along with this one. The default data path expects the repository in the same root directory as that of distil. If you change the location, the data paths in the exmples or tests needs to be changed accordingly.
 
 Dataset repository:
