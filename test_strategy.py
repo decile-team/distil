@@ -11,7 +11,7 @@ from torch.autograd import Variable
 import sys
 from sklearn.preprocessing import StandardScaler
 import argparse
-sys.path.append('../../')
+sys.path.append('./')
 from distil.utils.DataHandler import DataHandler_Points
 from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
                             LeastConfidence, MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, \
@@ -19,7 +19,7 @@ from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, R
 from distil.utils.models.simpleNN_net import TwoLayerNet
 from distil.utils.TrainHelper import data_train
 
-def test_strategy(selected_strat):
+def test_individual_strategy(selected_strat):
     """
     Function for testing individual active learning strategy
 
@@ -67,9 +67,9 @@ def test_strategy(selected_strat):
     dset_name = 'satimage'
 
     #User Execution
-    trn_file = '../../datasets/satimage/satimage.scale.trn'
-    val_file = '../../datasets/satimage/satimage.scale.val'
-    tst_file = '../../datasets/satimage/satimage.scale.tst'
+    trn_file = '../datasets/satimage/satimage.scale.trn'
+    val_file = '../datasets/satimage/satimage.scale.val'
+    tst_file = '../datasets/satimage/satimage.scale.tst'
     data_dims = 36
     nclasses = 6
 
@@ -128,7 +128,9 @@ def test_strategy(selected_strat):
     elif selected_strat == 'adversarial_deepfool':
         strategy = AdversarialDeepFool(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     else:
-        print('Enter a valid strategy, for more info: python TestStrategy.py -h')
+        print('Enter a valid strategy. You can select from the following: badge, glister, entropy_sampling, random_sampling,\
+                margin_sampling, least_confidence, core_set, bald_dropout, adversarial_bim,\
+                kmeans_sampling, baseline_sampling, adversarial_deepfool')
         sys.exit()
 
     train_args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
@@ -152,7 +154,6 @@ def test_strategy(selected_strat):
         for rd in range(1, n_rounds):
 
             idx = strategy.select(budget)
-            strategy.save_state()
 
             #Adding new points to training set
             X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
@@ -163,7 +164,6 @@ def test_strategy(selected_strat):
             y_unlabeled = np.delete(y_unlabeled, idx, axis = 0)
 
             #Reload state and start training
-            strategy.load_state()
             strategy.update_data(X_tr, y_tr, X_unlabeled)
             dt.update_data(X_tr, y_tr)
 
@@ -176,4 +176,10 @@ def test_strategy(selected_strat):
     except:
         print('Test unsuccessful for strategy -', selected_strat)
 
-# test_strategy('badge')
+parser = argparse.ArgumentParser()
+parser.add_argument('--strategy', required=True, help='Strategy to be tested. You can select\
+                 from the following: badge, glister, entropy_sampling, random_sampling,\
+                margin_sampling, least_confidence, core_set, bald_dropout, adversarial_bim,\
+                kmeans_sampling, baseline_sampling, adversarial_deepfool')
+args = parser.parse_args()
+test_individual_strategy(args.strategy)

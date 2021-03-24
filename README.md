@@ -158,12 +158,29 @@ Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%
 | Entropy Sampling | 0.924 |
 | Random Sampling |	0.911 |
 
-## Testing Individual strategy
-If there are any changes made in the strategy, it can be tested using distil.utils.TestStrategy
+## Testing Individual strategy & Running Examples
+Before running the examples or test, please clone the dataset repository, along with this one. The default data path expects the repository in the same root directory as that of distil. If you change the location, the data paths in the exmples or tests needs to be changed accordingly.
+
+Dataset repository:
 ```
-from distil.utils.TestStrategy import test_strategy
-test_strategy('badge')
+git clone https://github.com/decile-team/datasets.git
 ```
+
+To run examples:
+```
+cd distil/examples
+python example.py
+```
+
+To test individual strategies:
+```
+python test_strategy.py --strategy badge
+```
+For more information about the arguments that --strategy accepts:
+```
+python test_strategy.py -h
+```
+
 ## Mailing List
 To receive updates about distil and be a part of the community, join the Decile_DISTIL_Dev group.
 ```

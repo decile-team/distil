@@ -103,8 +103,8 @@ class AdversarialDeepFool(Strategy):
 
         data_pool = self.handler(self.unlabeled_x)
         for i in range(self.unlabeled_x.shape[0]):
-            if i % 20 == 0:
-                print('adv {}/{}'.format(i, self.unlabeled_x.shape[0]), flush=True)
+            # if i % 20 == 0:
+            #     print('adv {}/{}'.format(i, self.unlabeled_x.shape[0]), flush=True)
             x, idx = data_pool[i]
             x = torch.from_numpy(x)
             dis[i] = self.cal_dis(x)

@@ -27,8 +27,8 @@ def init_weights(m):
         m.bias.data.fill_(0.01)
 
 #User Execution
-data_path = '../datasets/iris.csv'
-test_path = '../datasets/iris_test.csv'
+data_path = '../../datasets/iris.csv'
+test_path = '../../datasets/iris_test.csv'
 train_args = {'n_epoch':150, 'lr':float(0.001), 'batch_size':5}  #Training args, Different args than strategy_args
 nclasses = 3    ##Number of unique classes
 n_rounds = 11    ##Number of rounds to run active learning

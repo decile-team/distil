@@ -51,9 +51,9 @@ dset_name = 'satimage'
 
 #User Execution
 if dset_name == "satimage":
-    trn_file = '../datasets/satimage/satimage.scale.trn'
-    val_file = '../datasets/satimage/satimage.scale.val'
-    tst_file = '../datasets/satimage/satimage.scale.tst'
+    trn_file = '../../datasets/satimage/satimage.scale.trn'
+    val_file = '../../datasets/satimage/satimage.scale.val'
+    tst_file = '../../datasets/satimage/satimage.scale.tst'
     data_dims = 36
     num_cls = 6
 
@@ -72,9 +72,9 @@ if dset_name == "satimage":
 
 elif dset_name == "ijcnn1":
     
-    trn_file = '../datasets/ijcnn1/ijcnn1.trn'
-    val_file = '../datasets/ijcnn1/ijcnn1.val'
-    tst_file = '../datasets/ijcnn1/ijcnn1.tst'
+    trn_file = '../../datasets/ijcnn1/ijcnn1.trn'
+    val_file = '../../datasets/ijcnn1/ijcnn1.val'
+    tst_file = '../../datasets/ijcnn1/ijcnn1.tst'
     data_dims = 22
     num_cls = 2
     x_trn, y_trn = libsvm_file_load(trn_file, dim=data_dims)
