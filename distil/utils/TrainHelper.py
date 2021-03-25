@@ -47,6 +47,11 @@ class data_train:
 
     def get_acc_on_set(self, X_test, Y_test):
         
+        try:
+            self.clf
+        except:
+            self.clf = self.net
+
         if X_test is None:
             raise ValueError("Test data not present")
         
