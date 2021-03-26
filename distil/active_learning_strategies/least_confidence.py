@@ -37,7 +37,7 @@ class LeastConfidence(Strategy):
     
     
     .. math::
-        \\min{\\max{P}}  
+        \\min{(\\max{(P)})}  
     
 
     where P=[p1, p2,… pn]
