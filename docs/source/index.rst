@@ -9,11 +9,11 @@ Distil is a toolkit in PyTorch which provides access to different active learnin
 
 **Principles of DISTIL**:
 
-Minimal changes to add it to the existing training structure.
-Independent of the training strategy used.
-Achieving similar test accuracy with less amount of training data.
-Huge reduction in labelling cost and time.
-Access to various active learning strategies with just one line of code.
+#. Minimal changes to add it to the existing training structure.
+#. Independent of the training strategy used.
+#. Achieving similar test accuracy with less amount of training data.
+#. Huge reduction in labelling cost and time.
+#. Access to various active learning strategies with just one line of code.
 
 .. toctree::
    :maxdepth: 2
