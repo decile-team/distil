@@ -162,6 +162,48 @@
 <span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`</span>
 <span class="sd">    to include margin sampling dropout technique to select data points for active learning.</span>
 
+<span class="sd">    While least confidence only takes into consideration the maximum probability, margin sampling considers the difference between the confidence of first and the second most probable labels.  </span>
+<span class="sd">  </span>
+<span class="sd">    </span>
+<span class="sd">    .. list-table:: Example</span>
+<span class="sd">       :widths: 25 25 25 25</span>
+<span class="sd">       :header-rows: 1</span>
+
+<span class="sd">       * - Data Instances</span>
+<span class="sd">         - Label 1</span>
+<span class="sd">         - Label 2</span>
+<span class="sd">         - Label 3</span>
+<span class="sd">       * - p1</span>
+<span class="sd">         - 0.1</span>
+<span class="sd">         - 0.55</span>
+<span class="sd">         - 0.45</span>
+<span class="sd">       * - p2</span>
+<span class="sd">         - 0.2</span>
+<span class="sd">         - 0.3</span>
+<span class="sd">         - 0.5</span>
+<span class="sd">       * - p3</span>
+<span class="sd">         - 0.1</span>
+<span class="sd">         - 0.1</span>
+<span class="sd">         - 0.8</span>
+
+<span class="sd">    </span>
+<span class="sd">    From the above table, the difference between the probability first and the second labels for p1, p2, p3 are 0.1, 0.2, 0.7 respectively.</span>
+<span class="sd">    The margin sampling will query the true label for the data instance p1 since it has the smallest difference among all the different data instances. </span>
+
+<span class="sd">    Let :math:`p_i` represent probability for ith label and let there be n possible labels for data instance p. </span>
+<span class="sd">    Let :math:`\\max{(t)}` represent the maximum value in t and :math:`max1{(t)}` represent second maximum value in t then, mathematically it can be written as:</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\min{(\\max{(P)} - \\max1{(P)})} </span>
+
+<span class="sd">    </span>
+<span class="sd">    where P=[ :math:`p_1, p_2,… p_n`]</span>
+
+<span class="sd">    The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.</span>
+<span class="sd">    User can pass n_drop argument which denotes the number of times the probabilities will be calculated.</span>
+<span class="sd">    The final probability is calculated by averaging probabilities obtained in all iteraitons.    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X: numpy array</span>

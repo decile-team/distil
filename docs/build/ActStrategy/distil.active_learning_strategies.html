@@ -403,6 +403,43 @@ Batch size to be used inside strategy class (int, optional)</p>
 <p>Implementation of Entropy Sampling Dropout Strategy.
 This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
 to include entropy sampling with dropout technique to select data points for active learning.</p>
+<p>Least Confidence and Margin Sampling do not make use of all the label probabilities, whereas entropy sampling calculates entropy based on the hypothesised confidence scores for each label and queries for the true label of a data instance with the highest entropy.</p>
+<table class="colwidths-given docutils align-default" id="id7">
+<caption><span class="caption-text">Example</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Data Instances</p></th>
+<th class="head"><p>Entropy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>p1</p></td>
+<td><p>0.2</p></td>
+</tr>
+<tr class="row-odd"><td><p>p2</p></td>
+<td><p>0.5</p></td>
+</tr>
+<tr class="row-even"><td><p>p3</p></td>
+<td><p>0.7</p></td>
+</tr>
+</tbody>
+</table>
+<p>From the above table, Entropy sampling will query for the true label data instance p3 since it has the highest entropy.</p>
+<p>Let <span class="math notranslate nohighlight">\(p_i\)</span>  denote probability for ith label of data instance p, and let total possible labels be denoted by n, then Entropy for p is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[E = \sum{p_i*log(p_i)}\]</div>
+<p>where i=1,2,3….n
+Thus Entropy Selection can be mathematically shown as:</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>max{(E)}</p>
+</dd>
+</dl>
+<p>The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
+User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
+The final probability is calculated by averaging probabilities obtained in all iteraitons.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -556,8 +593,8 @@ tensorization while honouring the resourse constraits.</p></li>
 <p>Implementation of Least Confidence Sampling Strategy.
 This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code> to include least confidence technique to select data points for active learning.</p>
 <p>In this active learning strategy, the algorithm selects the data points for which the model has the lowest confidence while predicting its hypothesised label.</p>
-<table class="colwidths-given docutils align-default" id="id7">
-<caption><span class="caption-text">Example</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id8">
+<caption><span class="caption-text">Example</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 25%" />
@@ -590,10 +627,10 @@ This class extends <code class="xref py py-class docutils literal notranslate"><
 </tbody>
 </table>
 <p>From the above table, the label for instance p1 is 2 with a confidence of 0.55, for instance p2, the hypothesised label predicted is 3 with confidence of 0.5 and for p3 label 3 is predicted with a confidence of 0.8. Thus, according to least confidence strategy,  the point for which it will query for true label will be instance p2.</p>
-<p>Let pi represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:</p>
+<p>Let <span class="math notranslate nohighlight">\(p_i\)</span> represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:</p>
 <div class="math notranslate nohighlight">
 \[\min{(\max{(P)})}\]</div>
-<p>where P=[p1, p2,… pn]</p>
+<p>where P=:math:<cite>[p_1, p_2,… p_n]</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -639,6 +676,48 @@ Batch size to be used inside strategy class (int, optional)</p>
 <p>Implementation of Least Confidence Dropout Strategy.
 This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
 to include least confidence dropout technique to select data points for active learning.</p>
+<p>In this active learning strategy, the algorithm selects the data points for which the model has the lowest confidence while predicting its hypothesised label.</p>
+<table class="colwidths-given docutils align-default" id="id9">
+<caption><span class="caption-text">Example</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Data Instances</p></th>
+<th class="head"><p>Label 1</p></th>
+<th class="head"><p>Label 2</p></th>
+<th class="head"><p>Label 3</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>p1</p></td>
+<td><p>0.1</p></td>
+<td><p>0.55</p></td>
+<td><p>0.45</p></td>
+</tr>
+<tr class="row-odd"><td><p>p2</p></td>
+<td><p>0.2</p></td>
+<td><p>0.3</p></td>
+<td><p>0.5</p></td>
+</tr>
+<tr class="row-even"><td><p>p3</p></td>
+<td><p>0.1</p></td>
+<td><p>0.1</p></td>
+<td><p>0.8</p></td>
+</tr>
+</tbody>
+</table>
+<p>From the above table, the label for instance p1 is 2 with a confidence of 0.55, for instance p2, the hypothesised label predicted is 3 with confidence of 0.5 and for p3 label 3 is predicted with a confidence of 0.8. Thus, according to least confidence strategy,  the point for which it will query for true label will be instance p2.</p>
+<p>Let <span class="math notranslate nohighlight">\(p_i\)</span> represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:</p>
+<div class="math notranslate nohighlight">
+\[\min{(\max{(P)})}\]</div>
+<p>where P=:math:<cite>[p_1, p_2,… p_n]</cite></p>
+<p>The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
+User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
+The final probability is calculated by averaging probabilities obtained in all iteraitons.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -687,8 +766,8 @@ Dropout value to be used (int, optional)</p>
 This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
 to include margin sampling technique to select data points for active learning.</p>
 <p>While least confidence only takes into consideration the maximum probability, margin sampling considers the difference between the confidence of first and the second most probable labels.</p>
-<table class="colwidths-given docutils align-default" id="id8">
-<caption><span class="caption-text">Example</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id10">
+<caption><span class="caption-text">Example</span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 25%" />
@@ -772,6 +851,50 @@ Batch size to be used inside strategy class (int, optional)</p>
 <p>Implementation of Margin Sampling Dropout Strategy.
 This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
 to include margin sampling dropout technique to select data points for active learning.</p>
+<p>While least confidence only takes into consideration the maximum probability, margin sampling considers the difference between the confidence of first and the second most probable labels.</p>
+<table class="colwidths-given docutils align-default" id="id11">
+<caption><span class="caption-text">Example</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Data Instances</p></th>
+<th class="head"><p>Label 1</p></th>
+<th class="head"><p>Label 2</p></th>
+<th class="head"><p>Label 3</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>p1</p></td>
+<td><p>0.1</p></td>
+<td><p>0.55</p></td>
+<td><p>0.45</p></td>
+</tr>
+<tr class="row-odd"><td><p>p2</p></td>
+<td><p>0.2</p></td>
+<td><p>0.3</p></td>
+<td><p>0.5</p></td>
+</tr>
+<tr class="row-even"><td><p>p3</p></td>
+<td><p>0.1</p></td>
+<td><p>0.1</p></td>
+<td><p>0.8</p></td>
+</tr>
+</tbody>
+</table>
+<p>From the above table, the difference between the probability first and the second labels for p1, p2, p3 are 0.1, 0.2, 0.7 respectively.
+The margin sampling will query the true label for the data instance p1 since it has the smallest difference among all the different data instances.</p>
+<p>Let <span class="math notranslate nohighlight">\(p_i\)</span> represent probability for ith label and let there be n possible labels for data instance p.
+Let <span class="math notranslate nohighlight">\(\max{(t)}\)</span> represent the maximum value in t and <span class="math notranslate nohighlight">\(max1{(t)}\)</span> represent second maximum value in t then, mathematically it can be written as:</p>
+<div class="math notranslate nohighlight">
+\[\min{(\max{(P)} - \max1{(P)})}\]</div>
+<p>where P=[ <span class="math notranslate nohighlight">\(p_1, p_2,… p_n\)</span>]</p>
+<p>The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
+User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
+The final probability is calculated by averaging probabilities obtained in all iteraitons.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

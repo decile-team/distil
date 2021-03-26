@@ -8,6 +8,43 @@ class EntropySamplingDropout(Strategy):
     This class extends :class:`active_learning_strategies.strategy.Strategy`
     to include entropy sampling with dropout technique to select data points for active learning.
 
+    Least Confidence and Margin Sampling do not make use of all the label probabilities, whereas entropy sampling calculates entropy based on the hypothesised confidence scores for each label and queries for the true label of a data instance with the highest entropy.
+    
+
+    .. list-table:: Example
+       :widths: 50 50
+       :header-rows: 1
+
+       * - Data Instances
+         - Entropy
+       * - p1
+         - 0.2
+       * - p2
+         - 0.5
+       * - p3
+         - 0.7
+
+
+    From the above table, Entropy sampling will query for the true label data instance p3 since it has the highest entropy.
+
+    Let :math:`p_i`  denote probability for ith label of data instance p, and let total possible labels be denoted by n, then Entropy for p is calculated as:
+    
+
+    .. math::
+        E = \\sum{p_i*log(p_i)}
+    
+   
+    where i=1,2,3....n   
+    Thus Entropy Selection can be mathematically shown as:
+
+
+    ..math::    
+        \\max{(E)}     
+
+    The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
+    User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
+    The final probability is calculated by averaging probabilities obtained in all iteraitons.    
+
     Parameters
     ----------
     X: numpy array

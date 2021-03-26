@@ -33,14 +33,14 @@ class LeastConfidence(Strategy):
     
     From the above table, the label for instance p1 is 2 with a confidence of 0.55, for instance p2, the hypothesised label predicted is 3 with confidence of 0.5 and for p3 label 3 is predicted with a confidence of 0.8. Thus, according to least confidence strategy,  the point for which it will query for true label will be instance p2.
 
-    Let pi represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:
+    Let :math:`p_i` represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:
     
     
     .. math::
         \\min{(\\max{(P)})}  
     
 
-    where P=[p1, p2,… pn]
+    where P=:math:`[p_1, p_2,… p_n]`
     
     Parameters
     ----------
