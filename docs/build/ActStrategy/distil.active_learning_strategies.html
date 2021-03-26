@@ -351,9 +351,13 @@ to include entropy sampling technique to select data points for active learning.
 <p>From the above table, Entropy sampling will query for the true label data instance p3 since it has the highest entropy.</p>
 <p>Let <span class="math notranslate nohighlight">\(p_i\)</span>  denote probability for ith label of data instance p, and let total possible labels be denoted by n, then Entropy for p is calculated as:</p>
 <div class="math notranslate nohighlight">
-\[E = \sum{p_i*log(p_i)}
-max_{(E)}\]</div>
-<p>where i=1,2,3….n</p>
+\[E = \sum{p_i*log(p_i)}\]</div>
+<p>where i=1,2,3….n
+Thus Entropy Selection can be mathematically shown as:</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>max{(E)}</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

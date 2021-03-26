@@ -32,9 +32,14 @@ class EntropySampling(Strategy):
 
     .. math::
         E = \\sum{p_i*log(p_i)}
-        max_{(E)}    
+    
+   
+    where i=1,2,3....n   
+    Thus Entropy Selection can be mathematically shown as:
 
-    where i=1,2,3....n    
+
+    ..math::    
+        \\max{(E)}     
     
     
     Parameters
