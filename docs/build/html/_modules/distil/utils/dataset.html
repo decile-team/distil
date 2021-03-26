@@ -32,6 +32,7 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -237,13 +238,15 @@
 <span class="sd">        Test labels</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Introduce a training transform that provides generalization in training to the test data.</span>
     <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR10&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR10&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span>
     <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span><span class="p">))</span>
     <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span>
     <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_te</span><span class="o">.</span><span class="n">targets</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span>
+
     <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
 </pre></div>
 

@@ -32,6 +32,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -214,6 +215,26 @@ class:<cite>active_learning_strategies.strategy.Strategy</cite>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>chosen</strong> – List of selected data point indexes with respect to unlabeled_x</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="distil.active_learning_strategies.badge.BADGE.select_per_batch">
+<code class="sig-name descname">select_per_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em>, <em class="sig-param"><span class="n">batch_size</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/badge.html#BADGE.select_per_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.badge.BADGE.select_per_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select points to label by using per-batch BADGE strategy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>budget</strong> (<em>int</em>) – Number of indices to be selected from unlabeled set</p></li>
+<li><p><strong>batch_size</strong> (<em>TYPE</em>) – Size of batches to form</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chosen</strong> – List of selected data point indices with respect to unlabeled_x</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>list</p>
@@ -495,8 +516,55 @@ tensorization while honouring the resourse constraits.</p></li>
 <em class="property">class </em><code class="sig-prename descclassname">distil.active_learning_strategies.least_confidence.</code><code class="sig-name descname">LeastConfidence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">unlabeled_x</span></em>, <em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">nclasses</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/least_confidence.html#LeastConfidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.least_confidence.LeastConfidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">distil.active_learning_strategies.strategy.Strategy</span></code></p>
 <p>Implementation of Least Confidence Sampling Strategy.
-This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code>
-to include least confidence technique to select data points for active learning.</p>
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">active_learning_strategies.strategy.Strategy</span></code> to include least confidence technique to select data points for active learning.</p>
+<p>In this active learning strategy, the algorithm selects the data points for which the model has the lowest confidence while predicting its hypothesised label.
+.. list-table:: Example</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">widths</dt>
+<dd class="field-odd"><p>25 25 25 25</p>
+</dd>
+<dt class="field-even">header-rows</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><ul>
+<li><p>Data Instances</p></li>
+<li><p>Label 1</p></li>
+<li><p>Label 2</p></li>
+<li><p>Label 3</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>p1</p></li>
+<li><p>0.1</p></li>
+<li><p>0.55</p></li>
+<li><p>0.45</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>p2</p></li>
+<li><p>0.2</p></li>
+<li><p>0.3</p></li>
+<li><p>0.5</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>p3</p></li>
+<li><p>0.1</p></li>
+<li><p>0.1</p></li>
+<li><p>0.8</p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>From the above table, the label for instance p1 is 2 with a confidence of 0.55, for instance p2, the hypothesised label predicted is 3 with confidence of 0.5 and for p3 label 3 is predicted with a confidence of 0.8. Thus, according to least confidence strategy,  the point for which it will query for true label will be instance p2.</p>
+<p>Let pi represent probability for ith label and let there be n possible labels for data
+instance p then, mathematically it can be written as:</p>
+<div class="math notranslate nohighlight">
+\[\min_{\max_{P}}\]</div>
+<p>where P=[p1, p2,… pn]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

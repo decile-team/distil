@@ -33,7 +33,9 @@ class LeastConfidence(Strategy):
     Let pi represent probability for ith label and let there be n possible labels for data
     instance p then, mathematically it can be written as:
     
-    LC: MIN(MAX(P))         where P=[p1, p2,… pn]
+    .. math::
+        \\min_{\\max_{P}}  
+    where P=[p1, p2,… pn]
     
     Parameters
     ----------
