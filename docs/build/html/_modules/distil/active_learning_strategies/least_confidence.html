@@ -161,34 +161,39 @@
 <span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy` to include least confidence technique to select data points for active learning.</span>
 <span class="sd">    </span>
 <span class="sd">    In this active learning strategy, the algorithm selects the data points for which the model has the lowest confidence while predicting its hypothesised label.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
 <span class="sd">    .. list-table:: Example</span>
-<span class="sd">        :widths: 25 25 25 25</span>
-<span class="sd">        :header-rows: 1</span>
+<span class="sd">       :widths: 25 25 25 25</span>
+<span class="sd">       :header-rows: 1</span>
 
-<span class="sd">        * - Data Instances</span>
-<span class="sd">          - Label 1</span>
-<span class="sd">          - Label 2</span>
-<span class="sd">          - Label 3</span>
-<span class="sd">        * - p1</span>
-<span class="sd">          - 0.1</span>
-<span class="sd">          - 0.55</span>
-<span class="sd">          - 0.45</span>
-<span class="sd">        * - p2</span>
-<span class="sd">          - 0.2</span>
-<span class="sd">          - 0.3</span>
-<span class="sd">          - 0.5</span>
-<span class="sd">        * - p3</span>
-<span class="sd">          - 0.1</span>
-<span class="sd">          - 0.1</span>
-<span class="sd">          - 0.8</span>
+<span class="sd">       * - Data Instances</span>
+<span class="sd">         - Label 1</span>
+<span class="sd">         - Label 2</span>
+<span class="sd">         - Label 3</span>
+<span class="sd">       * - p1</span>
+<span class="sd">         - 0.1</span>
+<span class="sd">         - 0.55</span>
+<span class="sd">         - 0.45</span>
+<span class="sd">       * - p2</span>
+<span class="sd">         - 0.2</span>
+<span class="sd">         - 0.3</span>
+<span class="sd">         - 0.5</span>
+<span class="sd">       * - p3</span>
+<span class="sd">         - 0.1</span>
+<span class="sd">         - 0.1</span>
+<span class="sd">         - 0.8</span>
 
+<span class="sd">    </span>
 <span class="sd">    From the above table, the label for instance p1 is 2 with a confidence of 0.55, for instance p2, the hypothesised label predicted is 3 with confidence of 0.5 and for p3 label 3 is predicted with a confidence of 0.8. Thus, according to least confidence strategy,  the point for which it will query for true label will be instance p2.</span>
 
-<span class="sd">    Let pi represent probability for ith label and let there be n possible labels for data</span>
-<span class="sd">    instance p then, mathematically it can be written as:</span>
+<span class="sd">    Let pi represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:</span>
+<span class="sd">    </span>
 <span class="sd">    </span>
 <span class="sd">    .. math::</span>
-<span class="sd">        \\min_{\\max_{P}}  </span>
+<span class="sd">        \\min{\\max{P}}  </span>
+<span class="sd">    </span>
+
 <span class="sd">    where P=[p1, p2,… pn]</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
