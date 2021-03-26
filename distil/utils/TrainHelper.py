@@ -1,13 +1,7 @@
-import pandas as pd 
-import numpy as np
-from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import torch.nn.functional as F
 from torch import nn
-from torchvision import transforms
 import torch
 import torch.optim as optim
-from torch.autograd import Variable
 import sys
 sys.path.append('../')  
 
@@ -40,6 +34,9 @@ class data_train:
 
         if 'max_accuracy' not in args:
             self.args['max_accuracy'] = 0.95
+            
+        if 'criterion' not in args:
+            self.args['criterion'] = nn.CrossEntropyLoss()
 
     def update_index(self, idxs_lb):
         self.idxs_lb = idxs_lb
@@ -48,19 +45,86 @@ class data_train:
     	self.X = X
     	self.Y = Y
 
-    def _train(self, epoch, loader_tr, optimizer):
+    def get_acc_on_set(self, X_test, Y_test):
+        
+        try:
+            self.clf
+        except:
+            self.clf = self.net
+
+        if X_test is None:
+            raise ValueError("Test data not present")
+        
+        if Y_test is None:
+            raise ValueError("Test labels not present")
+            
+        if X_test.shape[0] != Y_test.shape[0]:
+            raise ValueError("X_test has {self.X_test.shape[0]} values but {self.Y_test.shape[0]} labels")
+        
+        if 'batch_size' in self.args:
+            batch_size = self.args['batch_size']
+        else:
+            batch_size = 1 
+        
+        loader_te = DataLoader(self.handler(X_test, Y_test, False, use_test_transform=True), shuffle=False, pin_memory=True, batch_size=batch_size)
+        self.clf.eval()
+        accFinal = 0.
+
+        with torch.no_grad():
+            for batch_id, (x,y,idxs) in enumerate(loader_te):
+                if self.use_cuda:
+                    self.clf = self.clf.cuda()
+                    x, y = x.cuda(), y.cuda()
+                out = self.clf(x)
+                accFinal += torch.sum(1.0*(torch.max(out,1)[1] == y)).item() #.data.item()
+
+        return accFinal / len(loader_te.dataset.X)
+
+    def _train_weighted(self, epoch, loader_tr, optimizer, gradient_weights):
         self.clf.train()
         accFinal = 0.
+        criterion = self.args['criterion']
+        criterion.reduction = "none"
 
         for batch_id, (x, y, idxs) in enumerate(loader_tr):
             if self.use_cuda:
-                x, y = Variable(x.cuda()), Variable(y.cuda())
-            else:
-                x, y = Variable(x), Variable(y)
+                x, y = x.cuda(), y.cuda()
+                gradient_weights = gradient_weights.cuda()
+
             optimizer.zero_grad()
             out = self.clf(x)
-            loss = F.cross_entropy(out, y.long())
-            accFinal += torch.sum((torch.max(out,1)[1] == y).float()).data.item()
+
+            # Modify the loss function to apply weights before reducing to a mean
+            loss = criterion(out, y.long())
+
+            # Perform a dot product with the loss vector and the weight vector, then divide by batch size.
+            weighted_loss = torch.dot(loss, gradient_weights[idxs])
+            weighted_loss = torch.div(weighted_loss, len(idxs))
+
+            accFinal += torch.sum(torch.eq(torch.max(out,1)[1],y)).item() #.data.item()
+
+            # Backward now does so on the weighted loss, not the regular mean loss
+            weighted_loss.backward() 
+
+            # clamp gradients, just in case
+            # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
+
+            optimizer.step()
+        return accFinal / len(loader_tr.dataset.X), weighted_loss
+
+    def _train(self, epoch, loader_tr, optimizer):
+        self.clf.train()
+        accFinal = 0.
+        criterion = self.args['criterion']
+
+        for batch_id, (x, y, idxs) in enumerate(loader_tr):
+            if self.use_cuda:
+                x, y = x.cuda(), y.cuda()
+
+            optimizer.zero_grad()
+            out = self.clf(x)
+            loss = criterion(out, y.long())
+            accFinal += torch.sum((torch.max(out,1)[1] == y).float()).item()
             loss.backward()
 
             # clamp gradients, just in case
@@ -70,11 +134,11 @@ class data_train:
         return accFinal / len(loader_tr.dataset.X), loss
 
     
-    def train(self):
+    def train(self, gradient_weights=None):
 
         print('Training..')
         def weight_reset(m):
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+            if hasattr(m, 'reset_parameters'):
                 m.reset_parameters()
 
         train_logs = []
@@ -94,17 +158,26 @@ class data_train:
                 else:
                     self.clf =  self.net.apply(weight_reset)
 
-        optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
+        optimizer = optim.SGD(self.clf.parameters(), lr = self.args['lr'], momentum=0.9, weight_decay=5e-4)
+        lr_sched = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epoch)
+        
         if 'batch_size' in self.args:
             batch_size = self.args['batch_size']
         else:
             batch_size = 1
 
-        loader_tr = DataLoader(self.handler(self.X, self.Y, False), batch_size=batch_size)
+        # Set shuffle to true to encourage stochastic behavior for SGD
+        loader_tr = DataLoader(self.handler(self.X, self.Y, False), batch_size=batch_size, shuffle=True, pin_memory=True)
         epoch = 1
         accCurrent = 0
         while accCurrent < self.args['max_accuracy'] and epoch < n_epoch: 
-            accCurrent, lossCurrent = self._train(epoch, loader_tr, optimizer)
+            
+            if gradient_weights is None:
+                accCurrent, lossCurrent = self._train(epoch, loader_tr, optimizer)
+            else:
+                accCurrent, lossCurrent = self._train_weighted(epoch, loader_tr, optimizer, gradient_weights)
+            lr_sched.step()
+            
             epoch += 1
             if(self.args['isverbose']):
                 print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
@@ -115,7 +188,7 @@ class data_train:
                 self.clf = self.net.apply(weight_reset)
                 optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
 
-        print('Epoch:', str(epoch),'Training accuracy:',round(accCurrent, 3), flush=True)
+        print('Epoch:', str(epoch), 'Training accuracy:', round(accCurrent, 3), flush=True)
         if self.args['islogs']:
             return self.clf, train_logs
         else:

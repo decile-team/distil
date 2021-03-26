@@ -103,31 +103,37 @@ class DataHandler_CIFAR10(Dataset):
         True if loading data without labels, False otherwise
     """
 
-    def __init__(self, X, Y=None, select=True):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False):
         """
         Constructor
         """
         self.select = select
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))])
+        self.use_test_transform=use_test_transform
+        self.training_gen_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+        self.test_gen_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
         if not self.select:
             self.X = X
             self.Y = Y
-            self.transform = transform
         else:
             self.X = X
-            self.transform = transform
 
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
             x = Image.fromarray(x)
-            x = self.transform(x)
+            if self.use_test_transform:
+                x = self.test_gen_transform(x)
+            else:
+                x = self.training_gen_transform(x)
             return x, y, index
 
         else:
             x = self.X[index]
             x = Image.fromarray(x)
-            x = self.transform(x)
+            if self.use_test_transform:
+                x = self.test_gen_transform(x)
+            else:
+                x = self.training_gen_transform(x)
             return x, index
 
     def __len__(self):
