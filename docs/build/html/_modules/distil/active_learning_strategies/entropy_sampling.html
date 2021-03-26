@@ -162,6 +162,35 @@
 <span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`</span>
 <span class="sd">    to include entropy sampling technique to select data points for active learning.</span>
 
+<span class="sd">    Least Confidence and Margin Sampling do not make use of all the label probabilities, whereas entropy sampling calculates entropy based on the hypothesised confidence scores for each label and queries for the true label of a data instance with the highest entropy.</span>
+<span class="sd">    </span>
+
+<span class="sd">    .. list-table:: Example</span>
+<span class="sd">       :widths: 50 50</span>
+<span class="sd">       :header-rows: 1</span>
+
+<span class="sd">       * - Data Instances</span>
+<span class="sd">         - Entropy</span>
+<span class="sd">       * - p1</span>
+<span class="sd">         - 0.2</span>
+<span class="sd">       * - p2</span>
+<span class="sd">         - 0.5</span>
+<span class="sd">       * - p3</span>
+<span class="sd">         - 0.7</span>
+
+
+<span class="sd">    From the above table, Entropy sampling will query for the true label data instance p3 since it has the highest entropy.</span>
+
+<span class="sd">    Let :math:`p_i`  denote probability for ith label of data instance p, and let total possible labels be denoted by n, then Entropy for p is calculated as:</span>
+<span class="sd">    </span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        E = \\sum{p_i*log(p_i)}</span>
+<span class="sd">        max_{(E)}    </span>
+
+<span class="sd">    where i=1,2,3....n    </span>
+<span class="sd">    </span>
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X: numpy array</span>

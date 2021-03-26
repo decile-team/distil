@@ -163,6 +163,21 @@
 <span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`</span>
 <span class="sd">    to include entropy sampling technique to select data points for active learning.</span>
 
+<span class="sd">    In KMeans Sampling selection strategy, the last layer embeddings are calculated for all the unlabeled data points.</span>
+<span class="sd">    Then the KMeans clustering algorithm is run over these embeddings with the number of clusters equal to the budget.</span>
+<span class="sd">    Then the distance is calculated for all the points from their respective centers. </span>
+<span class="sd">    From each cluster, the point closest to the center is selected to be labeled for the next iteration. </span>
+<span class="sd">    Since the number of centers are equal to the budget, selecting one point from each cluster satisfies the total number of data points to be selected in one iteration.</span>
+
+<span class="sd">    Let :math:`d_i` represent distance of a point from the center of a cluster and D represent the set of distances for all the points that belong to a particular cluster, then Mathematically,</span>
+
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\min{(D)}</span>
+
+
+<span class="sd">    where :math:`D=[d_1,d_2...d_n]` where n is the number of points in a given cluster  </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X: numpy array</span>
