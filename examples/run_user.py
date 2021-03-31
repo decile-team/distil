@@ -29,7 +29,7 @@ def init_weights(m):
 #User Execution
 data_path = '../../datasets/iris.csv'
 test_path = '../../datasets/iris_test.csv'
-train_args = {'n_epoch':150, 'lr':float(0.001), 'batch_size':5}  #Training args, Different args than strategy_args
+train_args = {'n_epoch':150, 'lr':float(0.001), 'batch_size':5, 'optimizer':'sgd'}  #Training args, Different args than strategy_args
 nclasses = 3    ##Number of unique classes
 n_rounds = 11    ##Number of rounds to run active learning
 budget = 10 		##Number of new data points after every iteration

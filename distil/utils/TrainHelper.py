@@ -25,6 +25,9 @@ class data_train:
         
         if 'islogs' not in args:
             self.args['islogs'] = False
+
+        if 'optimizer' not in args:
+            self.args['optimizer'] = 'sgd'
         
         if 'isverbose' not in args:
             self.args['isverbose'] = False
@@ -34,6 +37,12 @@ class data_train:
 
         if 'max_accuracy' not in args:
             self.args['max_accuracy'] = 0.95
+
+        if 'min_diff_acc' not in args: #Threshold to monitor for
+            self.args['min_diff_acc'] = 0.001
+
+        if 'window_size' not in args:  #Window for monitoring accuracies
+            self.args['window_size'] = 10
             
         if 'criterion' not in args:
             self.args['criterion'] = nn.CrossEntropyLoss()
@@ -133,7 +142,18 @@ class data_train:
             optimizer.step()
         return accFinal / len(loader_tr.dataset.X), loss
 
-    
+    def check_saturation(self, acc_monitor):
+        
+        saturate = True
+
+        for i in range(len(acc_monitor)):
+            for j in range(i+1, len(acc_monitor)):
+                if acc_monitor[j] - acc_monitor[i] >= self.args['min_diff_acc']:
+                    saturate = False
+                    break
+
+        return saturate
+
     def train(self, gradient_weights=None):
 
         print('Training..')
@@ -158,8 +178,13 @@ class data_train:
                 else:
                     self.clf =  self.net.apply(weight_reset)
 
-        optimizer = optim.SGD(self.clf.parameters(), lr = self.args['lr'], momentum=0.9, weight_decay=5e-4)
-        lr_sched = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epoch)
+        if self.args['optimizer'] == 'sgd':
+            optimizer = optim.SGD(self.clf.parameters(), lr = self.args['lr'], momentum=0.9, weight_decay=5e-4)
+            lr_sched = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epoch)
+        
+        elif self.args['optimizer'] == 'adam':
+            optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
+
         
         if 'batch_size' in self.args:
             batch_size = self.args['batch_size']
@@ -170,25 +195,46 @@ class data_train:
         loader_tr = DataLoader(self.handler(self.X, self.Y, False), batch_size=batch_size, shuffle=True, pin_memory=True)
         epoch = 1
         accCurrent = 0
-        while accCurrent < self.args['max_accuracy'] and epoch < n_epoch: 
+        is_saturated = False
+        acc_monitor = []
+
+        while (accCurrent < self.args['max_accuracy']) and (epoch < n_epoch) and (not is_saturated): 
             
             if gradient_weights is None:
                 accCurrent, lossCurrent = self._train(epoch, loader_tr, optimizer)
             else:
                 accCurrent, lossCurrent = self._train_weighted(epoch, loader_tr, optimizer, gradient_weights)
-            lr_sched.step()
+            
+            acc_monitor.append(accCurrent)
+
+            if self.args['optimizer'] == 'sgd':
+                lr_sched.step()
             
             epoch += 1
             if(self.args['isverbose']):
                 print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
 
+            #Stop training if not converging
+            if len(acc_monitor) >= self.args['window_size']:
+
+                is_saturated = self.check_saturation(acc_monitor)
+                del acc_monitor[0]
+
             log_string = 'Epoch:' + str(epoch) + '- training accuracy:'+str(accCurrent)+'- training loss:'+str(lossCurrent)
             train_logs.append(log_string)
             if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging
                 self.clf = self.net.apply(weight_reset)
-                optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
+                
+                if self.args['optimizer'] == 'sgd':
+
+                    optimizer = optim.SGD(self.clf.parameters(), lr = self.args['lr'], momentum=0.9, weight_decay=5e-4)
+                    lr_sched = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epoch)
+
+                else:
+                    optimizer = optim.Adam(self.clf.parameters(), lr = self.args['lr'], weight_decay=0)
 
         print('Epoch:', str(epoch), 'Training accuracy:', round(accCurrent, 3), flush=True)
+
         if self.args['islogs']:
             return self.clf, train_logs
         else:
