@@ -27,9 +27,10 @@
 </p>
 
 <h3 align="center">
-<p>Label only the required data and reduce labeling cost and time.
+<p>Bring down your labeling cost and time to as low as 20%!
 </h3>
 
+DISTIL is an active learning toolkit and supports all the state of art selection strategies. DISTIL's main focus is to decouple the training loop from the active learning module, thus providing maximum flexibility to the user to control the training procedure. It allows to incorporate active learning with minimal changes to the existing code. DISTIL provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
 
 # In this README
 - [What is DISTIL?](#what-is-distil)
@@ -53,6 +54,13 @@ DISTIL implements a number of state of the art active learning algorithms. The f
 <p align="center"><i><b>Reducing Energy Requirement</b></i></p>
 <p align="center"><i><b>Reducing Resource (GPU) Requirement and Costs</b></i></p>
 
+We are continuously incorporating newer and better selection strategies into DISTIL. Some of the features of DISTIL includes:
+- Minimal changes to add it to the existing training structure.
+- Independent of the training strategy used.
+- Achieving similar test accuracy with less amount of training data.
+- Huge reduction in labelling cost and time.
+- Access to various active learning strategies with just one line of code.
+
 Some of the algorithms currently implemented with DISTIL include:
 
 - [Uncertainty Sampling [1]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.entropy_sampling)
@@ -69,13 +77,6 @@ Some of the algorithms currently implemented with DISTIL include:
 - [Kmeans Sampling [5]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.kmeans_sampling)
 - [Adversarial Bim](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.adversarial_bim)
 - [Baseline Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.baseline_sampling)
-
-We are continuously incorporating newer and better selection strategies into DISTIL. Some of the features of DISTIL includes:
-- Minimal changes to add it to the existing training structure.
-- Independent of the training strategy used.
-- Achieving similar test accuracy with less amount of training data.
-- Huge reduction in labelling cost and time.
-- Access to various active learning strategies with just one line of code.
 
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
