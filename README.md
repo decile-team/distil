@@ -48,11 +48,9 @@ DISTIL is an active learning toolkit and supports all the state of art selection
 ## What is DISTIL?
 DISTIL implements a number of state of the art active learning algorithms. The following are the goals that DISTIL tries to acheive:
 <p align="center"><i><b>Reducing Labeling Time</b></i></p>
-<p align="center"><i><b>Reducing Labeling Man Power & Costs</b></i></p>
+<p align="center"><i><b>Reducing Labeling Effort & Costs</b></i></p>
 <p align="center"><i><b>Reducing Amount of Data to be Labeled</b></i></p>
-<p align="center"><i><b>Reducing End to End Training Time</b></i></p>
-<p align="center"><i><b>Reducing Energy Requirement</b></i></p>
-<p align="center"><i><b>Reducing Resource (GPU) Requirement and Costs</b></i></p>
+<p align="center"><i><b>Reducing Deal with imbalance, OOD data, and distribution shift</b></i></p>
 
 We are continuously incorporating newer and better selection strategies into DISTIL. Some of the features of DISTIL includes:
 - Minimal changes to add it to the existing training structure.
