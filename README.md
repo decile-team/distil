@@ -27,13 +27,14 @@
 </p>
 
 <h3 align="center">
-<p>Bring down your labeling cost and time to as low as 20%!
+<p>Cut down your labeling cost and time 5x-10x times!
 </h3>
 
 DISTIL is an active learning toolkit and supports all the state of art selection strategies. DISTIL's main focus is to decouple the training loop from the active learning module, thus providing maximum flexibility to the user to control the training procedure. It allows to incorporate active learning with minimal changes to the existing code. DISTIL provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
 
 # In this README
 - [What is DISTIL?](#what-is-distil)
+- [What does DISTIL offer that other's don't?](#what-does-distil-offer-that-others-dont)
 - [Where can DISTIL be used?](#where-can-distil-be-used)
 - [Installation](#installation)
 - [Package Requirements](#package-requirements)
@@ -67,7 +68,7 @@ DISTIL implements a number of state of the art active learning algorithms. The f
 ```
 git clone https://github.com/decile-team/distil.git
 cd distil
-
+python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
 ```
 
 Some of the algorithms currently implemented with DISTIL include:
@@ -121,22 +122,18 @@ Learn more about distil at our [documentation](https://decile-team-distil.readth
 
 ## Evaluation of Active Learning Strategies
 ### Experimentation Method
-The model was first trained on randomly selected n points where n is the budget of the experiment. For each set of new points added, the model was trained from scratch till the training accuracy crossed 95%.
+The model was first trained on randomly selected n points where n is the budget of the experiment. For each set of new points added, the model was trained from scratch till the training accuracy crossed the max accuracy threshold.
 
 ### CIFAR10
-Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (30%)
-
-![CIFAR10 Plot](./experiment_plots/cifar10_plot.png?raw=true)
+Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
 
 | Strategy | Accuracy |
 | --- | --- |
-| BADGE | 0.699 | 
-| FASS | 0.691 | 
-| Entropy Sampling | 0.688 | 
-| Glister | 0.676 | 
-| Random Sampling | 0.648 | 
-| Margin Sampling | 0.638 | 
-| Coreset | 0.632 | 
+| BADGE | 0.935 | 
+| FASS | 0.936 | 
+| Entropy Sampling | 0.935 | 
+| Glister | 0.934 | 
+| Random Sampling | 0.942 |
 
 ### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)

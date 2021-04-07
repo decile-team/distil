@@ -82,6 +82,7 @@ class TrainClassifier:
 			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 			handler = DataHandler_CIFAR10
 			y_test = y_test.numpy()
+			y = y.numpy()
 
 		elif data_config['name'] == 'mnist':
 			data_set_name = 'MNIST'
@@ -100,6 +101,7 @@ class TrainClassifier:
 			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 			handler = DataHandler_FASHION_MNIST
 			y_test = y_test.numpy()
+			y = y.numpy()
 
 		elif data_config['name'] == 'svhn':
 			
@@ -108,6 +110,7 @@ class TrainClassifier:
 			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 			handler = DataHandler_SVHN
 			y_test = y_test.numpy()
+			y = y.numpy()
 
 		elif data_config['name'] == 'cifar100':
 			
@@ -116,6 +119,7 @@ class TrainClassifier:
 			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 			handler = DataHandler_CIFAR100
 			y_test = y_test.numpy()
+			y = y.numpy()
 
 		elif data_config['name'] == 'stl10':
 			
@@ -124,6 +128,7 @@ class TrainClassifier:
 			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
 			handler = DataHandler_STL10
 			y_test = y_test.numpy()
+			y = y.numpy()
 
 		elif data_config['name'] == 'satimage':
 
@@ -190,9 +195,7 @@ class TrainClassifier:
 		start = self.config['active_learning']['initial_points']
 		n_rounds = self.config['active_learning']['rounds']
 		nclasses = self.config['model']['target_classes']
-		strategy_args = self.config['active_learning']['strategy_args']
-		lr = strategy_args['lr']
-		strategy_args['lr'] = float(lr)  
+		strategy_args = self.config['active_learning']['strategy_args'] 
 	    
 		nSamps = np.shape(X)[0]
 		np.random.seed(42)
@@ -226,7 +229,7 @@ class TrainClassifier:
 		elif selected_strat == 'random_sampling':
 		    strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 		elif selected_strat == 'fass':
-			strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+			strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 		elif selected_strat == 'bald_dropout':
 		    strategy = BALDDropout(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 		elif selected_strat == 'adversarial_bim':
