@@ -35,6 +35,7 @@ DISTIL is an active learning toolkit and supports all the state of art selection
 # In this README
 - [What is DISTIL?](#what-is-distil)
 - [What does DISTIL offer that other's don't?](#what-does-distil-offer-that-others-dont)
+- [Starting with DISTIL](#starting-with-distil)
 - [Where can DISTIL be used?](#where-can-distil-be-used)
 - [Installation](#installation)
 - [Package Requirements](#package-requirements)
