@@ -57,8 +57,8 @@ nSamps, dim = np.shape(X)
 net = TwoLayerNet(dim, nclasses, dim*2)
 net.apply(init_weights)
 
-strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'Full'} 
-strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+# strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'Full'} 
+# strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
 # strategy = BADGE(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
@@ -74,8 +74,8 @@ strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, stra
 # strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = BALDDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
-# strategy_args = {'batch_size' : 1, 'tor':1e-4}
-# strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+strategy_args = {'batch_size' : 1, 'tor':1e-4}
+strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
 # strategy_args = {'batch_size' : 5}
 # strategy = AdversarialBIM(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)

@@ -12,15 +12,17 @@ from sklearn.preprocessing import StandardScaler
 import argparse
 sys.path.append('./')
 from distil.utils.models.resnet import ResNet18
-from distil.utils.DataHandler import DataHandler_Points,DataHandler_MNIST, DataHandler_CIFAR10
+from distil.utils.DataHandler import DataHandler_Points,DataHandler_MNIST, DataHandler_CIFAR10, \
+										DataHandler_FASHION_MNIST
 from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
-                            LeastConfidence, MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, \
+                            LeastConfidence, MarginSampling, CoreSet, FASS, AdversarialBIM, AdversarialDeepFool, \
                             KMeansSampling, BaselineSampling, BALDDropout
 from distil.utils.models.simpleNN_net import TwoLayerNet
 from distil.utils.dataset import get_dataset
 from distil.utils.TrainHelper import data_train
 from distil.utils.ConfigHelper import read_config_file
 import time
+import pickle
 
 class TrainClassifier:
 	
@@ -31,10 +33,14 @@ class TrainClassifier:
 	def getModel(self, model_config):
 
 		if model_config['architecture'] == 'resnet18':
-			if 'target_classes' in model_config:
-				net = ResNet18(model_config['target_classes'])
+
+			if ('target_classes' in model_config) and ('channel' in model_config):
+				net = ResNet18(num_classes = model_config['target_classes'], channels = model_config['channel'])
+			elif 'target_classes' in model_config:
+				net = ResNet18(num_classes = model_config['target_classes'])
 			else:
 				net = ResNet18()
+		
 		elif model_config['architecture'] == 'two_layer_net':
 			net = TwoLayerNet(model_config['input_dim'], model_config['target_classes'], model_config['hidden_units_1'])
 
@@ -87,11 +93,43 @@ class TrainClassifier:
 			X_test = X_test.numpy()
 			y_test = y_test.numpy()
 
+		elif data_config['name'] == 'fmnist':
+			
+			data_set_name = 'FASHION_MNIST'
+			download_path = './downloaded_data/'
+			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
+			handler = DataHandler_FASHION_MNIST
+			y_test = y_test.numpy()
+
+		elif data_config['name'] == 'svhn':
+			
+			data_set_name = 'SVHN'
+			download_path = './downloaded_data/'
+			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
+			handler = DataHandler_SVHN
+			y_test = y_test.numpy()
+
+		elif data_config['name'] == 'cifar100':
+			
+			data_set_name = 'CIFAR100'
+			download_path = './downloaded_data/'
+			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
+			handler = DataHandler_CIFAR100
+			y_test = y_test.numpy()
+
+		elif data_config['name'] == 'stl10':
+			
+			data_set_name = 'STL10'
+			download_path = './downloaded_data/'
+			X, y, X_test, y_test = get_dataset(data_set_name, download_path)
+			handler = DataHandler_STL10
+			y_test = y_test.numpy()
+
 		elif data_config['name'] == 'satimage':
 
-		    trn_file = './datasets/satimage/satimage.scale.trn'
-		    val_file = './datasets/satimage/satimage.scale.val'
-		    tst_file = './datasets/satimage/satimage.scale.tst'
+		    trn_file = '../datasets/satimage/satimage.scale.trn'
+		    val_file = '../datasets/satimage/satimage.scale.val'
+		    tst_file = '../datasets/satimage/satimage.scale.tst'
 		    data_dims = 36
 		    num_cls = 6
 
@@ -108,9 +146,9 @@ class TrainClassifier:
 
 		elif data_config['name'] == 'ijcnn1':
 			
-			trn_file = './datasets/ijcnn1/ijcnn1.trn'
-			val_file = './datasets/ijcnn1/ijcnn1.val'
-			tst_file = './datasets/ijcnn1/ijcnn1.tst'
+			trn_file = '../datasets/ijcnn1/ijcnn1.trn'
+			val_file = '../datasets/ijcnn1/ijcnn1.val'
+			tst_file = '../datasets/ijcnn1/ijcnn1.tst'
 			data_dims = 22
 			num_cls = 2
 			
@@ -187,6 +225,8 @@ class TrainClassifier:
 		    strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 		elif selected_strat == 'random_sampling':
 		    strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
+		elif selected_strat == 'fass':
+			strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 		elif selected_strat == 'bald_dropout':
 		    strategy = BALDDropout(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 		elif selected_strat == 'adversarial_bim':
@@ -260,6 +300,18 @@ class TrainClassifier:
 			    self.write_logs(logs, save_location, rd)
 
 		print('Training Completed!')
+		with open('./final_model.pkl', 'wb') as save_file:
+			pickle.dump(clf.state_dict(), save_file)
+		print('Model Saved!')
+
+if __name__=='__main__':
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--config_path', required=True, help="Path to the config file")
+  args = parser.parse_args()
+  tc = TrainClassifier(args.config_path)
+  tc.train_classifier()
+
 
 # tc = TrainClassifier('./configs/config_2lnet_satimage_randomsampling.json')
 # # tc = TrainClassifier('./configs/config_cifar10_marginsampling.json')

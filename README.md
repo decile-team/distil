@@ -52,12 +52,23 @@ DISTIL implements a number of state of the art active learning algorithms. The f
 <p align="center"><i><b>Reducing Amount of Data to be Labeled</b></i></p>
 <p align="center"><i><b>Reducing Deal with imbalance, OOD data, and distribution shift</b></i></p>
 
-We are continuously incorporating newer and better selection strategies into DISTIL. Some of the features of DISTIL includes:
-- Minimal changes to add it to the existing training structure.
-- Independent of the training strategy used.
+## What does DISTIL offer that other's don't?
+- A one of its kind active learning toolkit that decouples the active learning module from        training loop and allows users to have full control over the training.
+- Faster and efficient implementation of several active learning strategies.
+- Run the basic experiments with just one command.
+- Minimal changes in configuration files to run your own experiments.
 - Achieving similar test accuracy with less amount of training data.
+- Minimal changes to add it to the existing training structure.
 - Huge reduction in labelling cost and time.
 - Access to various active learning strategies with just one line of code.
+- We are continuously incorporating newer and better selection strategies into DISTIL.
+
+## Starting with DISTIL
+```
+git clone https://github.com/decile-team/distil.git
+cd distil
+
+```
 
 Some of the algorithms currently implemented with DISTIL include:
 
