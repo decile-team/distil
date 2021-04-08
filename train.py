@@ -13,7 +13,7 @@ import argparse
 sys.path.append('./')
 from distil.utils.models.resnet import ResNet18
 from distil.utils.DataHandler import DataHandler_Points,DataHandler_MNIST, DataHandler_CIFAR10, \
-										DataHandler_FASHION_MNIST
+										DataHandler_FASHION_MNIST, DataHandler_SVHN, DataHandler_STL10
 from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
                             LeastConfidence, MarginSampling, CoreSet, FASS, AdversarialBIM, AdversarialDeepFool, \
                             KMeansSampling, BaselineSampling, BALDDropout
