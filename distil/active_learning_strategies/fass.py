@@ -66,7 +66,7 @@ class FASS(Strategy):
             self.selection_type = 'PerClass'
         super(FASS, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
 
-    def select(self, budget):
+    def select(self, budget,top_n=5):
         """
         Select next set of points
 
@@ -74,7 +74,10 @@ class FASS(Strategy):
         ----------
         budget: int
             Number of indexes to be returned for next set
-
+        top_n: float
+            It is the multiper to the budget which decides the size of the data points on which\
+             submodular functions will be applied. For example top_n = 5, 5*budget points will be\
+             passed to the submodular functions.  
         Returns
         ----------
         return_indices: list
@@ -90,15 +93,21 @@ class FASS(Strategy):
         if self.selection_type not in selection_type:
             raise ValueError('Selection type is invalid, Selection type can only be '+ str(selection_type))
 
+        if top_n < 1:
+            raise ValueError('top_n parameter should be atleast 1' )
+
+
         curr_X_trn = self.unlabeled_x
         cached_state_dict = copy.deepcopy(self.model.state_dict())
         predicted_y = self.predict(curr_X_trn)  # Hypothesised Labels
         soft = self.predict_prob(curr_X_trn)    #Probabilities of each class
 
         entropy2 = Categorical(probs = soft).entropy()
+
+        curr_size = int(top_n*budget)
         
-        if 5*budget < entropy2.shape[0]:
-            values,indices = entropy2.topk(5*budget)
+        if curr_size < entropy2.shape[0]:
+            values,indices = entropy2.topk(curr_size)
         else:
             indices = [i for i in range(entropy2.shape[0])]    
         # curr_X_trn = torch.from_numpy(curr_X_trn)

@@ -86,7 +86,7 @@ class AdversarialBIM(Strategy):
 				print('adv {}/{}'.format(i, self.unlabeled_x.shape[0]))
 			# print('Data_Pool ', data_pool[i])
 			x, idx = data_pool[i]
-			x = torch.from_numpy(x)
+			#x = torch.from_numpy(x)
 			dis[i] = self.cal_dis(x)
 
 		self.model.to(self.device)

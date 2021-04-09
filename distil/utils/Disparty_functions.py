@@ -13,7 +13,7 @@ from .Similarity_mat import SimilarityComputation
 class DisparityFunction(SimilarityComputation):
 
     """
-    Implementation of Diparity Function.
+    Implementation of Diparity Functions.
     This class allows you to use different Diparity functions
             
     Parameters
@@ -189,19 +189,10 @@ class DisparityFunction(SimilarityComputation):
                 current_values[best_id] = np.inf     
 
                 if self.dis_type == "sum":
-                    #current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
-                    #    sparse_simmat.indptr[best_id+1]]] += \
-                    #    sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense() 
                     Td_row = sparse_simmat[best_id,:].todense()
                     current_values += np.ravel(Td_row.sum(axis=0))
                         
                 elif self.dis_type == "min":
-                    #current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
-                    #    sparse_simmat.indptr[best_id+1]]] = \
-                    #    np.maximum(current_values[sparse_simmat.indices[sparse_simmat.indptr[best_id]:\
-                    #    sparse_simmat.indptr[best_id+1]]],\
-                    #    sparse_simmat.data[sparse_simmat.indptr[best_id]:sparse_simmat.indptr[best_id+1]].todense())
-                    
                     Td_row = sparse_simmat[best_id,:].todense()
                     current_values = np.maximum(current_values,np.ravel(Td_row.sum(axis=0)))
 

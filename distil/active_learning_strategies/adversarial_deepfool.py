@@ -106,7 +106,7 @@ class AdversarialDeepFool(Strategy):
             # if i % 20 == 0:
             #     print('adv {}/{}'.format(i, self.unlabeled_x.shape[0]), flush=True)
             x, idx = data_pool[i]
-            x = torch.from_numpy(x)
+            #x = torch.from_numpy(x)
             dis[i] = self.cal_dis(x)
 
         self.model.to(self.device)

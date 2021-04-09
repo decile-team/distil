@@ -212,7 +212,8 @@ class data_train:
             
             epoch += 1
             if(self.args['isverbose']):
-                print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
+                if epoch % 50 == 0:
+                    print(str(epoch) + ' training accuracy: ' + str(accCurrent), flush=True)
 
             #Stop training if not converging
             if len(acc_monitor) >= self.args['window_size']:
