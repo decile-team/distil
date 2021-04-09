@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import torch
 from torchvision import datasets
@@ -86,6 +87,44 @@ def get_imbalanced_idx(y_trn, num_cls, class_ratio=0.6):
             subset_idxs.extend(batch_subset_idxs)
 
     return subset_idxs
+
+def make_data_redundant(X,Y,amtRed=2):
+
+    """
+    Modifies the input dataset in such a way that only X.shape(0)/amtRed are original 
+    points and rest are repeated or redundant. 
+
+    Parameters
+    ----------
+    X : numpy ndarray
+        The feature set to be made redundant.
+    Y : numpy ndarray
+        The label set corresponding to the X.
+    amtRed : float, optional
+        Factor that determines redundancy. The default is 2.
+
+    Returns
+    -------
+    X : numpy ndarray
+        Modified feature set.
+    """
+    
+    classes,no_elements = np.unique(Y, return_counts=True)
+
+    for cl in range(len(classes)):
+        retain = math.ceil(no_elements[cl]/amtRed)
+        idxs = np.where(Y == classes[cl])[0]
+
+        for i in range(math.ceil(amtRed)):
+            if i == 0:
+                idxs_rep = idxs[:retain]
+            else: 
+                idxs_rep = np.concatenate((idxs_rep,idxs[:retain]),axis=0)
+
+        X[idxs] = X[idxs_rep[:no_elements[cl]]]
+
+    return X
+
 
 def get_dataset(name, path, tr_load_args = None, te_load_args = None):
     """
