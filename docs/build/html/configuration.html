@@ -198,18 +198,19 @@
 <li><p>Active Learning Configuration</p></li>
 <li><p>Dataset</p></li>
 </ol>
-<p>** Symbol (%) represents mandatory arguments **</p>
-<p><em>model</em></p>
-<ol class="arabic">
-<li><dl>
-<dt>architecture %</dt><dd><blockquote>
-<div><ul class="simple">
-<li><p>Model architecture to be used, Presently it supports the below mentioned architectures.</p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
+<p><strong>Symbol (%) represents mandatory arguments</strong></p>
+<p><strong>model</strong></p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>architecture %</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Model architecture to be used, Presently it supports the below mentioned architectures.</dt><dd><ol class="arabic simple">
 <li><p>resnet18</p></li>
 <li><p>two_layer_net</p></li>
+</ol>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
@@ -236,7 +237,7 @@
 </dl>
 </li>
 </ol>
-<p><em>train_parameters</em></p>
+<p><strong>train_parameters</strong></p>
 <ol class="arabic simple">
 <li><dl class="simple">
 <dt>lr %</dt><dd><ul class="simple">
@@ -268,18 +269,28 @@
 </li>
 <li><dl class="simple">
 <dt>isreset</dt><dd><ul class="simple">
-<li><p>Reset weight whenever the model training starts.</p></li>
+<li><dl class="simple">
+<dt>Reset weight whenever the model training starts.</dt><dd><ol class="arabic simple">
 <li><p>True</p></li>
 <li><p>False</p></li>
+</ol>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
 <dt>islogs</dt><dd><ul class="simple">
-<li><p>Log training output.</p></li>
+<li><dl class="simple">
+<dt>Log training output.</dt><dd><ol class="arabic simple">
 <li><p>True</p></li>
 <li><p>False</p></li>
+</ol>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
@@ -292,11 +303,12 @@
 </dl>
 </li>
 </ol>
-<p><em>active_learning</em></p>
+<p><strong>active_learning</strong></p>
 <ol class="arabic simple">
 <li><dl class="simple">
 <dt>strategy %</dt><dd><ul class="simple">
-<li><p>Active learning strategy to be used.</p></li>
+<li><dl class="simple">
+<dt>Active learning strategy to be used.</dt><dd><ol class="arabic simple">
 <li><p>badge</p></li>
 <li><p>glister</p></li>
 <li><p>entropy_sampling</p></li>
@@ -310,6 +322,10 @@
 <li><p>kmeans_sampling</p></li>
 <li><p>baseline_sampling</p></li>
 <li><p>adversarial_deepfool</p></li>
+</ol>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
@@ -343,11 +359,12 @@
 </dl>
 </li>
 </ol>
-<p><em>dataset</em></p>
-<p>#. name
-Name of the dataset to be used. It presently supports following datasets.</p>
-<blockquote>
-<div><ul class="simple">
+<p><strong>dataset</strong></p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>name</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Name of the dataset to be used. It presently supports following datasets.</dt><dd><ol class="arabic simple">
 <li><p>cifar10</p></li>
 <li><p>mnist</p></li>
 <li><p>fmnist</p></li>
@@ -355,8 +372,15 @@ Name of the dataset to be used. It presently supports following datasets.</p>
 <li><p>cifar100</p></li>
 <li><p>satimage</p></li>
 <li><p>ijcnn1</p></li>
+</ol>
+</dd>
+</dl>
+</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
+</li>
+</ol>
 <p>You can refer to various configuration examples in the configs/ folders of the DISTIL repository.</p>
 </div>
 

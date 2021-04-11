@@ -46,14 +46,14 @@ The configuration files consists of following sections:
 #. Active Learning Configuration
 #. Dataset
 
-** Symbol (%) represents mandatory arguments **
+**Symbol (%) represents mandatory arguments**
 
-*model*
+**model**
 
 #. architecture % 
 	* Model architecture to be used, Presently it supports the below mentioned architectures.
-    * resnet18
-    * two_layer_net
+		#. resnet18
+		#. two_layer_net
 #. target_classes %
 	* Number of output classes for prediction. 
 #. input_dim
@@ -61,7 +61,7 @@ The configuration files consists of following sections:
 #. hidden_units_1
 	* Number of hidden units to be used in the first layer. To be mentioned while using two layer net.
 
-*train_parameters*
+**train_parameters**
 
 #. lr %
 	* Learning rate to be used for training.
@@ -73,32 +73,32 @@ The configuration files consists of following sections:
 	* Maximum training accuracy after which training should be stopped.
 #. isreset
 	* Reset weight whenever the model training starts.
-	* True
-	* False
+		#. True
+		#. False
 #. islogs
 	* Log training output.
-	* True
-	* False
+		#. True
+		#. False
 #. logs_location %
 	* Location where logs should be saved.
 
-*active_learning*
+**active_learning**
 
 #. strategy %
 	* Active learning strategy to be used.
-	* badge
-	* glister
-	* entropy_sampling
-	* margin_sampling
-	* least_confidence
-	* core_set
-	* random_sampling
-	* fass
-	* bald_dropout
-	* adversarial_bim
-	* kmeans_sampling
-	* baseline_sampling
-	* adversarial_deepfool
+		#. badge
+		#. glister
+		#. entropy_sampling
+		#. margin_sampling
+		#. least_confidence
+		#. core_set
+		#. random_sampling
+		#. fass
+		#. bald_dropout
+		#. adversarial_bim
+		#. kmeans_sampling
+		#. baseline_sampling
+		#. adversarial_deepfool
 #. budget %
 	* Number of points to be selected by the active learning strategy.
 #. rounds %
@@ -108,16 +108,16 @@ The configuration files consists of following sections:
 #. strategy_args
 	* Arguments to pass to the strategy. It varies from strategy to strategy. Please refer to the documentation of the strategy that is being used.
 
-*dataset*
+**dataset**
 
 #. name
-Name of the dataset to be used. It presently supports following datasets.
-	* cifar10
-	* mnist
-	* fmnist
-	* svhn
-	* cifar100
-	* satimage
-	* ijcnn1
+	* Name of the dataset to be used. It presently supports following datasets.
+		#. cifar10
+		#. mnist
+		#. fmnist
+		#. svhn
+		#. cifar100
+		#. satimage
+		#. ijcnn1
 
 You can refer to various configuration examples in the configs/ folders of the DISTIL repository.
