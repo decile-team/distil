@@ -6,6 +6,7 @@ This page gives a tutorial on how to generate your custom training configuration
 This configuration files can be used to select datasets, training configuration, and active learning settings. These files are in json format.
 
 ``
+
 {
 	"model": {
 		"architecture": "resnet18",
@@ -36,6 +37,7 @@ This configuration files can be used to select datasets, training configuration,
 		"name":"cifar10"
 	}
 }
+
 ``
 
 The configuration files consists of following sections:
@@ -45,9 +47,10 @@ The configuration files consists of following sections:
 #. Active Learning Configuration
 #. Dataset
 
-** % represents mandatory arguments **
+** Symbol (%) represents mandatory arguments **
 
 *model*
+
 #. architecture % 
 	* Model architecture to be used, Presently it supports the below mentioned architectures.
     * resnet18
@@ -59,7 +62,8 @@ The configuration files consists of following sections:
 #. hidden_units_1
 	* Number of hidden units to be used in the first layer. To be mentioned while using two layer net.
 
-*train_parameters* 
+*train_parameters*
+
 #. lr %
 	* Learning rate to be used for training.
 #. batch_size %
@@ -80,6 +84,7 @@ The configuration files consists of following sections:
 	* Location where logs should be saved.
 
 *active_learning*
+
 #. strategy %
 	* Active learning strategy to be used.
 	* badge
@@ -105,8 +110,9 @@ The configuration files consists of following sections:
 	* Arguments to pass to the strategy. It varies from strategy to strategy. Please refer to the documentation of the strategy that is being used.
 
 *dataset*
+
 #. name
-	* Name of the dataset to be used. It presently supports following datasets.
+Name of the dataset to be used. It presently supports following datasets.
 	* cifar10
 	* mnist
 	* fmnist
