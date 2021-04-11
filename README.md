@@ -128,43 +128,26 @@ The model was first trained on randomly selected n points where n is the budget 
 ### CIFAR10
 Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
 
-| Strategy | Accuracy |
-| --- | --- |
-| BADGE | 0.935 | 
-| FASS | 0.936 | 
-| Entropy Sampling | 0.935 | 
-| Glister | 0.934 | 
-| Random Sampling | 0.942 |
+![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)
 
 ### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
 
+Zoomed Plot
+
+![MNIST Zoomed Plot](./experiment_plots/mnist_zoom_plot.png?raw=true)
+
 ![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
-| Strategy | Accuracy |
-| --- | --- |
-| Margin Sampling |	0.993 |
-| Entropy Sampling | 0.993 |
-| BADGE | 0.992 | 
-| Glister |	0.992 |
-| Coreset |	0.991 |
-| FASS |	0.99 |
-| Random Sampling |	0.98 |
+### FASHION MNIST
+Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
+
+![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)
 
 ### OPENML-6
 Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
 
 ![OPENML6 Plot](./experiment_plots/openml6_plot.png?raw=true)
-
-| Strategy | Accuracy |
-| --- | --- |
-| Glister | 0.938 |
-| BADGE | 0.938 |
-| FASS | 0.935 |
-| Margin Sampling |	0.934 |
-| Coreset |	0.925 |
-| Entropy Sampling | 0.924 |
-| Random Sampling |	0.911 |
 
 ## Testing Individual strategy and Running Examples
 Before running the examples or test, please clone the dataset repository, along with this one. The default data path expects the repository in the same root directory as that of distil. If you change the location, the data paths in the exmples or tests needs to be changed accordingly.
