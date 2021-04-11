@@ -86,6 +86,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../ActStrategy/modules.html">DISTIL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration Files for Training</a></li>
 </ul>
 
             
@@ -220,7 +221,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">selection_type</span> <span class="o">=</span> <span class="s1">&#39;PerClass&#39;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FASS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span><span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FASS.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.fass.FASS.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
+<div class="viewcode-block" id="FASS.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.fass.FASS.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span><span class="n">top_n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select next set of points</span>
 
@@ -228,7 +229,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        budget: int</span>
 <span class="sd">            Number of indexes to be returned for next set</span>
-
+<span class="sd">        top_n: float</span>
+<span class="sd">            It is the multiper to the budget which decides the size of the data points on which\</span>
+<span class="sd">             submodular functions will be applied. For example top_n = 5, 5*budget points will be\</span>
+<span class="sd">             passed to the submodular functions.  </span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
 <span class="sd">        return_indices: list</span>
@@ -244,15 +248,21 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">selection_type</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Selection type is invalid, Selection type can only be &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">selection_type</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="n">top_n</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;top_n parameter should be atleast 1&#39;</span> <span class="p">)</span>
+
+
         <span class="n">curr_X_trn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span>
         <span class="n">cached_state_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
         <span class="n">predicted_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">curr_X_trn</span><span class="p">)</span>  <span class="c1"># Hypothesised Labels</span>
         <span class="n">soft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_prob</span><span class="p">(</span><span class="n">curr_X_trn</span><span class="p">)</span>    <span class="c1">#Probabilities of each class</span>
 
         <span class="n">entropy2</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">probs</span> <span class="o">=</span> <span class="n">soft</span><span class="p">)</span><span class="o">.</span><span class="n">entropy</span><span class="p">()</span>
+
+        <span class="n">curr_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">top_n</span><span class="o">*</span><span class="n">budget</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="mi">5</span><span class="o">*</span><span class="n">budget</span> <span class="o">&lt;</span> <span class="n">entropy2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">values</span><span class="p">,</span><span class="n">indices</span> <span class="o">=</span> <span class="n">entropy2</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">budget</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">curr_size</span> <span class="o">&lt;</span> <span class="n">entropy2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">values</span><span class="p">,</span><span class="n">indices</span> <span class="o">=</span> <span class="n">entropy2</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">curr_size</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">entropy2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>    
         <span class="c1"># curr_X_trn = torch.from_numpy(curr_X_trn)</span>

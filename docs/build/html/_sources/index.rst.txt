@@ -20,7 +20,7 @@ Distil is a toolkit in PyTorch which provides access to different active learnin
    :caption: Contents:
 
    ActStrategy/modules
-
+   configuration
 
 
    
