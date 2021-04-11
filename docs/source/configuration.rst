@@ -1,44 +1,43 @@
 Configuration Files for Training
-====================
+================================
 
 This page gives a tutorial on how to generate your custom training configuration files.
 
 This configuration files can be used to select datasets, training configuration, and active learning settings. These files are in json format.
 
-``
+.. code-block:: json
 
-{
-	"model": {
-		"architecture": "resnet18",
-		"target_classes": 10
-	},
-	"train_parameters": {
-		"lr": 0.001,
-		"batch_size": 1000,
-		"n_epoch": 50,
-		"max_accuracy": 0.95,
-		"isreset": true,
-		"islogs":  true,
-		"logs_location": "./logs.txt"
-	},
+	{
+		"model": {
+			"architecture": "resnet18",
+			"target_classes": 10
+		},
+		"train_parameters": {
+			"lr": 0.001,
+			"batch_size": 1000,
+			"n_epoch": 50,
+			"max_accuracy": 0.95,
+			"isreset": true,
+			"islogs":  true,
+			"logs_location": "./logs.txt"
+		},
 
-	"active_learning":{
-		"strategy": "badge",
-		"budget": 1000,
-		"rounds": 15,
-		"initial_points":1000,
-		
-		"strategy_args":{	
-			"batch_size" : 1000, 
-			"lr":0.001
+		"active_learning":{
+			"strategy": "badge",
+			"budget": 1000,
+			"rounds": 15,
+			"initial_points":1000,
+			
+			"strategy_args":{	
+				"batch_size" : 1000, 
+				"lr":0.001
+			}
+		},
+		"dataset":{
+			"name":"cifar10"
 		}
-	},
-	"dataset":{
-		"name":"cifar10"
 	}
-}
 
-``
 
 The configuration files consists of following sections:
 

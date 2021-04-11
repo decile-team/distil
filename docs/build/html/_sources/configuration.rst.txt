@@ -1,42 +1,43 @@
 Configuration Files for Training
-====================
+================================
 
 This page gives a tutorial on how to generate your custom training configuration files.
 
 This configuration files can be used to select datasets, training configuration, and active learning settings. These files are in json format.
 
-``
-{
-	"model": {
-		"architecture": "resnet18",
-		"target_classes": 10
-	},
-	"train_parameters": {
-		"lr": 0.001,
-		"batch_size": 1000,
-		"n_epoch": 50,
-		"max_accuracy": 0.95,
-		"isreset": true,
-		"islogs":  true,
-		"logs_location": "./logs.txt"
-	},
+.. code-block:: json
 
-	"active_learning":{
-		"strategy": "badge",
-		"budget": 1000,
-		"rounds": 15,
-		"initial_points":1000,
-		
-		"strategy_args":{	
-			"batch_size" : 1000, 
-			"lr":0.001
+	{
+		"model": {
+			"architecture": "resnet18",
+			"target_classes": 10
+		},
+		"train_parameters": {
+			"lr": 0.001,
+			"batch_size": 1000,
+			"n_epoch": 50,
+			"max_accuracy": 0.95,
+			"isreset": true,
+			"islogs":  true,
+			"logs_location": "./logs.txt"
+		},
+
+		"active_learning":{
+			"strategy": "badge",
+			"budget": 1000,
+			"rounds": 15,
+			"initial_points":1000,
+			
+			"strategy_args":{	
+				"batch_size" : 1000, 
+				"lr":0.001
+			}
+		},
+		"dataset":{
+			"name":"cifar10"
 		}
-	},
-	"dataset":{
-		"name":"cifar10"
 	}
-}
-``
+
 
 The configuration files consists of following sections:
 
@@ -45,9 +46,10 @@ The configuration files consists of following sections:
 #. Active Learning Configuration
 #. Dataset
 
-** % represents mandatory arguments **
+** Symbol (%) represents mandatory arguments **
 
 *model*
+
 #. architecture % 
 	* Model architecture to be used, Presently it supports the below mentioned architectures.
     * resnet18
@@ -59,7 +61,8 @@ The configuration files consists of following sections:
 #. hidden_units_1
 	* Number of hidden units to be used in the first layer. To be mentioned while using two layer net.
 
-*train_parameters* 
+*train_parameters*
+
 #. lr %
 	* Learning rate to be used for training.
 #. batch_size %
@@ -80,6 +83,7 @@ The configuration files consists of following sections:
 	* Location where logs should be saved.
 
 *active_learning*
+
 #. strategy %
 	* Active learning strategy to be used.
 	* badge
@@ -105,8 +109,9 @@ The configuration files consists of following sections:
 	* Arguments to pass to the strategy. It varies from strategy to strategy. Please refer to the documentation of the strategy that is being used.
 
 *dataset*
+
 #. name
-	* Name of the dataset to be used. It presently supports following datasets.
+Name of the dataset to be used. It presently supports following datasets.
 	* cifar10
 	* mnist
 	* fmnist

@@ -87,10 +87,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ActStrategy/modules.html">DISTIL</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Files for Training</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">}</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Files for Training</a></li>
 </ul>
 
             
@@ -162,48 +159,38 @@
 <h1>Configuration Files for Training<a class="headerlink" href="#configuration-files-for-training" title="Permalink to this headline">¶</a></h1>
 <p>This page gives a tutorial on how to generate your custom training configuration files.</p>
 <p>This configuration files can be used to select datasets, training configuration, and active learning settings. These files are in json format.</p>
-<p>``
-{</p>
-<blockquote>
-<div><dl class="simple">
-<dt>“model”: {</dt><dd><p>“architecture”: “resnet18”,
-“target_classes”: 10</p>
-</dd>
-</dl>
-<p>},
-“train_parameters”: {</p>
-<blockquote>
-<div><p>“lr”: 0.001,
-“batch_size”: 1000,
-“n_epoch”: 50,
-“max_accuracy”: 0.95,
-“isreset”: true,
-“islogs”:  true,
-“logs_location”: “./logs.txt”</p>
-</div></blockquote>
-<p>},</p>
-<dl>
-<dt>“active_learning”:{</dt><dd><p>“strategy”: “badge”,
-“budget”: 1000,
-“rounds”: 15,
-“initial_points”:1000,</p>
-<dl class="simple">
-<dt>“strategy_args”:{</dt><dd><p>“batch_size” : 1000,
-“lr”:0.001</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>},
-“dataset”:{</p>
-<blockquote>
-<div><p>“name”:”cifar10”</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
-<div class="section" id="id1">
-<h2>}<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="nt">&quot;model&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;architecture&quot;</span><span class="p">:</span> <span class="s2">&quot;resnet18&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;target_classes&quot;</span><span class="p">:</span> <span class="mi">10</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;train_parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+                <span class="nt">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                <span class="nt">&quot;n_epoch&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                <span class="nt">&quot;max_accuracy&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+                <span class="nt">&quot;isreset&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nt">&quot;islogs&quot;</span><span class="p">:</span>  <span class="kc">true</span><span class="p">,</span>
+                <span class="nt">&quot;logs_location&quot;</span><span class="p">:</span> <span class="s2">&quot;./logs.txt&quot;</span>
+        <span class="p">},</span>
+
+        <span class="nt">&quot;active_learning&quot;</span><span class="p">:{</span>
+                <span class="nt">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;badge&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;budget&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                <span class="nt">&quot;rounds&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+                <span class="nt">&quot;initial_points&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span>
+
+                <span class="nt">&quot;strategy_args&quot;</span><span class="p">:{</span>
+                        <span class="nt">&quot;batch_size&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                        <span class="nt">&quot;lr&quot;</span><span class="p">:</span><span class="mf">0.001</span>
+                <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;dataset&quot;</span><span class="p">:{</span>
+                <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;cifar10&quot;</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>The configuration files consists of following sections:</p>
 <ol class="arabic simple">
 <li><p>Model</p></li>
@@ -211,11 +198,11 @@
 <li><p>Active Learning Configuration</p></li>
 <li><p>Dataset</p></li>
 </ol>
-<p>** % represents mandatory arguments **</p>
-<p><em>model</em>
-#. architecture %</p>
-<blockquote>
-<div><blockquote>
+<p>** Symbol (%) represents mandatory arguments **</p>
+<p><em>model</em></p>
+<ol class="arabic">
+<li><dl>
+<dt>architecture %</dt><dd><blockquote>
 <div><ul class="simple">
 <li><p>Model architecture to be used, Presently it supports the below mentioned architectures.</p></li>
 </ul>
@@ -224,8 +211,9 @@
 <li><p>resnet18</p></li>
 <li><p>two_layer_net</p></li>
 </ul>
-</div></blockquote>
-<ol class="arabic simple">
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>target_classes %</dt><dd><ul class="simple">
 <li><p>Number of output classes for prediction.</p></li>
@@ -248,14 +236,15 @@
 </dl>
 </li>
 </ol>
-<p><em>train_parameters</em>
-#. lr %</p>
-<blockquote>
-<div><ul class="simple">
+<p><em>train_parameters</em></p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>lr %</dt><dd><ul class="simple">
 <li><p>Learning rate to be used for training.</p></li>
 </ul>
-</div></blockquote>
-<ol class="arabic simple">
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>batch_size %</dt><dd><ul class="simple">
 <li><p>Batch size to be used for training.</p></li>
@@ -303,10 +292,10 @@
 </dl>
 </li>
 </ol>
-<p><em>active_learning</em>
-#. strategy %</p>
-<blockquote>
-<div><ul class="simple">
+<p><em>active_learning</em></p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>strategy %</dt><dd><ul class="simple">
 <li><p>Active learning strategy to be used.</p></li>
 <li><p>badge</p></li>
 <li><p>glister</p></li>
@@ -322,8 +311,9 @@
 <li><p>baseline_sampling</p></li>
 <li><p>adversarial_deepfool</p></li>
 </ul>
-</div></blockquote>
-<ol class="arabic simple">
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>budget %</dt><dd><ul class="simple">
 <li><p>Number of points to be selected by the active learning strategy.</p></li>
@@ -353,11 +343,11 @@
 </dl>
 </li>
 </ol>
-<p><em>dataset</em>
-#. name</p>
+<p><em>dataset</em></p>
+<p>#. name
+Name of the dataset to be used. It presently supports following datasets.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Name of the dataset to be used. It presently supports following datasets.</p></li>
 <li><p>cifar10</p></li>
 <li><p>mnist</p></li>
 <li><p>fmnist</p></li>
@@ -368,7 +358,6 @@
 </ul>
 </div></blockquote>
 <p>You can refer to various configuration examples in the configs/ folders of the DISTIL repository.</p>
-</div>
 </div>
 
 
