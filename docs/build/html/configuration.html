@@ -87,7 +87,10 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ActStrategy/modules.html">DISTIL</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Files for Training</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Files for Training</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">}</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -158,6 +161,214 @@
   <div class="section" id="configuration-files-for-training">
 <h1>Configuration Files for Training<a class="headerlink" href="#configuration-files-for-training" title="Permalink to this headline">¶</a></h1>
 <p>This page gives a tutorial on how to generate your custom training configuration files.</p>
+<p>This configuration files can be used to select datasets, training configuration, and active learning settings. These files are in json format.</p>
+<p>``
+{</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“model”: {</dt><dd><p>“architecture”: “resnet18”,
+“target_classes”: 10</p>
+</dd>
+</dl>
+<p>},
+“train_parameters”: {</p>
+<blockquote>
+<div><p>“lr”: 0.001,
+“batch_size”: 1000,
+“n_epoch”: 50,
+“max_accuracy”: 0.95,
+“isreset”: true,
+“islogs”:  true,
+“logs_location”: “./logs.txt”</p>
+</div></blockquote>
+<p>},</p>
+<dl>
+<dt>“active_learning”:{</dt><dd><p>“strategy”: “badge”,
+“budget”: 1000,
+“rounds”: 15,
+“initial_points”:1000,</p>
+<dl class="simple">
+<dt>“strategy_args”:{</dt><dd><p>“batch_size” : 1000,
+“lr”:0.001</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>},
+“dataset”:{</p>
+<blockquote>
+<div><p>“name”:”cifar10”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<div class="section" id="id1">
+<h2>}<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The configuration files consists of following sections:</p>
+<ol class="arabic simple">
+<li><p>Model</p></li>
+<li><p>Training Parameters</p></li>
+<li><p>Active Learning Configuration</p></li>
+<li><p>Dataset</p></li>
+</ol>
+<p>** % represents mandatory arguments **</p>
+<p><em>model</em>
+#. architecture %</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li><p>Model architecture to be used, Presently it supports the below mentioned architectures.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>resnet18</p></li>
+<li><p>two_layer_net</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>target_classes %</dt><dd><ul class="simple">
+<li><p>Number of output classes for prediction.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>input_dim</dt><dd><ul class="simple">
+<li><p>Input dimension of the dataset. To be mentioned while using two layer net.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>hidden_units_1</dt><dd><ul class="simple">
+<li><p>Number of hidden units to be used in the first layer. To be mentioned while using two layer net.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p><em>train_parameters</em>
+#. lr %</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Learning rate to be used for training.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>batch_size %</dt><dd><ul class="simple">
+<li><p>Batch size to be used for training.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_epoch %</dt><dd><ul class="simple">
+<li><p>Maximum number of epochs for the model to train.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>max_accuracy</dt><dd><ul class="simple">
+<li><p>Maximum training accuracy after which training should be stopped.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>isreset</dt><dd><ul class="simple">
+<li><p>Reset weight whenever the model training starts.</p></li>
+<li><p>True</p></li>
+<li><p>False</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>islogs</dt><dd><ul class="simple">
+<li><p>Log training output.</p></li>
+<li><p>True</p></li>
+<li><p>False</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>logs_location %</dt><dd><ul class="simple">
+<li><p>Location where logs should be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p><em>active_learning</em>
+#. strategy %</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Active learning strategy to be used.</p></li>
+<li><p>badge</p></li>
+<li><p>glister</p></li>
+<li><p>entropy_sampling</p></li>
+<li><p>margin_sampling</p></li>
+<li><p>least_confidence</p></li>
+<li><p>core_set</p></li>
+<li><p>random_sampling</p></li>
+<li><p>fass</p></li>
+<li><p>bald_dropout</p></li>
+<li><p>adversarial_bim</p></li>
+<li><p>kmeans_sampling</p></li>
+<li><p>baseline_sampling</p></li>
+<li><p>adversarial_deepfool</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>budget %</dt><dd><ul class="simple">
+<li><p>Number of points to be selected by the active learning strategy.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>rounds %</dt><dd><ul class="simple">
+<li><p>Total number of rounds to run active learning for.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>initial_points</dt><dd><ul class="simple">
+<li><p>Initial number of points to start training with.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>strategy_args</dt><dd><ul class="simple">
+<li><p>Arguments to pass to the strategy. It varies from strategy to strategy. Please refer to the documentation of the strategy that is being used.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p><em>dataset</em>
+#. name</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Name of the dataset to be used. It presently supports following datasets.</p></li>
+<li><p>cifar10</p></li>
+<li><p>mnist</p></li>
+<li><p>fmnist</p></li>
+<li><p>svhn</p></li>
+<li><p>cifar100</p></li>
+<li><p>satimage</p></li>
+<li><p>ijcnn1</p></li>
+</ul>
+</div></blockquote>
+<p>You can refer to various configuration examples in the configs/ folders of the DISTIL repository.</p>
+</div>
 </div>
 
 
