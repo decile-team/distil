@@ -30,8 +30,6 @@
 <p>Cut down your labeling cost and time 5x-10x times!
 </h3>
 
-DISTIL is an active learning toolkit and supports all the state of art selection strategies. DISTIL's main focus is to decouple the training loop from the active learning module, thus providing maximum flexibility to the user to control the training procedure. It allows to incorporate active learning with minimal changes to the existing code. DISTIL provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
-
 # In this README
 - [What is DISTIL?](#what-is-distil)
 - [What does DISTIL offer that other's don't?](#what-does-distil-offer-that-others-dont)
@@ -48,11 +46,7 @@ DISTIL is an active learning toolkit and supports all the state of art selection
 - [Acknowledgement](#acknowledgement)
 
 ## What is DISTIL?
-DISTIL implements a number of state of the art active learning algorithms. The following are the goals that DISTIL tries to acheive:
-<p align="center"><i><b>Reducing Labeling Time</b></i></p>
-<p align="center"><i><b>Reducing Labeling Effort & Costs</b></i></p>
-<p align="center"><i><b>Reducing Amount of Data to be Labeled</b></i></p>
-<p align="center"><i><b>Reducing Deal with imbalance, OOD data, and distribution shift</b></i></p>
+DISTIL is an active learning toolkit, which implements a number of state of art active learning strategies, with a particular focus for active learning in the deep learning setting. DISTIL is built on pyTorch and decouples the training loop from the active learning algorithms, thereby providing flexibility to the user to control the training procedures and models. It allows users to incorporate new active learning algorithms easily with minimal changes to the existing code. DISTIL also provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
 
 ## What does DISTIL offer that other's don't?
 - A one of its kind active learning toolkit that decouples the active learning module from        training loop and allows users to have full control over the training.
