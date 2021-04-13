@@ -1,6 +1,4 @@
-import numpy as np
 from .strategy import Strategy
-import pdb
 
 class MarginSampling(Strategy):
 

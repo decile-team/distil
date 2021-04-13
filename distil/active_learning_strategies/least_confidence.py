@@ -1,4 +1,3 @@
-import numpy as np
 from .strategy import Strategy
 
 class LeastConfidence(Strategy):

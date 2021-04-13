@@ -25,7 +25,6 @@ def Fixed_Weight_Greedy_Parallel(A, b, val_set_size, nnz=None, device="cpu"):
         
         # Calculate residual
         resid = memoized_Ax - b_k_val
-        resid_norm = resid.norm()
 
         # Calculate columnwise difference with resid.
         # resid[:None] promotes shape from (d) to (d,)

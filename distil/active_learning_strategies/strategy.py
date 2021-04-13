@@ -1,14 +1,7 @@
-import numpy as np
-from torch import nn
-import sys
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from copy import deepcopy
 import pickle
-import warnings
 
 class Strategy:
     def __init__(self,X, Y, unlabeled_x, net, handler, nclasses, args={}): #
@@ -23,8 +16,10 @@ class Strategy:
         if 'batch_size' not in args:
             args['batch_size'] = 1
         
-        #print('Use_CUDA ', self.use_cuda)
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        if 'device' not in args:
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        else:
+            self.device = args['device']
 
     def select(self, budget):
         pass

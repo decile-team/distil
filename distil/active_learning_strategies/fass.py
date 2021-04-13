@@ -1,19 +1,4 @@
 from .strategy import Strategy
-import copy
-import datetime
-import numpy as np
-import os
-import subprocess
-import sys
-import time
-import torch
-import torch.backends.cudnn as cudnn
-import torch.nn as nn
-import torch.optim as optim
-from torch.autograd import Variable
-from torch.utils.data import DataLoader
-import math
-import random
 from torch.distributions import Categorical
 from ..utils.submodular import SubmodularFunction
 
@@ -84,8 +69,6 @@ class FASS(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """ 
 
-        device = "cuda:0" if torch.cuda.is_available() else "cpu"
-
         submod_choices = ['facility_location', 'graph_cut', 'saturated_coverage', 'sum_redundancy', 'feature_based']
         if self.submod not in submod_choices:
             raise ValueError('Submodular function is invalid, Submodular functions can only be '+ str(submod_choices))
@@ -98,7 +81,6 @@ class FASS(Strategy):
 
 
         curr_X_trn = self.unlabeled_x
-        cached_state_dict = copy.deepcopy(self.model.state_dict())
         predicted_y = self.predict(curr_X_trn)  # Hypothesised Labels
         soft = self.predict_prob(curr_X_trn)    #Probabilities of each class
 
@@ -114,7 +96,7 @@ class FASS(Strategy):
         curr_X_trn_embeddings = self.get_embedding(curr_X_trn)
         curr_X_trn_embeddings  = curr_X_trn_embeddings.reshape(curr_X_trn.shape[0], -1)
 
-        submodular = SubmodularFunction(device, curr_X_trn_embeddings[indices], predicted_y[indices],\
+        submodular = SubmodularFunction(self.device, curr_X_trn_embeddings[indices], predicted_y[indices],\
             curr_X_trn.shape[0], 32, self.submod, self.selection_type)
         dsf_idxs_flag_val = submodular.lazy_greedy_max(budget)
 
