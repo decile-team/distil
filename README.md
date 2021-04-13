@@ -71,6 +71,7 @@ git clone https://github.com/decile-team/distil.git
 cd distil
 python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
 ```
+For making your custom configuration file for training, please refer to [Distil Configuration File Documentation](https://decile-team-distil.readthedocs.io/en/latest/configuration.html)
 
 Some of the algorithms currently implemented with DISTIL include:
 
