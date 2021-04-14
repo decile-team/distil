@@ -48,7 +48,7 @@
 ## What is DISTIL?
 DISTIL is an active learning toolkit, which implements a number of state of art active learning strategies, with a particular focus for active learning in the deep learning setting. DISTIL is built on pyTorch and decouples the training loop from the active learning algorithms, thereby providing flexibility to the user to control the training procedures and models. It allows users to incorporate new active learning algorithms easily with minimal changes to the existing code. DISTIL also provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
 
-## Key Features of DISTIL?
+## Key Features of DISTIL
 - A one of its kind active learning toolkit that decouples the active learning module from        training loop and allows users to have full control over the training.
 - Faster and efficient implementation of several active learning strategies.
 - Run the basic experiments with just one command.
