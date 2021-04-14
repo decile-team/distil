@@ -84,7 +84,7 @@ Some of the algorithms currently implemented with DISTIL include:
 - [Baseline Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.baseline_sampling)
 
 ## Where can DISTIL be used?
-DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
+DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works in the supervised learning setting for classification. We will be adding extensions to active semi-supervised learning and active learning for object detection. It can be used in scenarios where you only want to label few data points which can provide maximum information to the ML model and thus reduce labeling cost and time.
 
 ## Installation
 The latest version of  DISTIL package can be installed using the following command:
