@@ -1,7 +1,6 @@
 import apricot
 import math
 import numpy as np
-import time
 import torch
 
 from scipy.sparse import csr_matrix

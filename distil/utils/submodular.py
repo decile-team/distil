@@ -1,11 +1,8 @@
 import numpy as np
-import sys
 import torch
 
 import apricot
 
-import math
-import copy
 from scipy.sparse import csr_matrix
 
 from .Similarity_mat import SimilarityComputation
@@ -65,7 +62,6 @@ class SubmodularFunction(SimilarityComputation):
 
         classes, no_elements = torch.unique(self.y_trn, return_counts=True)
         len_unique_elements = no_elements.shape[0]
-        tem_xtrain = copy.deepcopy(self.x_trn)
         per_class_bud = int(budget / len(classes))
         final_per_class_bud = []
         _, sorted_indices = torch.sort(no_elements, descending = True)

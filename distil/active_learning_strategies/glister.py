@@ -1,17 +1,13 @@
 from .strategy import Strategy
-import copy
 import numpy as np
 
 import torch
-import torch.backends.cudnn as cudnn
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
 
 from torch.utils.data import DataLoader
 
 import math
-import random
 
 class GLISTER(Strategy):
     """

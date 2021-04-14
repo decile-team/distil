@@ -1,12 +1,6 @@
 import numpy as np
-import pdb
 from .strategy import Strategy
-from sklearn.neighbors import NearestNeighbors
-import pickle
-from datetime import datetime
 from sklearn.metrics import pairwise_distances
-import torch.nn as nn
-import torch
 
 class CoreSet(Strategy):
     """
@@ -63,7 +57,6 @@ class CoreSet(Strategy):
         idxs: list
             List of selected data point indexes with respect to unlabeled_x
         """ 
-        pdist = nn.PairwiseDistance(p=2)
         m = np.shape(X)[0]
         if np.shape(X_set)[0] == 0:
             min_dist = np.tile(float("inf"), m)

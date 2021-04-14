@@ -21,7 +21,6 @@ class data_train:
         self.handler = handler
         self.args = args
         self.n_pool = len(Y)
-        self.use_cuda = torch.cuda.is_available()
         
         if 'islogs' not in args:
             self.args['islogs'] = False
@@ -46,6 +45,11 @@ class data_train:
             
         if 'criterion' not in args:
             self.args['criterion'] = nn.CrossEntropyLoss()
+            
+        if 'device' not in args:
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        else:
+            self.device = args['device']
 
     def update_index(self, idxs_lb):
         self.idxs_lb = idxs_lb
@@ -79,11 +83,10 @@ class data_train:
         self.clf.eval()
         accFinal = 0.
 
-        with torch.no_grad():
-            for batch_id, (x,y,idxs) in enumerate(loader_te):
-                if self.use_cuda:
-                    self.clf = self.clf.cuda()
-                    x, y = x.cuda(), y.cuda()
+        with torch.no_grad():        
+            self.clf = self.clf.to(device=self.device)
+            for batch_id, (x,y,idxs) in enumerate(loader_te):     
+                x, y = x.to(device=self.device), y.to(device=self.device)
                 out = self.clf(x)
                 accFinal += torch.sum(1.0*(torch.max(out,1)[1] == y)).item() #.data.item()
 
@@ -96,9 +99,8 @@ class data_train:
         criterion.reduction = "none"
 
         for batch_id, (x, y, idxs) in enumerate(loader_tr):
-            if self.use_cuda:
-                x, y = x.cuda(), y.cuda()
-                gradient_weights = gradient_weights.cuda()
+            x, y = x.to(device=self.device), y.to(device=self.device)
+            gradient_weights = gradient_weights.to(device=self.device)
 
             optimizer.zero_grad()
             out = self.clf(x)
@@ -127,8 +129,7 @@ class data_train:
         criterion = self.args['criterion']
 
         for batch_id, (x, y, idxs) in enumerate(loader_tr):
-            if self.use_cuda:
-                x, y = x.cuda(), y.cuda()
+            x, y = x.to(device=self.device), y.to(device=self.device)
 
             optimizer.zero_grad()
             out = self.clf(x)
@@ -165,18 +166,12 @@ class data_train:
         n_epoch = self.args['n_epoch']
         
         if self.args['isreset']:
-            if self.use_cuda:
-                self.clf =  self.net.apply(weight_reset).cuda()
-            else:
-                self.clf =  self.net.apply(weight_reset)
+            self.clf = self.net.apply(weight_reset).to(device=self.device)
         else:
             try:
                 self.clf
             except:
-                if self.use_cuda:
-                    self.clf =  self.net.apply(weight_reset).cuda()
-                else:
-                    self.clf =  self.net.apply(weight_reset)
+                self.clf = self.net.apply(weight_reset).to(device=self.device)
 
         if self.args['optimizer'] == 'sgd':
             optimizer = optim.SGD(self.clf.parameters(), lr = self.args['lr'], momentum=0.9, weight_decay=5e-4)
@@ -224,7 +219,7 @@ class data_train:
             log_string = 'Epoch:' + str(epoch) + '- training accuracy:'+str(accCurrent)+'- training loss:'+str(lossCurrent)
             train_logs.append(log_string)
             if (epoch % 50 == 0) and (accCurrent < 0.2): # resetif not converging
-                self.clf = self.net.apply(weight_reset)
+                self.clf = self.net.apply(weight_reset).to(device=self.device)
                 
                 if self.args['optimizer'] == 'sgd':
 
