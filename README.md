@@ -46,18 +46,17 @@
 - [Acknowledgement](#acknowledgement)
 
 ## What is DISTIL?
-DISTIL is an active learning toolkit, which implements a number of state of art active learning strategies, with a particular focus for active learning in the deep learning setting. DISTIL is built on pyTorch and decouples the training loop from the active learning algorithms, thereby providing flexibility to the user to control the training procedures and models. It allows users to incorporate new active learning algorithms easily with minimal changes to the existing code. DISTIL also provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
+DISTIL is an active learning toolkit, which implements a number of state of art active learning strategies, with a particular focus for active learning in the deep learning setting. DISTIL is built on pyTorch and decouples the training loop from the active learning algorithms, thereby providing flexibility to the user to control the training procedures and models. It allows users to incorporate new active learning algorithms easily with minimal changes to the existing code. DISTIL also provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets. We are continuously incorporating newer and better selection strategies into DISTIL.
 
 ## Key Features of DISTIL
-- A one of its kind active learning toolkit that decouples the active learning module from        training loop and allows users to have full control over the training.
+- Decouples the active learning strategy from the training loop there allowing the users to modify the training and/or the active learning strategy.
 - Faster and efficient implementation of several active learning strategies.
-- Run the basic experiments with just one command.
+- Implements most state-of-the-art active learning algorithms.
+- Run the basic experiments with just one command. Access to various active learning strategies with just one line of code.
 - Minimal changes in configuration files to run your own experiments.
-- Achieving similar test accuracy with less amount of training data.
+- Achieving similar test accuracy with less amount of training data. Huge reduction in labelling cost and time.
 - Minimal changes to add it to the existing training structure.
-- Huge reduction in labelling cost and time.
-- Access to various active learning strategies with just one line of code.
-- We are continuously incorporating newer and better selection strategies into DISTIL.
+- Recipies, tutorials and benchmarks of all active learning algorithms on many deep learning datasets.
 
 ## Starting with DISTIL
 ```
