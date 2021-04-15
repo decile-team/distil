@@ -138,6 +138,11 @@ Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
 
 ![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)
 
+### SVHN
+Budget: 1000, Model: Resnet18, Number of rounds: 10, Total Points: 11,000 (15%)
+
+![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)
+
 ### OPENML-6
 Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
 
