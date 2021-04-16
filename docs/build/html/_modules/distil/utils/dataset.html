@@ -86,6 +86,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../ActStrategy/modules.html">DISTIL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration Files for Training</a></li>
 </ul>
 
             
@@ -152,14 +153,135 @@
            <div itemprop="articleBody">
             
   <h1>Source code for distil.utils.dataset</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">transforms</span>
 
-<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="add_label_noise"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.add_label_noise">[docs]</a><span class="k">def</span> <span class="nf">add_label_noise</span><span class="p">(</span><span class="n">y_trn</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">noise_ratio</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds noise to the specified list of labels.</span>
+<span class="sd">    This functionality is taken from CORDS and </span>
+<span class="sd">    applied here.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_trn : list</span>
+<span class="sd">        The list of labels to add noise.</span>
+<span class="sd">    num_cls : int</span>
+<span class="sd">        The number of classes possible in the list.</span>
+<span class="sd">    noise_ratio : float, optional</span>
+<span class="sd">        The percentage of labels to modify. The default is 0.8.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y_trn : list</span>
+<span class="sd">        The list of now-noisy labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">noise_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)</span> <span class="o">*</span> <span class="n">noise_ratio</span><span class="p">)</span>
+    <span class="n">noise_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="n">noise_size</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">y_trn</span><span class="p">[</span><span class="n">noise_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_cls</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">noise_size</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">y_trn</span></div>
+
+<div class="viewcode-block" id="get_imbalanced_idx"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_imbalanced_idx">[docs]</a><span class="k">def</span> <span class="nf">get_imbalanced_idx</span><span class="p">(</span><span class="n">y_trn</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">class_ratio</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of indices of the supplied dataset that </span>
+<span class="sd">    constitute a class-imbalanced subset of the supplied </span>
+<span class="sd">    dataset. This functionality is taken from CORDS and </span>
+<span class="sd">    applied here.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_trn : numpy ndarray</span>
+<span class="sd">        The label set to choose imbalance.</span>
+<span class="sd">    num_cls : int</span>
+<span class="sd">        The number of classes possible in the list.</span>
+<span class="sd">    class_ratio : float, optional</span>
+<span class="sd">        The percentage of classes to affect. The default is 0.6.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    subset_idxs : list</span>
+<span class="sd">        The list of indices of the supplied dataset that </span>
+<span class="sd">        constitute a class-imbalanced subset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Calculate the minimum samples in a class and take a small fraction of that number as the new sample </span>
+    <span class="c1"># count for that class</span>
+    <span class="n">samples_per_class</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_cls</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cls</span><span class="p">):</span>
+        <span class="n">samples_per_class</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">min_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">samples_per_class</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+    
+    <span class="c1"># Generate affected classes based on the specified class ratio</span>
+    <span class="n">selected_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_cls</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">class_ratio</span> <span class="o">*</span> <span class="n">num_cls</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="c1"># For each class, either add the full class to the dataset (if not selected) or add only min_samples</span>
+    <span class="c1"># samples from that class to the dataset</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_classes</span><span class="p">:</span>
+                <span class="n">subset_idxs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+                                             <span class="n">size</span><span class="o">=</span><span class="n">min_samples</span><span class="p">,</span>
+                                             <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">subset_idxs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_classes</span><span class="p">:</span>
+                <span class="n">batch_subset_idxs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+                                             <span class="n">size</span><span class="o">=</span><span class="n">min_samples</span><span class="p">,</span>
+                                             <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">batch_subset_idxs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_trn</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+            <span class="n">subset_idxs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">batch_subset_idxs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">subset_idxs</span></div>
+
+<div class="viewcode-block" id="make_data_redundant"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.make_data_redundant">[docs]</a><span class="k">def</span> <span class="nf">make_data_redundant</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">amtRed</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modifies the input dataset in such a way that only X.shape(0)/amtRed are original </span>
+<span class="sd">    points and rest are repeated or redundant. </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy ndarray</span>
+<span class="sd">        The feature set to be made redundant.</span>
+<span class="sd">    Y : numpy ndarray</span>
+<span class="sd">        The label set corresponding to the X.</span>
+<span class="sd">    amtRed : float, optional</span>
+<span class="sd">        Factor that determines redundancy. The default is 2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X : numpy ndarray</span>
+<span class="sd">        Modified feature set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">classes</span><span class="p">,</span><span class="n">no_elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)):</span>
+        <span class="n">retain</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">no_elements</span><span class="p">[</span><span class="n">cl</span><span class="p">]</span><span class="o">/</span><span class="n">amtRed</span><span class="p">)</span>
+        <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Y</span> <span class="o">==</span> <span class="n">classes</span><span class="p">[</span><span class="n">cl</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">amtRed</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">idxs_rep</span> <span class="o">=</span> <span class="n">idxs</span><span class="p">[:</span><span class="n">retain</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">idxs_rep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">idxs_rep</span><span class="p">,</span><span class="n">idxs</span><span class="p">[:</span><span class="n">retain</span><span class="p">]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">X</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idxs_rep</span><span class="p">[:</span><span class="n">no_elements</span><span class="p">[</span><span class="n">cl</span><span class="p">]]]</span>
+
+    <span class="k">return</span> <span class="n">X</span></div>
+
+
+<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads dataset</span>
 
@@ -167,6 +289,48 @@
 <span class="sd">    ----------</span>
 <span class="sd">    name: str</span>
 <span class="sd">        Name of the dataset to be loaded. Supports MNIST and CIFAR10</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+<span class="sd">    tr_load_args: dict</span>
+<span class="sd">        String dictionary for train distribution shift loading</span>
+<span class="sd">    te_load_args: dict</span>
+<span class="sd">        String dictionary for test distribution shift loading</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;MNIST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;KMNIST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_KMNIST</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;FASHION_MNIST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_FASHION_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;CIFAR10&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_CIFAR10</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;CIFAR100&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_CIFAR100</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;SVHN&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_SVHN</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;STL10&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_STL10</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">)</span></div>
+    
+
+<div class="viewcode-block" id="get_SVHN"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_SVHN">[docs]</a><span class="k">def</span> <span class="nf">get_SVHN</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads SVHN dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    path: str</span>
 <span class="sd">        Path to save the downloaded dataset</span>
 
@@ -183,12 +347,65 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;MNIST&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">get_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;CIFAR10&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">get_CIFAR10</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">10</span>
+    
+    <span class="c1"># Download the SVHN dataset</span>
+    <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">SVHN</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/SVHN&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">SVHN</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/SVHN&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">labels</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">labels</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="get_MNIST"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_MNIST">[docs]</a><span class="k">def</span> <span class="nf">get_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
+
+<div class="viewcode-block" id="get_MNIST"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_MNIST">[docs]</a><span class="k">def</span> <span class="nf">get_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Downloads MNIST dataset</span>
 
@@ -209,15 +426,226 @@
 <span class="sd">        Test labels</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">raw_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">raw_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">raw_tr</span><span class="o">.</span><span class="n">train_data</span>
-    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">raw_tr</span><span class="o">.</span><span class="n">train_labels</span>
-    <span class="n">X_te</span> <span class="o">=</span> <span class="n">raw_te</span><span class="o">.</span><span class="n">test_data</span>
-    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">raw_te</span><span class="o">.</span><span class="n">test_labels</span>
+    
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">10</span>
+    
+    <span class="c1"># Download the MNIST dataset</span>
+    <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
 
-<div class="viewcode-block" id="get_CIFAR10"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_CIFAR10">[docs]</a><span class="k">def</span> <span class="nf">get_CIFAR10</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="get_KMNIST"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_KMNIST">[docs]</a><span class="k">def</span> <span class="nf">get_KMNIST</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads KMNIST dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">10</span>
+    
+    <span class="c1"># Download the KMNIST dataset</span>
+    <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">KMNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/KMNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">KMNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/KMNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
+
+<div class="viewcode-block" id="get_FASHION_MNIST"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_FASHION_MNIST">[docs]</a><span class="k">def</span> <span class="nf">get_FASHION_MNIST</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads FASHION_MNIST dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">10</span>
+    
+    <span class="c1"># Download the FASHION_MNIST dataset</span>
+    <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/FASHION_MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/FASHION_MNIST&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
+
+<div class="viewcode-block" id="get_CIFAR10"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_CIFAR10">[docs]</a><span class="k">def</span> <span class="nf">get_CIFAR10</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Downloads CIFAR10 dataset</span>
 
@@ -239,13 +667,221 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="c1"># Introduce a training transform that provides generalization in training to the test data.</span>
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">10</span>
+    
+    <span class="c1"># Download the CIFAR10 dataset</span>
     <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR10&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR10&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
     <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span>
-    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span><span class="p">))</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span>
     <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span>
-    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_te</span><span class="o">.</span><span class="n">targets</span><span class="p">))</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">targets</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
+
+<div class="viewcode-block" id="get_CIFAR100"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_CIFAR100">[docs]</a><span class="k">def</span> <span class="nf">get_CIFAR100</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads CIFAR100 dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">100</span>
+    
+    <span class="c1"># Download the CIFAR100 dataset</span>
+    <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR100</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR100&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR100</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/CIFAR100&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">targets</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">targets</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
+
+<div class="viewcode-block" id="get_STL10"><a class="viewcode-back" href="../../../ActStrategy/distil.utils.html#distil.utils.dataset.get_STL10">[docs]</a><span class="k">def</span> <span class="nf">get_STL10</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tr_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">te_load_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads STL10 dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to save the downloaded dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_tr: numpy array</span>
+<span class="sd">        Train set</span>
+<span class="sd">    Y_tr: torch tensor</span>
+<span class="sd">        Training Labels</span>
+<span class="sd">    X_te: numpy array</span>
+<span class="sd">        Test Set</span>
+<span class="sd">    Y_te: torch tensor</span>
+<span class="sd">        Test labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Deterministic random seed to ensure data initialization is consistent</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    
+    <span class="n">num_cls</span> <span class="o">=</span> <span class="mi">100</span>
+    
+    <span class="c1"># Download the STL10 dataset</span>
+    <span class="n">data_tr</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">STL10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/STL10&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data_te</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">STL10</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;/STL10&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Obtain the raw data</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">data_tr</span><span class="o">.</span><span class="n">labels</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">data_te</span><span class="o">.</span><span class="n">labels</span>
+    
+    <span class="c1"># Initialize tr_idx and te_idx, which contain the full list of indices. </span>
+    <span class="c1"># Used to select a subset from the the full dataset.</span>
+    <span class="n">tr_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">te_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_te</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    
+    <span class="c1"># Prepare labels for subset selection</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
+    
+    <span class="c1"># If the load arguments specify a class imbalance or a noise ratio, apply the distribution </span>
+    <span class="c1"># shift to the appropriate dataset. Note that only one of class imbalance or noise is applied.</span>
+    <span class="k">if</span> <span class="n">tr_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">tr_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">tr_load_args</span><span class="p">:</span>
+            <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">tr_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">te_load_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;class_imbalance_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">te_idx</span> <span class="o">=</span> <span class="n">get_imbalanced_idx</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;class_imbalance_ratio&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;noisy_labels_ratio&quot;</span> <span class="ow">in</span> <span class="n">te_load_args</span><span class="p">:</span>
+            <span class="n">Y_te</span> <span class="o">=</span> <span class="n">add_label_noise</span><span class="p">(</span><span class="n">Y_te</span><span class="p">,</span> <span class="n">num_cls</span><span class="p">,</span> <span class="n">te_load_args</span><span class="p">[</span><span class="s2">&quot;noisy_labels_ratio&quot;</span><span class="p">])</span>   
+    
+    <span class="c1"># Select the subset specified by tr_idx and te_idx</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">tr_idx</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">te_idx</span><span class="p">]</span>
+
+    <span class="c1"># Shuffle train and test datasets.</span>
+    <span class="n">train_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">test_permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Y_te</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">X_tr</span> <span class="o">=</span> <span class="n">X_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">Y_tr</span><span class="p">[</span><span class="n">train_permutation</span><span class="p">]</span>
+    <span class="n">X_te</span> <span class="o">=</span> <span class="n">X_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">Y_te</span><span class="p">[</span><span class="n">test_permutation</span><span class="p">]</span>
+
+    <span class="c1"># Convert labels to tensor</span>
+    <span class="n">Y_tr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_tr</span><span class="p">)</span>
+    <span class="n">Y_te</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">Y_te</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">X_tr</span><span class="p">,</span> <span class="n">Y_tr</span><span class="p">,</span> <span class="n">X_te</span><span class="p">,</span> <span class="n">Y_te</span></div>
 </pre></div>

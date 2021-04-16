@@ -86,6 +86,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="ActStrategy/modules.html">DISTIL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration Files for Training</a></li>
 </ul>
 
             
@@ -172,10 +173,12 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.adversarial_bim.AdversarialBIM">AdversarialBIM (class in distil.active_learning_strategies.adversarial_bim)</a>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.add_label_noise">add_label_noise() (in module distil.utils.dataset)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.adversarial_bim.AdversarialBIM">AdversarialBIM (class in distil.active_learning_strategies.adversarial_bim)</a>
+</li>
       <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.adversarial_deepfool.AdversarialDeepFool">AdversarialDeepFool (class in distil.active_learning_strategies.adversarial_deepfool)</a>
 </li>
   </ul></td>
@@ -216,9 +219,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_CIFAR10">DataHandler_CIFAR10 (class in distil.utils.DataHandler)</a>
 </li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_CIFAR100">DataHandler_CIFAR100 (class in distil.utils.DataHandler)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_FASHION_MNIST">DataHandler_FASHION_MNIST (class in distil.utils.DataHandler)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_KMNIST">DataHandler_KMNIST (class in distil.utils.DataHandler)</a>
+</li>
       <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_MNIST">DataHandler_MNIST (class in distil.utils.DataHandler)</a>
 </li>
       <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_Points">DataHandler_Points (class in distil.utils.DataHandler)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_STL10">DataHandler_STL10 (class in distil.utils.DataHandler)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.DataHandler.DataHandler_SVHN">DataHandler_SVHN (class in distil.utils.DataHandler)</a>
 </li>
       <li>
     distil.active_learning_strategies.adversarial_bim
@@ -276,6 +289,8 @@
         <li><a href="ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.entropy_sampling_dropout">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     distil.active_learning_strategies.fass
 
@@ -283,8 +298,6 @@
         <li><a href="ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.fass">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     distil.active_learning_strategies.glister
 
@@ -387,12 +400,24 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_CIFAR10">get_CIFAR10() (in module distil.utils.dataset)</a>
 </li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_CIFAR100">get_CIFAR100() (in module distil.utils.dataset)</a>
+</li>
       <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_dataset">get_dataset() (in module distil.utils.dataset)</a>
 </li>
-      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_MNIST">get_MNIST() (in module distil.utils.dataset)</a>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_FASHION_MNIST">get_FASHION_MNIST() (in module distil.utils.dataset)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_imbalanced_idx">get_imbalanced_idx() (in module distil.utils.dataset)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_KMNIST">get_KMNIST() (in module distil.utils.dataset)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_MNIST">get_MNIST() (in module distil.utils.dataset)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_STL10">get_STL10() (in module distil.utils.dataset)</a>
+</li>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.get_SVHN">get_SVHN() (in module distil.utils.dataset)</a>
+</li>
       <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.glister.GLISTER">GLISTER (class in distil.active_learning_strategies.glister)</a>
 </li>
       <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.baseline_sampling.gram_aug">gram_aug() (in module distil.active_learning_strategies.baseline_sampling)</a>
@@ -425,6 +450,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="ActStrategy/distil.utils.html#distil.utils.dataset.make_data_redundant">make_data_redundant() (in module distil.utils.dataset)</a>
+</li>
       <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling.MarginSampling">MarginSampling (class in distil.active_learning_strategies.margin_sampling)</a>
 </li>
       <li><a href="ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout">MarginSamplingDropout (class in distil.active_learning_strategies.margin_sampling_dropout)</a>

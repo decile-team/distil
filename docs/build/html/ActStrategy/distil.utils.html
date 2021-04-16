@@ -39,6 +39,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration Files for Training" href="../configuration.html" />
     <link rel="prev" title="Active Learning Strategies" href="distil.active_learning_strategies.html" /> 
 </head>
 
@@ -95,6 +96,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Files for Training</a></li>
 </ul>
 
             
@@ -189,8 +191,62 @@ loading data even without labels</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="distil.utils.DataHandler.DataHandler_CIFAR100">
+<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_CIFAR100</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_test_transform</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_CIFAR100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_CIFAR100" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load CIFAR100 dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="distil.utils.DataHandler.DataHandler_FASHION_MNIST">
+<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_FASHION_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_test_transform</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_FASHION_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_FASHION_MNIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load FASHION_MNIST dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="distil.utils.DataHandler.DataHandler_KMNIST">
+<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_KMNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_test_transform</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_KMNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_KMNIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load KMNIST dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
 <dt id="distil.utils.DataHandler.DataHandler_MNIST">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_MNIST" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_test_transform</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_MNIST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
 <p>Data Handler to load MNIST dataset.
 This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
@@ -224,12 +280,71 @@ loading data even without labels</p>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt id="distil.utils.DataHandler.DataHandler_STL10">
+<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_STL10</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_test_transform</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_STL10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_STL10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load STL10 dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="distil.utils.DataHandler.DataHandler_SVHN">
+<em class="property">class </em><code class="sig-prename descclassname">distil.utils.DataHandler.</code><code class="sig-name descname">DataHandler_SVHN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">select</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_test_transform</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/DataHandler.html#DataHandler_SVHN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.DataHandler.DataHandler_SVHN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Data Handler to load SVHN dataset.
+This class extends <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> to handle
+loading data even without labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy array</em>) – Data to be loaded</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Labels to be loaded (default: None)</p></li>
+<li><p><strong>select</strong> (<em>bool</em>) – True if loading data without labels, False otherwise</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-distil.utils.dataset">
 <span id="dataset"></span><h2>Dataset<a class="headerlink" href="#module-distil.utils.dataset" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
+<dt id="distil.utils.dataset.add_label_noise">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">add_label_noise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y_trn</span></em>, <em class="sig-param"><span class="n">num_cls</span></em>, <em class="sig-param"><span class="n">noise_ratio</span><span class="o">=</span><span class="default_value">0.8</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#add_label_noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.add_label_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds noise to the specified list of labels.
+This functionality is taken from CORDS and
+applied here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_trn</strong> (<em>list</em>) – The list of labels to add noise.</p></li>
+<li><p><strong>num_cls</strong> (<em>int</em>) – The number of classes possible in the list.</p></li>
+<li><p><strong>noise_ratio</strong> (<em>float</em><em>, </em><em>optional</em>) – The percentage of labels to modify. The default is 0.8.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y_trn</strong> – The list of now-noisy labels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="distil.utils.dataset.get_CIFAR10">
-<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_CIFAR10</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_CIFAR10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_CIFAR10" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_CIFAR10</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_CIFAR10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_CIFAR10" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downloads CIFAR10 dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -248,8 +363,68 @@ loading data even without labels</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="distil.utils.dataset.get_CIFAR100">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_CIFAR100</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_CIFAR100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_CIFAR100" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads CIFAR100 dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="distil.utils.dataset.get_FASHION_MNIST">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_FASHION_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_FASHION_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_FASHION_MNIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads FASHION_MNIST dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="distil.utils.dataset.get_KMNIST">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_KMNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_KMNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_KMNIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads KMNIST dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="distil.utils.dataset.get_MNIST">
-<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_MNIST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_MNIST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_MNIST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_MNIST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downloads MNIST dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,14 +443,56 @@ loading data even without labels</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="distil.utils.dataset.get_STL10">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_STL10</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_STL10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_STL10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads STL10 dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="distil.utils.dataset.get_SVHN">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_SVHN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_SVHN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_SVHN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads SVHN dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_tr</strong> (<em>numpy array</em>) – Train set</p></li>
+<li><p><strong>Y_tr</strong> (<em>torch tensor</em>) – Training Labels</p></li>
+<li><p><strong>X_te</strong> (<em>numpy array</em>) – Test Set</p></li>
+<li><p><strong>Y_te</strong> (<em>torch tensor</em>) – Test labels</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="distil.utils.dataset.get_dataset">
-<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">tr_load_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">te_load_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of the dataset to be loaded. Supports MNIST and CIFAR10</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – Path to save the downloaded dataset</p></li>
+<li><p><strong>tr_load_args</strong> (<em>dict</em>) – String dictionary for train distribution shift loading</p></li>
+<li><p><strong>te_load_args</strong> (<em>dict</em>) – String dictionary for test distribution shift loading</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -290,6 +507,53 @@ loading data even without labels</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="distil.utils.dataset.get_imbalanced_idx">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">get_imbalanced_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y_trn</span></em>, <em class="sig-param"><span class="n">num_cls</span></em>, <em class="sig-param"><span class="n">class_ratio</span><span class="o">=</span><span class="default_value">0.6</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#get_imbalanced_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.get_imbalanced_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of indices of the supplied dataset that
+constitute a class-imbalanced subset of the supplied
+dataset. This functionality is taken from CORDS and
+applied here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_trn</strong> (<em>numpy ndarray</em>) – The label set to choose imbalance.</p></li>
+<li><p><strong>num_cls</strong> (<em>int</em>) – The number of classes possible in the list.</p></li>
+<li><p><strong>class_ratio</strong> (<em>float</em><em>, </em><em>optional</em>) – The percentage of classes to affect. The default is 0.6.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>subset_idxs</strong> – The list of indices of the supplied dataset that
+constitute a class-imbalanced subset</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="distil.utils.dataset.make_data_redundant">
+<code class="sig-prename descclassname">distil.utils.dataset.</code><code class="sig-name descname">make_data_redundant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">amtRed</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/dataset.html#make_data_redundant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.dataset.make_data_redundant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies the input dataset in such a way that only X.shape(0)/amtRed are original
+points and rest are repeated or redundant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy ndarray</em>) – The feature set to be made redundant.</p></li>
+<li><p><strong>Y</strong> (<em>numpy ndarray</em>) – The label set corresponding to the X.</p></li>
+<li><p><strong>amtRed</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor that determines redundancy. The default is 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>X</strong> – Modified feature set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -299,6 +563,7 @@ loading data even without labels</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../configuration.html" class="btn btn-neutral float-right" title="Configuration Files for Training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="distil.active_learning_strategies.html" class="btn btn-neutral float-left" title="Active Learning Strategies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

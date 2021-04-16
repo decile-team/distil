@@ -1,15 +1,6 @@
 from .strategy import Strategy
-import copy
-import numpy as np
 
 import torch
-import torch.backends.cudnn as cudnn
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-
-import math
-import random
 
 from ..utils.submodular import SubmodularFunction
 from ..utils.Disparty_functions import DisparityFunction
@@ -60,7 +51,6 @@ class SubmodSampling(Strategy):
         self.if_grad = if_grad
         self.selection_type = selection_type
         self.kernel_batch_size = kernel_batch_size
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def _compute_per_element_grads(self):
         

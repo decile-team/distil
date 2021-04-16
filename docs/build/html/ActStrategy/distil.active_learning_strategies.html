@@ -112,6 +112,7 @@
 <li class="toctree-l2"><a class="reference internal" href="distil.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Files for Training</a></li>
 </ul>
 
             
@@ -508,11 +509,14 @@ Choice of selection strategy - ‘PerClass’ | ‘Supervised’</p>
 </dl>
 <dl class="py method">
 <dt id="distil.active_learning_strategies.fass.FASS.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS.select" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em>, <em class="sig-param"><span class="n">top_n</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/active_learning_strategies/fass.html#FASS.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.active_learning_strategies.fass.FASS.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select next set of points</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>budget</strong> (<em>int</em>) – Number of indexes to be returned for next set</p></li>
+<li><p><strong>top_n</strong> (<em>float</em>) – It is the multiper to the budget which decides the size of the data points on which             submodular functions will be applied. For example top_n = 5, 5*budget points will be             passed to the submodular functions.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>return_indices</strong> – List of selected data point indexes with respect to unlabeled_x</p>

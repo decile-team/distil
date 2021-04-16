@@ -2,9 +2,6 @@ import math
 import numpy as np
 import torch
 from torchvision import datasets
-from torch.utils.data import Dataset
-from PIL import Image
-from torchvision import transforms
 
 def add_label_noise(y_trn, num_cls, noise_ratio=0.8):
     """

@@ -6,15 +6,15 @@
 	"train_parameters": {
 		"lr": 0.001,
 		"batch_size": 1000,
-		"n_epoch": 50,
-		"max_accuracy": 0.95,
+		"n_epoch": 80,
+		"max_accuracy": 0.99,
 		"isreset": true,
 		"islogs":  true,
 		"logs_location": "./logs.txt"
 	},
 
 	"active_learning":{
-		"strategy": "margin_sampling",
+		"strategy": "badge",
 		"budget": 1000,
 		"rounds": 15,
 		"initial_points":1000,

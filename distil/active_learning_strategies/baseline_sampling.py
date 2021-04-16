@@ -1,5 +1,4 @@
 import numpy as np
-from torch.utils.data import DataLoader
 from .strategy import Strategy
 
 def gram_red(L, L_inv, u_loc):
