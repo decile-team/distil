@@ -12,6 +12,7 @@ from .margin_sampling_dropout import MarginSamplingDropout
 from .core_set import CoreSet
 from .glister import GLISTER
 from .badge import BADGE
+from .gradmatch_active import GradMatchActive
 from .adversarial_bim import AdversarialBIM
 from .adversarial_deepfool import AdversarialDeepFool
 from .kmeans_sampling import KMeansSampling
