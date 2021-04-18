@@ -9,7 +9,7 @@ from ..utils.supervised_strategy_wrappers import SupervisedSelectHandler
 # Define a GradMatch Active strategy
 class GradMatchActive(Strategy):
     
-    def __init__(self, X, Y, unlabeled_x, net, criterion, handler, nclasses, lrn_rate, selection_type, linear_layer, args={}, valid=False, X_val=None, Y_val=None, device="cuda"):
+    def __init__(self, X, Y, unlabeled_x, net, criterion, handler, nclasses, lrn_rate, selection_type, linear_layer, args={}, valid=False, X_val=None, Y_val=None):
         
         # Run super constructor
         super(GradMatchActive, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
@@ -21,7 +21,6 @@ class GradMatchActive(Strategy):
         if valid:
             self.X_Val = X_val
             self.Y_Val = Y_val
-        self.device = device
 
     def select(self, budget, use_weights):
         
