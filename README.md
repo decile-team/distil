@@ -27,7 +27,7 @@
 </p>
 
 <h3 align="center">
-<p>Cut down your labeling cost and time 5x-10x times!
+<p>Cut down your labeling cost and time by 3x-5x!
 </h3>
 
 # In this README
