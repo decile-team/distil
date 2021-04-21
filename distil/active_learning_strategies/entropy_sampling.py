@@ -9,12 +9,12 @@ class EntropySampling(Strategy):
      from the model then the correponding softmax would be 
 
     .. math::
-        \sigma(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}
+        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}}
     
     Then entropy can be calculated as,
 
     .. math:: 
-        ENTROPY = -\sum_j \sigma(z_j)*log(\sigma(z_i))
+        ENTROPY = -\\sum_j \\sigma(z_j)*log(\\sigma(z_i))
     
     Parameters
     ----------
