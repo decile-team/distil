@@ -48,16 +48,13 @@ def init_centers(X, K, device):
 class BADGE(Strategy):
 
     """
-    Implementation of Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE) 
-    :footcite:`DBLP:journals/corr/abs-1906-03671` Strategy. This class extends :
-    class:`active_learning_strategies.strategy.Strategy`.
-
-    This method is based on the paper `Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds <https://arxiv.org/abs/1906.03671>`_ 
-    According to the paper, Batch Active learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate and high magnitude when represented in a hallucinated gradient space, a strategy designed to incorporate both predictive uncertainty and sample diversity into every selected batch.
+   This method is based on the paper `Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds
+    :footcite:`DBLP:journals/corr/abs-1906-03671`. According to the paper, this strategy,
+    Batch Active learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate and high magnitude when represented in a hallucinated gradient space, a strategy designed to incorporate both predictive uncertainty and sample diversity into every selected batch.
     Crucially, BADGE trades off between uncertainty and diversity without requiring any hand-tuned hyperparameters.
     Here at each round of selection, loss gradients are computed using the hypothesised labels. Then to select the points to be labeled are selected by applying k-means++ on these loss gradients. 
     
-    Parameters
+    Parameters.
     ----------
 
     X: Numpy array 
@@ -88,7 +85,7 @@ class BADGE(Strategy):
         ----------
         budget : int
             Number of indices to be selected from unlabeled set
-        batch_size : TYPE
+        batch_size : int
             Size of batches to form
 
         Returns
