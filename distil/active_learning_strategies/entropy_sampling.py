@@ -4,9 +4,9 @@ from .strategy import Strategy
 class EntropySampling(Strategy):
     """
     Implementation of Entropy Sampling Strategy, one of the most basic active learning strategies,
-     where we select samples about which the model is most uncertain. To quantify the uncertainity 
-     we use entropy and therefore select points which have maximum entropy. Let :math:`z_i` be output 
-     from the model then the correponding softmax would be 
+    where we select samples about which the model is most uncertain. To quantify the uncertainity 
+    we use entropy and therefore select points which have maximum entropy. Let :math:`z_i` be output 
+    from the model then the correponding softmax would be 
 
     .. math::
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}}
