@@ -116,13 +116,13 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
 * Model
     * The model should have a function get_embedding_dim which returns the number of hidden units in the last layer.
     * The forward function should have a boolean flag “last” where:
-        * if  true: It should return the model output and the output of the second last layer
-        * if false: It should only return the model output.
+        * if True: It should return the model output and the output of the second last layer
+        * if False: It should only return the model output.
 
 * Data Handler
     * The data handler class should have a boolean parameter “select”:
-        * if true: It should return only X and not Y (used by active learning strategies)
-        * if false: It should return both X and Y (used while training the model)
+        * if True: It should return only X and not Y (used by active learning strategies)
+        * if False: It should return both X and Y (used while training the model)
 
 To get a more clearer idea about how to incorporate DISTIL with your own models, refer to our blog: ##
 
@@ -149,6 +149,7 @@ The label efficiency plot indicates that for reaching testing accuracy of 92% on
 
 ### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
+
 
 Test Accuracy(Zoomed)      |  Label Efficiency(Finer Budget)
 :-------------------------:|:-------------------------:
