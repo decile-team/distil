@@ -140,6 +140,7 @@ The model was first trained on randomly selected n points where n is the budget 
 ### CIFAR10
 Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
 
+
 Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
 ![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)  |  ![CIFAR10 LE](./experiment_plots/cifar10_label_efficiency.png?raw=true)
@@ -160,10 +161,12 @@ Test Accuracy(Zoomed)      |  Label Efficiency(Finer Budget)
 The label efficiency plot indicates that for reaching testing accuracy of 96% on MNIST, random sampling requires 860 labeled points, whereas entropy requires 460 and badge acheives same accuracy levels at 500 points. The label efficiency graph is on a finer budget.
 
 Zoomed out training plot.
+
 ![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
 ### FASHION MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
+
 
 Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
@@ -174,6 +177,7 @@ The label efficiency plot indicates that for reaching testing accuracy of 94% on
 
 ### SVHN
 Budget: 1000, Model: Resnet18, Number of rounds: 10, Total Points: 11,000 (15%)
+
 
 Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
