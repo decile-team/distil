@@ -57,10 +57,10 @@ class BADGE(Strategy):
     hyperparameters. Here at each round of selection, loss gradients are computed using the 
     hypothesised labels. Then to select the points to be labeled are selected by applying 
     k-means++ on these loss gradients. 
-    
+
+
     Parameters.
     ----------
-
     X: Numpy array 
         Features of the labled set of points 
     Y: Numpy array

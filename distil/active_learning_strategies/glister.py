@@ -15,6 +15,9 @@ class GLISTER(Strategy):
     Subset Selection for Efficient and Robust Learning :footcite:`killamsetty2020glister`. GLISTER 
     methods tries to solve a bi-level optimisation problem.
 
+    .. math::
+        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\underset{\\theta}{\\operatorname{argmin\\hspace{0.7mm}}} L_T( \\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
+        
     Parameters
     ----------
     X: Numpy array 
