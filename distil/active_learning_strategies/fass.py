@@ -4,9 +4,13 @@ from ..utils.submodular import SubmodularFunction
 
 class FASS(Strategy):
     """
-    Implementation of FASS strategy:footcite:`pmlr-v37-wei15` to select data points for active learning.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`.
-    
+    Implements FASS :footcite:`pmlr-v37-wei15` combines the uncertainty sampling 
+    method with a submodular data subset selection framework to label a subset of data points to 
+    train a classifier. Here the based on the ‘top_n’ parameter, ‘top_n*budget’ most uncertain 
+    parameters are filtered. On these filtered points one of  the submodular functions viz. 
+    'facility_location' , 'graph_cut', 'saturated_coverage', 'sum_redundancy', 'feature_based' 
+    is applied to get the final set of points.
+
     Parameters
     ----------
     X: numpy array
@@ -60,9 +64,9 @@ class FASS(Strategy):
         budget: int
             Number of indexes to be returned for next set
         top_n: float
-            It is the multiper to the budget which decides the size of the data points on which\
-             submodular functions will be applied. For example top_n = 5, 5*budget points will be\
-             passed to the submodular functions.  
+            It is the multiper to the budget which decides the size of the data points on which \
+            submodular functions will be applied. For example top_n = 5, if 5*budget points will
+            be passed to the submodular functions.  
         Returns
         ----------
         return_indices: list

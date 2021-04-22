@@ -11,9 +11,15 @@ import math
 
 class GLISTER(Strategy):
     """
-    Implementation of GLISTER-ACTIVE Strategy :footcite:`killamsetty2020glister`. 
-    This class extends :class:`active_learning_strategies.strategy.Strategy`.
-    
+    This is implementation of GLISTER-ACTIVE from the paper GLISTER: Generalization based Data 
+    Subset Selection for Efficient and Robust Learning :footcite:`killamsetty2020glister`. GLISTER 
+    methods tries to solve a bi-level optimisation problem.
+
+    .. math::
+        \begin{equation*}
+            \overbrace{\underset{{S \subseteq {\mathcal U}, |S| \leq k}}{\operatorname{argmax\hspace{0.7mm}}} LL_V(\underbrace{\underset{\theta}{\operatorname{argmax\hspace{0.7mm}}} LL_T( \theta, S)}_{inner-level}, {\mathcal V})}^{outer-level}
+        \end{equation*}
+
     Parameters
     ----------
     X: Numpy array 
