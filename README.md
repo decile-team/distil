@@ -122,7 +122,9 @@ The model was first trained on randomly selected n points where n is the budget 
 ### CIFAR10
 Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
 
-![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)
+Test Accuracy              |  Label Efficiency
+:-------------------------:|:-------------------------:
+![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)  |  ![CIFAR10 LE](./experiment_plots/cifar10_label_efficiency.png?raw=true)
 
 ### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
