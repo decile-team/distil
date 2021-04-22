@@ -38,6 +38,7 @@
 - [Installation](#installation)
 - [Package Requirements](#package-requirements)
 - [Documentation](#documentation)
+- [Make your PyTorch Model compatible with DISTIL](#make-your-pytorch-model-compatible-with-distil)
 - [Demo Notebooks](#demo-notebooks)
 - [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
 - [Testing Individual strategy and Running Examples](#testing-individual-strategy-and-running-examples)
@@ -108,6 +109,25 @@ Please make sure to enter the space between simple/ and decile-distil in the abo
 ## Documentation
 Learn more about distil at our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
 
+## Make your PyTorch Model compatible with DISTIL
+DISTIL provides various models and data handlers which can be used directly.
+DISTIL makes it extremely easy to integrate your custom models with active learning. There are two main things that needs to be incorporated in the code before using DISTIL.
+
+* Model
+    * The model should have a function get_embedding_dim which returns the number of hidden units in the last layer.
+    * The forward function should have a boolean flag “last” where:
+        * if  true: It should return the model output and the output of the second last layer
+        * if false: It should only return the model output.
+
+* Data Handler
+Since active learning works with data without labels, default data handlers cannot be used. The custom data handler should have following support:
+
+    * The data handler should have a boolean parameter “select”:
+        * if true: It should return only X and not Y (used by active learning strategies)
+        * if false: It should return both X and Y (used while training the model)
+
+To get a more clearer idea about how to incorporate DISTIL with your own models, refer to our blog: ##
+
 ## Demo Notebooks
 1. https://colab.research.google.com/drive/10WkyKlOxSixrMHvA9wEHcd0l5HugnChN?usp=sharing
 
@@ -126,24 +146,37 @@ Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
 ![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)  |  ![CIFAR10 LE](./experiment_plots/cifar10_label_efficiency.png?raw=true)
 
+The label efficiency plot indicates that for reaching testing accuracy of 92% on CIFAR10, random sampling requires 35000 labeled points, whereas entropy and badge acheives same accuracy levels at 20000 points.
+
 ### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
 
-Zoomed Plot
+Test Accuracy(Zoomed)      |  Label Efficiency(Finer Budget)
+:-------------------------:|:-------------------------:
+![MNIST Zoomed Plot](./experiment_plots/mnist_zoom_plot.png?raw=true)  |  ![MNIST LE](./experiment_plots/mnist_label_efficiency.png?raw=true)
 
-![MNIST Zoomed Plot](./experiment_plots/mnist_zoom_plot.png?raw=true)
+The label efficiency plot indicates that for reaching testing accuracy of 96% on MNIST, random sampling requires 860 labeled points, whereas entropy requires 460 and badge acheives same accuracy levels at 500 points. The label efficiency graph is on a finer budget.
 
+Zoomed out training plot.
 ![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
 ### FASHION MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
 
-![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)
+Test Accuracy              |  Label Efficiency
+:-------------------------:|:-------------------------:
+![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)  |  ![FMNIST LE](./experiment_plots/fmnist_label_efficiency.png?raw=true)
+
+The label efficiency plot indicates that for reaching testing accuracy of 94% on Fashion MNIST, random sampling requires 35000 labeled points, whereas entropy and badge acheives same accuracy levels at 12000 points.
 
 ### SVHN
 Budget: 1000, Model: Resnet18, Number of rounds: 10, Total Points: 11,000 (15%)
 
-![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)
+Test Accuracy              |  Label Efficiency
+:-------------------------:|:-------------------------:
+![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)  |  ![SVHN LE](./experiment_plots/svhn_label_efficiency.png?raw=true)
+
+The label efficiency plot indicates that for reaching testing accuracy of 95% on SVHN, random sampling requires 52000 labeled points, whereas entropy and badge acheives same accuracy levels at 16000 points.
 
 ### OPENML-6
 Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
