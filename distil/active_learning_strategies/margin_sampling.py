@@ -23,7 +23,7 @@ class MarginSampling(Strategy):
     Then using softmax, Margin Sampling Strategy would pick `budget` no. of elements as follows, 
     
     .. math::
-        arg\\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))} - (arg\\max_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
+        arg\\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}) - (arg\\max_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
 
     where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
