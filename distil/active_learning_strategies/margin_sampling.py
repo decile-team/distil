@@ -3,48 +3,33 @@ from .strategy import Strategy
 class MarginSampling(Strategy):
 
     """
-    Implementation of Margin Sampling Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include margin sampling technique to select data points for active learning.
-
-    While least confidence only takes into consideration the maximum probability, margin sampling considers the difference between the confidence of first and the second most probable labels.  
-  
+    Implements the Margin Sampling Strategy a active learning strategy similar to Least Confidence 
+    Sampling Strategy. While least confidence only takes into consideration the maximum probability, 
+    margin sampling considers the difference between the confidence of first and the second most 
+    probable labels.  
     
-    .. list-table:: Example
-       :widths: 25 25 25 25
-       :header-rows: 1
+    Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` 
+    and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. 
+    Then for a output node :math:`z_i` from the model, the correponding softmax would be 
 
-       * - Data Instances
-         - Label 1
-         - Label 2
-         - Label 3
-       * - p1
-         - 0.1
-         - 0.55
-         - 0.45
-       * - p2
-         - 0.2
-         - 0.3
-         - 0.5
-       * - p3
-         - 0.1
-         - 0.1
-         - 0.8
+    .. math::
+        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
 
-    
-    From the above table, the difference between the probability first and the second labels for p1, p2, p3 are 0.1, 0.2, 0.7 respectively.
-    The margin sampling will query the true label for the data instance p1 since it has the smallest difference among all the different data instances. 
-
-    Let :math:`p_i` represent probability for ith label and let there be n possible labels for data instance p. 
-    Let :math:`\\max{(t)}` represent the maximum value in t and :math:`max1{(t)}` represent second maximum value in t then, mathematically it can be written as:
-    
+    Let,
+    .. math::
+        m = arg\\max_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}
+        
+    Then using softmax, Margin Sampling Strategy would pick `budget` no. of elements as follows, 
     
     .. math::
-        \\min{(\\max{(P)} - \\max1{(P)})} 
-
+        arg\\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j
+        {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))} - (arg\\max_{j \ne m}
+        {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
-    where P=[ :math:`p_1, p_2,… p_n`]
-   
+
+    where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
+    
+
     Parameters
     ----------
     X: numpy array

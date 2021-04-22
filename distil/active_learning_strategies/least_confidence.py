@@ -14,11 +14,11 @@ class LeastConfidence(Strategy):
     .. math::
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
 
-    Then the softmax can be used pick `budget` no. of elements as for which the model has the lowest 
+    Then the softmax can be used pick `budget` no. of elements for which the model has the lowest 
     confidence as follows, 
     
     .. math::
-        \\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
+        arg\\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
 
     where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
