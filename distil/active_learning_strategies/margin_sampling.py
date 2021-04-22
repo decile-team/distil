@@ -16,6 +16,7 @@ class MarginSampling(Strategy):
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
 
     Let,
+    
     .. math::
         m = arg\\max_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}
         
