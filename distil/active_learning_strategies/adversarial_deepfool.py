@@ -11,8 +11,8 @@ class AdversarialDeepFool(Strategy):
     from decision boundary is often difficult and intractable for margin-based methods. This 
     technique avoids estimating distance by using Deep-Fool :footcite:`Moosavi-Dezfooli_2016_CVPR` 
     like techniques to estimate how much adversarial perturbation is required to cross the boundary. 
-    The smaller the required perturbation, the closer the point is to the boundary. 
-    
+    The smaller the required perturbation, the closer the point is to the boundary.
+
     Parameters
     ----------
     X: numpy array
