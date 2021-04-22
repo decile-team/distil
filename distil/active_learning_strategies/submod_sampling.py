@@ -9,6 +9,14 @@ from ..utils.DPP import dpp
 
 class SubmodSampling(Strategy):
     """
+
+    This strategy uses one of  the submodular functions viz. 'facility_location', 'graph_cut', 
+    'saturated_coverage', 'sum_redundancy', 'feature_based' :footcite:`iyer2021submodular` 
+    or Disparity-sum, Disparity-min :footcite:`dasgupta-etal-2013-summarization` or 
+    DPP :footcite:`NEURIPS2018_dbbf603f` is used to select the points to be labeled. These 
+    techniques can be applied directly to the features/embeddings or on the gradients of the 
+    loss functions.
+
     
     Parameters
     ----------

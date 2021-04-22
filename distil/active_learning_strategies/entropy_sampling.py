@@ -9,7 +9,7 @@ class EntropySampling(Strategy):
     we use entropy and therefore select points which have maximum entropy. 
 
     Suppose the model has `nclasses` output nodes and each output node is denoted by :math:`z_j`. Thus,  
-    :math:`j \in [1,nclasses]`. Then for a output node :math:`z_i` from the model, the correponding 
+    :math:`j \\in [1,nclasses]`. Then for a output node :math:`z_i` from the model, the correponding 
     softmax would be 
 
     .. math::

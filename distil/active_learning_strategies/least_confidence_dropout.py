@@ -2,7 +2,7 @@ from .strategy import Strategy
 
 class LeastConfidenceDropout(Strategy):
     """
-    Implements the Least Confidence Sampling Strategy a active learning strategy where 
+    Implements the Least Confidence Sampling Strategy with dropout a active learning strategy where 
     the algorithm selects the data points for which the model has the lowest confidence while 
     predicting its label.
     
