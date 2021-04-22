@@ -6,8 +6,11 @@ class EntropySampling(Strategy):
     
     Implements the Entropy Sampling Strategy, one of the most basic active learning strategies,
     where we select samples about which the model is most uncertain. To quantify the uncertainity 
-    we use entropy and therefore select points which have maximum entropy. Let :math:`z_i` be output 
-    from the model then the correponding softmax would be 
+    we use entropy and therefore select points which have maximum entropy. 
+
+    Suppose the model has `nclasses` output nodes and each output node is denoted by :math:`z_j`. Thus,  
+    :math:`j \in [1,nclasses]`. Then for a output node :math:`z_i` from the model, the correponding 
+    softmax would be 
 
     .. math::
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}}
@@ -16,6 +19,8 @@ class EntropySampling(Strategy):
 
     .. math:: 
         ENTROPY = -\\sum_j \\sigma(z_j)*log(\\sigma(z_i))
+
+    The algorithm then selects `budget` no. of elements with highest **ENTROPY**.
     
     Parameters
     ----------

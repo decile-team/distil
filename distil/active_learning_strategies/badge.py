@@ -46,7 +46,6 @@ def init_centers(X, K, device):
     return indsAll
 
 class BADGE(Strategy):
-
     """
     This method is based on the paper Deep Batch Active Learning by Diverse, Uncertain Gradient 
     Lower Bounds :footcite:`DBLP-Badge`. According to the paper, this strategy, Batch Active 
@@ -57,8 +56,7 @@ class BADGE(Strategy):
     hyperparameters. Here at each round of selection, loss gradients are computed using the 
     hypothesised labels. Then to select the points to be labeled are selected by applying 
     k-means++ on these loss gradients. 
-
-
+    
     Parameters.
     ----------
     X: Numpy array 

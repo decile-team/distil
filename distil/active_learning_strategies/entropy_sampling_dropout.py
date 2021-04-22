@@ -7,7 +7,10 @@ class EntropySamplingDropout(Strategy):
     Implements the Entropy Sampling Strategy with dropout. Entropy Sampling Strategy is one 
     of the most basic active learning strategies, where we select samples about which the model 
     is most uncertain. To quantify the uncertainity we use entropy and therefore select points 
-    which have maximum entropy. Let :math:`z_i` be output from the model then the correponding 
+    which have maximum entropy. 
+
+    Suppose the model has `nclasses` output nodes and each output node is denoted by :math:`z_j`. Thus,  
+    :math:`j \in [1,nclasses]`. Then for a output node :math:`z_i` from the model, the correponding 
     softmax would be 
 
     .. math::
@@ -18,6 +21,7 @@ class EntropySamplingDropout(Strategy):
     .. math:: 
         ENTROPY = -\\sum_j \\sigma(z_j)*log(\\sigma(z_i))
 
+    The algorithm then selects `budget` no. of elements with highest **ENTROPY**.
     
     The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
     User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
