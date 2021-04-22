@@ -124,7 +124,7 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
         * if True: It should return only X and not Y (used by active learning strategies)
         * if False: It should return both X and Y (used while training the model)
 
-To get a more clearer idea about how to incorporate DISTIL with your own models, refer to our blog: ##
+To get a more clearer idea about how to incorporate DISTIL with your own models, refer to ![Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
 
 ## Demo Notebooks
 1. https://colab.research.google.com/drive/10WkyKlOxSixrMHvA9wEHcd0l5HugnChN?usp=sharing
