@@ -1,26 +1,29 @@
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
-from torch import nn
-from torchvision import transforms
-import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 from sklearn.preprocessing import StandardScaler
 import argparse
 sys.path.append('./')
 from distil.utils.models.resnet import ResNet18
-from distil.utils.DataHandler import DataHandler_Points,DataHandler_MNIST, DataHandler_CIFAR10, \
-										DataHandler_FASHION_MNIST, DataHandler_SVHN, DataHandler_STL10
-from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
-                            LeastConfidence, MarginSampling, CoreSet, FASS, AdversarialBIM, AdversarialDeepFool, \
-                            KMeansSampling, BaselineSampling, BALDDropout
-from distil.utils.models.simpleNN_net import TwoLayerNet
+from distil.utils.data_handler import DataHandler_Points, DataHandler_MNIST, DataHandler_CIFAR10, \
+										DataHandler_FASHION_MNIST, DataHandler_SVHN, DataHandler_STL10, \
+                                        DataHandler_CIFAR100
+from distil.active_learning_strategies.glister import GLISTER
+from distil.active_learning_strategies.badge import BADGE
+from distil.active_learning_strategies.entropy_sampling import EntropySampling
+from distil.active_learning_strategies.random_sampling import RandomSampling
+from distil.active_learning_strategies.least_confidence import LeastConfidence
+from distil.active_learning_strategies.margin_sampling import MarginSampling
+from distil.active_learning_strategies.core_set import CoreSet
+from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
+from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
+from distil.active_learning_strategies.kmeans_sampling import KMeansSampling
+from distil.active_learning_strategies.BaselineSampling import BaselineSampling
+from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout
+from distil.active_learning_strategies.fass import FASS
+from distil.utils.models.simple_net import TwoLayerNet
 from distil.utils.dataset import get_dataset
-from distil.utils.TrainHelper import data_train
-from distil.utils.ConfigHelper import read_config_file
+from distil.utils.train_helper import data_train
+from distil.utils.config_helper import read_config_file
 import time
 import pickle
 
