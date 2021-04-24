@@ -3,7 +3,7 @@ import torch
 
 from scipy.sparse import csr_matrix
 
-from .Similarity_mat import SimilarityComputation
+from .similarity_mat import SimilarityComputation
 
 class DisparityFunction(SimilarityComputation):
 

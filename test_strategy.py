@@ -1,23 +1,27 @@
 #import pandas as pd 
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
 from torch import nn
-from torchvision import transforms
 import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 from sklearn.preprocessing import StandardScaler
 import argparse
 sys.path.append('./')
-from distil.utils.DataHandler import DataHandler_Points
-from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
-                            LeastConfidence, MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, \
-                            KMeansSampling, BaselineSampling, BALDDropout
-from distil.utils.models.simpleNN_net import TwoLayerNet
-from distil.utils.TrainHelper import data_train
+from distil.utils.data_handler import DataHandler_Points
+from distil.active_learning_strategies.glister import GLISTER
+from distil.active_learning_strategies.badge import BADGE
+from distil.active_learning_strategies.entropy_sampling import EntropySampling
+from distil.active_learning_strategies.random_sampling import RandomSampling
+from distil.active_learning_strategies.least_confidence import LeastConfidence
+from distil.active_learning_strategies.margin_sampling import MarginSampling
+from distil.active_learning_strategies.core_set import CoreSet
+from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
+from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
+from distil.active_learning_strategies.kmeans_sampling import KMeansSampling
+from distil.active_learning_strategies.BaselineSampling import BaselineSampling
+from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout
+
+from distil.utils.models.simple_net import TwoLayerNet
+from distil.utils.train_helper import data_train
 
 def test_individual_strategy(selected_strat):
     """
@@ -63,8 +67,6 @@ def test_individual_strategy(selected_strat):
         return (X_data, Y_label)
 
     print('Strategy to be tested on -', selected_strat)
-
-    dset_name = 'satimage'
 
     #User Execution
     trn_file = '../datasets/satimage/satimage.scale.trn'

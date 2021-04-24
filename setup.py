@@ -4,13 +4,13 @@ import setuptools
 setup(
     name='decile-distil',
     version='0.0.3',
-    author='Apurva Dani, Durga Sivasubramanian, Rishabh Iyer',
+    author='Apurva Dani, Durga Sivasubramanian, Nathan Beck, Rishabh Iyer',
     author_email='apurvadani98@gmail.com',
     url='https://github.com/decile-team/distil',
     download_url = 'https://github.com/decile-team/distil/archive/0.0.3.tar.gz',
     license='LICENSE',
     packages=setuptools.find_packages(),
-    description='distil is a package for Deep dIverSified inTeractIve Learning.',
+    description='DISTIL is a package for Deep dIverSified inTeractIve Learning.',
     install_requires=[
         "numpy >= 1.14.2",
         "scipy >= 1.0.0",
