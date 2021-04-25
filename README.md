@@ -155,13 +155,13 @@ The label efficiency plot indicates that, when reaching a test accuracy of 92% o
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
 
 
-Test Accuracy(Zoomed)      |  Label Efficiency(Finer Budget)
+Test Accuracy(Zoomed)      |  Label Efficiency
 :-------------------------:|:-------------------------:
 ![MNIST Zoomed Plot](./experiment_plots/mnist_zoom_plot.png?raw=true)  |  ![MNIST LE](./experiment_plots/mnist_label_efficiency.png?raw=true)
 
 
 
-The label efficiency plot indicates that, when reaching a test accuracy of 96% on MNIST, random sampling requires 860 labeled points, whereas entropy sampling requires only 460 points while BADGE requires only 500 points. The label efficiency graph is on a finer budget.
+The label efficiency plot indicates that, when reaching a test accuracy of 98.1% on MNIST, random sampling requires 11000 labeled points, whereas entropy sampling requires only 4000 points while BADGE requires only 4000 points.
 
 Zoomed out training plot.
 
