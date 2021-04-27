@@ -3,9 +3,9 @@ from .strategy import Strategy
 import torch
 
 from ..utils.submodular import SubmodularFunction
-from ..utils.Disparty_functions import DisparityFunction
-from ..utils.Similarity_mat import SimilarityComputation
-from ..utils.DPP import dpp
+from ..utils.disparity_functions import DisparityFunction
+from ..utils.similarity_mat import SimilarityComputation
+from ..utils.dpp import dpp
 
 class SubmodSampling(Strategy):
     """

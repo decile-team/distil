@@ -1,24 +1,19 @@
-import pandas as pd 
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
-from torch import nn
-from torchvision import transforms
-import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 sys.path.append('../')
-from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
-                                LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
-                                CoreSet, BADGE
+from distil.active_learning_strategies.glister import GLISTER
+from distil.active_learning_strategies.badge import BADGE
+from distil.active_learning_strategies.entropy_sampling import EntropySampling
+from distil.active_learning_strategies.random_sampling import RandomSampling
+from distil.active_learning_strategies.least_confidence import LeastConfidence
+from distil.active_learning_strategies.margin_sampling import MarginSampling
+from distil.active_learning_strategies.core_set import CoreSet
+from distil.active_learning_strategies.fass import FASS
 
 from distil.utils.models.cifar10net import CifarNet
-from distil.utils.models.mnist_net import MnistNet
-from distil.utils.DataHandler import DataHandler_MNIST, DataHandler_CIFAR10
+from distil.utils.data_handler import DataHandler_CIFAR10
 from distil.utils.dataset import get_dataset
-from distil.utils.TrainHelper import data_train
+from distil.utils.train_helper import data_train
 
 
 data_set_name = 'CIFAR10'

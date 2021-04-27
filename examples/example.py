@@ -1,21 +1,15 @@
 #import pandas as pd 
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
 from torch import nn
-from torchvision import transforms
 import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 from sklearn.preprocessing import StandardScaler
 
 sys.path.append('../')
-from distil.utils.DataHandler import DataHandler_Points
-from distil.active_learning_strategies import GLISTER, BADGE, RandomSampling
-from distil.utils.models.simpleNN_net import TwoLayerNet
-from distil.utils.TrainHelper import data_train
+from distil.utils.data_handler import DataHandler_Points
+from distil.active_learning_strategies.glister import GLISTER
+from distil.utils.models.simple_net import TwoLayerNet
+from distil.utils.train_helper import data_train
 
 def init_weights(m):
     if type(m) == nn.Linear:
