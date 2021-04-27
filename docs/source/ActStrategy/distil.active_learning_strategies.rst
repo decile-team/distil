@@ -100,7 +100,6 @@ Adversarial BIM
 
 .. automodule:: distil.active_learning_strategies.adversarial_bim
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Adversarial DeepFool
@@ -108,7 +107,6 @@ Adversarial DeepFool
 
 .. automodule:: distil.active_learning_strategies.adversarial_deepfool
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Bayesian Active Learning Disagreement Dropout
