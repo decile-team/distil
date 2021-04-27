@@ -5,24 +5,14 @@ from sklearn.cluster import KMeans
 class KMeansSampling(Strategy):
     
     """
-    Implementation of KMeans Sampling Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling technique to select data points for active learning.
 
-    In KMeans Sampling selection strategy, the last layer embeddings are calculated for all the unlabeled data points.
-    Then the KMeans clustering algorithm is run over these embeddings with the number of clusters equal to the budget.
-    Then the distance is calculated for all the points from their respective centers. 
-    From each cluster, the point closest to the center is selected to be labeled for the next iteration. 
-    Since the number of centers are equal to the budget, selecting one point from each cluster satisfies the total number of data points to be selected in one iteration.
-
-    Let :math:`d_i` represent distance of a point from the center of a cluster and D represent the set of distances for all the points that belong to a particular cluster, then Mathematically,
-
-    
-    .. math::
-        \\min{(D)}
-
-
-    where :math:`D=[d_1,d_2...d_n]` where n is the number of points in a given cluster  
+    Implements KMeans Sampling selection strategy, the last layer embeddings are calculated for 
+    all the unlabeled data points.Then the KMeans clustering algorithm is run over these embeddings 
+    with the number of clusters equal to the `budget`. Then the distance is calculated for all the 
+    points from their respective centers. From each cluster, the point closest to the center is 
+    selected to be labeled for the next iteration. Since the number of centers are equal to the 
+    budget, selecting one point from each cluster satisfies the total number of data points to be 
+    selected in one iteration.
 
     Parameters
     ----------

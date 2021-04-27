@@ -127,14 +127,6 @@ KMeans Sampling
    :undoc-members:
    :show-inheritance:
 
-Baseline Sampling
------------------------------------------------------
-
-.. automodule:: distil.active_learning_strategies.baseline_sampling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 REFERENCES
 -----------
