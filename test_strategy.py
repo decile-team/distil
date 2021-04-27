@@ -7,18 +7,9 @@ from sklearn.preprocessing import StandardScaler
 import argparse
 sys.path.append('./')
 from distil.utils.data_handler import DataHandler_Points
-from distil.active_learning_strategies.glister import GLISTER
-from distil.active_learning_strategies.badge import BADGE
-from distil.active_learning_strategies.entropy_sampling import EntropySampling
-from distil.active_learning_strategies.random_sampling import RandomSampling
-from distil.active_learning_strategies.least_confidence import LeastConfidence
-from distil.active_learning_strategies.margin_sampling import MarginSampling
-from distil.active_learning_strategies.core_set import CoreSet
-from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
-from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
-from distil.active_learning_strategies.kmeans_sampling import KMeansSampling
-from distil.active_learning_strategies.BaselineSampling import BaselineSampling
-from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout
+from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, LeastConfidence, \
+                                        MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, KMeansSampling, \
+                                        BALDDropout
 
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.utils.train_helper import data_train
@@ -33,7 +24,7 @@ def test_individual_strategy(selected_strat):
         Strategy to be tested.
         badge, glister, entropy_sampling, random_sampling
         margin_sampling, least_confidence, core_set, bald_dropout, adversarial_bim,
-        kmeans_sampling, baseline_sampling, adversarial_deepfool
+        kmeans_sampling, adversarial_deepfool
     """
 
     def init_weights(m):
@@ -125,14 +116,12 @@ def test_individual_strategy(selected_strat):
         strategy = AdversarialBIM(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     elif selected_strat == 'kmeans_sampling':
         strategy = KMeansSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-    elif selected_strat == 'baseline_sampling':
-        strategy = BaselineSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     elif selected_strat == 'adversarial_deepfool':
         strategy = AdversarialDeepFool(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     else:
         print('Enter a valid strategy. You can select from the following: badge, glister, entropy_sampling, random_sampling,\
                 margin_sampling, least_confidence, core_set, bald_dropout, adversarial_bim,\
-                kmeans_sampling, baseline_sampling, adversarial_deepfool')
+                kmeans_sampling, adversarial_deepfool')
         sys.exit()
 
     train_args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
