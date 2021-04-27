@@ -59,20 +59,20 @@ class BADGE(Strategy):
     
     Parameters.
     ----------
-        X: Numpy array 
-            Features of the labled set of points 
-        Y: Numpy array
-            Lables of the labled set of points 
-        unlabeled_x: Numpy array
-            Features of the unlabled set of points 
-        net: class object
-            Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
-        handler: class object
-            It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
-        nclasses: int 
-            No. of classes in tha dataset
-        args: dictionary
-            This dictionary should have 'batch_size' as a key. 
+    X: Numpy array 
+        Features of the labled set of points 
+    Y: Numpy array
+        Lables of the labled set of points 
+    unlabeled_x: Numpy array
+        Features of the unlabled set of points 
+    net: class object
+        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
+    handler: class object
+        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
+    nclasses: int 
+        No. of classes in tha dataset
+    args: dictionary
+        This dictionary should have 'batch_size' as a key. 
     """
 
     def __init__(self, X, Y, unlabeled_x, net, handler,nclasses, args):
