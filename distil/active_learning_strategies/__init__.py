@@ -10,6 +10,7 @@ from .entropy_sampling import EntropySampling
 from .entropy_sampling_dropout import EntropySamplingDropout
 from .fass import FASS
 from .glister import GLISTER
+from .gradmatch_active import GradMatchActive
 from .kmeans_sampling import KMeansSampling
 from .least_confidence import LeastConfidence
 from .least_confidence_dropout import LeastConfidenceDropout
