@@ -47,7 +47,7 @@
 <p align="center">
     <br>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_explanation.png" width="500" height="500"/>
+        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_explanation.png" width="543" height="390"/>
     </br>
 </p>
 
