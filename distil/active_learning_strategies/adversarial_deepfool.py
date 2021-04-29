@@ -47,6 +47,7 @@ class AdversarialDeepFool(Strategy):
         super(AdversarialDeepFool, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
 
     def cal_dis(self, x):
+
         nx = Variable(torch.unsqueeze(x, 0), requires_grad=True)
         eta = Variable(torch.zeros(nx.shape))
 

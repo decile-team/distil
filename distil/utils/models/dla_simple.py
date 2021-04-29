@@ -6,8 +6,11 @@ But it seems works fine.
 See dla.py for the original paper version.
 
 Reference:
-    Deep Layer Aggregation. https://arxiv.org/abs/1707.06484
+    Deep Layer Aggregation
+    https://arxiv.org/abs/1707.06484
 '''
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -33,6 +36,7 @@ class BasicBlock(nn.Module):
                 nn.BatchNorm2d(self.expansion*planes)
             )
 
+
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
@@ -48,6 +52,7 @@ class Root(nn.Module):
             in_channels, out_channels, kernel_size,
             stride=1, padding=(kernel_size - 1) // 2, bias=False)
         self.bn = nn.BatchNorm2d(out_channels)
+
 
     def forward(self, xs):
         x = torch.cat(xs, 1)
@@ -68,6 +73,7 @@ class Tree(nn.Module):
             self.right_tree = Tree(block, out_channels,
                                    out_channels, level=level-1, stride=1)
 
+
     def forward(self, x):
         out1 = self.left_tree(x)
         out2 = self.right_tree(out1)
@@ -79,6 +85,7 @@ class SimpleDLA(nn.Module):
     def __init__(self, num_classes=10, block=BasicBlock):
         super(SimpleDLA, self).__init__()
         self.embDim = 512
+        
         self.base = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(16),
@@ -103,21 +110,35 @@ class SimpleDLA(nn.Module):
         self.layer6 = Tree(block, 256, 512, level=1, stride=2)
         self.linear = nn.Linear(512, num_classes)
 
-    def forward(self, x, last=False):
-        out = self.base(x)
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = self.layer5(out)
-        out = self.layer6(out)
-        out = F.avg_pool2d(out, 4)
-        e = out.view(out.size(0), -1)
+
+    def forward(self, x, last=False, freeze=False):
+        if freeze:
+            with torch.no_grad():
+                out = self.base(x)
+                out = self.layer1(out)
+                out = self.layer2(out)
+                out = self.layer3(out)
+                out = self.layer4(out)
+                out = self.layer5(out)
+                out = self.layer6(out)
+                out = F.avg_pool2d(out, 4)
+                e = out.view(out.size(0), -1)
+        else:
+            out = self.base(x)
+            out = self.layer1(out)
+            out = self.layer2(out)
+            out = self.layer3(out)
+            out = self.layer4(out)
+            out = self.layer5(out)
+            out = self.layer6(out)
+            out = F.avg_pool2d(out, 4)
+            e = out.view(out.size(0), -1)
         out = self.linear(e)
         if last:
             return out, e
         else:
             return out
+
 
     def get_embedding_dim(self):
         return self.embDim

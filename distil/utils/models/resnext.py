@@ -1,7 +1,11 @@
 '''ResNeXt in PyTorch.
 
-See the paper "Aggregated Residual Transformations for Deep Neural Networks" for more details.
+Reference
+    Aggregated Residual Transformations for Deep Neural Networks
+    https://arxiv.org/abs/1611.05431
 '''
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -27,6 +31,7 @@ class Block(nn.Module):
                 nn.BatchNorm2d(self.expansion*group_width)
             )
 
+
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
         out = F.relu(self.bn2(self.conv2(out)))
@@ -43,6 +48,7 @@ class ResNeXt(nn.Module):
         self.bottleneck_width = bottleneck_width
         self.in_planes = 64
         self.embDim = cardinality*bottleneck_width*8
+        
         self.conv1 = nn.Conv2d(3, 64, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.layer1 = self._make_layer(num_blocks[0], 1)
@@ -50,6 +56,7 @@ class ResNeXt(nn.Module):
         self.layer3 = self._make_layer(num_blocks[2], 2)
         # self.layer4 = self._make_layer(num_blocks[3], 2)
         self.linear = nn.Linear(cardinality*bottleneck_width*8, num_classes)
+
 
     def _make_layer(self, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
@@ -61,19 +68,31 @@ class ResNeXt(nn.Module):
         self.bottleneck_width *= 2
         return nn.Sequential(*layers)
 
-    def forward(self, x,last=False):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        # out = self.layer4(out)
-        out = F.avg_pool2d(out, 8)
-        e = out.view(out.size(0), -1)
+
+    def forward(self, x, last=False, freeze=False):
+        if freeze:
+            with torch.no_grad():
+                out = F.relu(self.bn1(self.conv1(x)))
+                out = self.layer1(out)
+                out = self.layer2(out)
+                out = self.layer3(out)
+                # out = self.layer4(out)
+                out = F.avg_pool2d(out, 8)
+                e = out.view(out.size(0), -1)
+        else:
+            out = F.relu(self.bn1(self.conv1(x)))
+            out = self.layer1(out)
+            out = self.layer2(out)
+            out = self.layer3(out)
+            # out = self.layer4(out)
+            out = F.avg_pool2d(out, 8)
+            e = out.view(out.size(0), -1) 
         out = self.linear(e)
         if last:
             return out, e
         else:
             return out
+
 
     def get_embedding_dim(self):
         return self.embDim
@@ -82,14 +101,18 @@ class ResNeXt(nn.Module):
 def ResNeXt29_2x64d(num_classes=10):
     return ResNeXt([3,3,3], 2, 64, num_classes)
 
+
 def ResNeXt29_4x64d(num_classes=10):
     return ResNeXt([3,3,3], 4, 64, num_classes)
+
 
 def ResNeXt29_8x64d(num_classes=10):
     return ResNeXt([3,3,3], 8, 64, num_classes)
 
+
 def ResNeXt29_32x4d(num_classes=10):
     return ResNeXt([3,3,3], 32, 4, num_classes)
+
 
 def test_resnext():
     net = ResNeXt29_2x64d()
