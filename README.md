@@ -141,10 +141,10 @@ To get a clearer idea about how to incorporate DISTIL with your own models, refe
 3. https://colab.research.google.com/drive/1PaMne-hsAMlzZt6Aul3kZbOezx-2CgKc?usp=sharing
 
 ## Active Learning Benchmarks using DISTIL
-### Experimentation Method
+#### Experimentation Method
 The models used below were first trained on n randomly selected points, where n is the budget of the experiment. For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round.
 
-### CIFAR10
+#### CIFAR10
 Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
 
 
@@ -155,7 +155,7 @@ Test Accuracy              |  Label Efficiency
 
 The label efficiency plot indicates that, when reaching a test accuracy of 92% on CIFAR10, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 20,000 points. We observe ~2x improvement in labeling efficiency!
 
-### MNIST
+#### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
 
 
@@ -171,7 +171,7 @@ Zoomed out training plot.
 
 ![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
-### FASHION MNIST
+#### FASHION MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
 
 
@@ -182,7 +182,7 @@ Test Accuracy              |  Label Efficiency
 
 The label efficiency plot indicates that, when reaching a test accuracy of 94% on Fashion MNIST, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 12,000 points. As a result, we see ~3x labeling efficiency.
 
-### SVHN
+#### SVHN
 Budget: 1000, Model: Resnet18, Number of rounds: 10, Total Points: 11,000 (15%)
 
 
@@ -193,7 +193,7 @@ Test Accuracy              |  Label Efficiency
 
 The label efficiency plot indicates that, when reaching a test accuracy of 95% on SVHN, random sampling requires 52,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 16,000 points. As a result, we can observe a labeling efficiency of ~3.2x!
 
-### OPENML-6
+#### OPENML-6
 Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
 
 ![OPENML6 Plot](./experiment_plots/openml6_plot.png?raw=true)
