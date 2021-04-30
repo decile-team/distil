@@ -172,7 +172,7 @@ Zoomed out training plot.
 ![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
 #### FASHION MNIST
-Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
+Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 60,000. In the accuracy plot below, we clip at 15000 points.
 
 
 Test Accuracy              |  Label Efficiency
