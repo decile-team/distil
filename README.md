@@ -140,7 +140,7 @@ To get a clearer idea about how to incorporate DISTIL with your own models, refe
 
 3. https://colab.research.google.com/drive/1PaMne-hsAMlzZt6Aul3kZbOezx-2CgKc?usp=sharing
 
-## Evaluation of Active Learning Strategies
+## Active Learning Benchmarks using DISTIL
 ### Experimentation Method
 The models used below were first trained on n randomly selected points, where n is the budget of the experiment. For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round.
 
@@ -153,7 +153,7 @@ Test Accuracy              |  Label Efficiency
 ![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)  |  ![CIFAR10 LE](./experiment_plots/cifar10_label_efficiency.png?raw=true)
 
 
-The label efficiency plot indicates that, when reaching a test accuracy of 92% on CIFAR10, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 20,000 points.
+The label efficiency plot indicates that, when reaching a test accuracy of 92% on CIFAR10, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 20,000 points. We observe ~2x improvement in labeling efficiency!
 
 ### MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
@@ -165,7 +165,7 @@ Test Accuracy(Zoomed)      |  Label Efficiency
 
 
 
-The label efficiency plot indicates that, when reaching a test accuracy of 98.1% on MNIST, random sampling requires 11000 labeled points, whereas entropy sampling requires only 4000 points while BADGE requires only 4000 points.
+The label efficiency plot indicates that, when reaching a test accuracy of 98.1% on MNIST, random sampling requires 11000 labeled points, whereas entropy sampling requires only 4000 points while BADGE requires only 4000 points. We observe ~ 3x labeling efficiency.
 
 Zoomed out training plot.
 
@@ -180,7 +180,7 @@ Test Accuracy              |  Label Efficiency
 ![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)  |  ![FMNIST LE](./experiment_plots/fmnist_label_efficiency.png?raw=true)
 
 
-The label efficiency plot indicates that, when reaching a test accuracy of 94% on Fashion MNIST, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 12,000 points.
+The label efficiency plot indicates that, when reaching a test accuracy of 94% on Fashion MNIST, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 12,000 points. As a result, we see ~3x labeling efficiency.
 
 ### SVHN
 Budget: 1000, Model: Resnet18, Number of rounds: 10, Total Points: 11,000 (15%)
@@ -191,7 +191,7 @@ Test Accuracy              |  Label Efficiency
 ![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)  |  ![SVHN LE](./experiment_plots/svhn_label_efficiency.png?raw=true)
 
 
-The label efficiency plot indicates that, when reaching a test accuracy of 95% on SVHN, random sampling requires 52,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 16,000 points.
+The label efficiency plot indicates that, when reaching a test accuracy of 95% on SVHN, random sampling requires 52,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 16,000 points. As a result, we can observe a labeling efficiency of ~3.2x!
 
 ### OPENML-6
 Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
@@ -250,4 +250,4 @@ https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join
 [10] Gal, Yarin, Riashat Islam, and Zoubin Ghahramani. "Deep bayesian active learning with image data." International Conference on Machine Learning. PMLR, 2017.
 
 ## Acknowledgement
-This library takes inspiration and also uses pieces of code from [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux).
+This library takes inspiration and also uses pieces of code from [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
