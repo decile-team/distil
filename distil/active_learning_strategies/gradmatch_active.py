@@ -9,6 +9,49 @@ from ..utils.supervised_strategy_wrappers import SupervisedSelectHandler
 # Define a GradMatch Active strategy
 class GradMatchActive(Strategy):
     
+    """
+    This is an implementation of an active learning variant of GradMatch from the paper GRAD-MATCH: A 
+    Gradient Matching Based Data Subset Selection for Efficient Learning :footcite:`Killamsetty2021gradmatch`.
+    This algorithm solves a fixed-weight version of the error term present in the paper by a greedy selection 
+    algorithm akin to the original GradMatch's Orthogonal Matching Pursuit. The gradients computed are on the 
+    hypothesized labels of the loss function and are matched to either the full gradient of these hypothesized 
+    examples or a supplied validation gradient. The indices returned are the ones selected by this algorithm.
+
+    
+    Parameters
+    ----------
+    X: Numpy array 
+        Features of the labled set of points 
+    Y: Numpy array
+        Lables of the labled set of points 
+    unlabeled_x: Numpy array
+        Features of the unlabled set of points 
+    net: class object
+        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
+    criterion: class object
+        The loss type used in training. Could be instance of torch.nn.* losses or torch functionals.
+    handler: class object
+        It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
+    nclasses: int 
+        No. of classes in tha dataset
+    lrn_rate: float
+        The learning rate used in training. Used by the original GradMatch algorithm.
+    selection_type: string
+        Should be one of "PerClass" or "PerBatch". Selects which approximation method is used.
+    linear_layer: bool
+        Sets whether to include the last linear layer parameters as part of the gradient computation.
+    args: dictionary
+        This dictionary should have keys 'batch_size' and  'lr'. 
+        'lr' should be the learning rate used for training. 'batch_size'  'batch_size' should be such 
+        that one can exploit the benefits of tensorization while honouring the resourse constraits.
+    valid: boolean
+        Whether validation set is passed or not
+    X_val: Numpy array, optional
+        Features of the points in the validation set. Mandatory if `valid=True`.
+    Y_val:Numpy array, optional
+        Lables of the points in the validation set. Mandatory if `valid=True`.
+    """
+    
     def __init__(self, X, Y, unlabeled_x, net, criterion, handler, nclasses, lrn_rate, selection_type, linear_layer, args={}, valid=False, X_val=None, Y_val=None):
         
         # Run super constructor
@@ -23,6 +66,22 @@ class GradMatchActive(Strategy):
             self.Y_Val = Y_val
 
     def select(self, budget, use_weights):
+        
+        """
+        Select next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of indexes to be returned for next set
+        use_weights: bool
+            Whether to use fixed-weight version (false) or OMP version (true)
+        
+        Returns
+        ----------
+        subset_idxs: list
+            List of selected data point indexes with respect to unlabeled_x and, if use_weights is true, the weights associated with each point
+        """ 
         
         # Compute hypothesize labels using model
         hypothesized_labels = self.predict(self.unlabeled_x)
