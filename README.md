@@ -150,7 +150,7 @@ Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
 
 Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
-![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)  |  ![CIFAR10 LE](./experiment_plots/cifar10_label_efficiency.png?raw=true)
+![CIFAR10](./experiment_plots/cifar10_plot_50k.png?raw=true)
 
 
 The label efficiency plot indicates that, when reaching a test accuracy of 92% on CIFAR10, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 20,000 points. We observe ~2x improvement in labeling efficiency!
@@ -159,17 +159,11 @@ The label efficiency plot indicates that, when reaching a test accuracy of 92% o
 Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
 
 
-Test Accuracy(Zoomed)      |  Label Efficiency
+Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
-![MNIST Zoomed Plot](./experiment_plots/mnist_zoom_plot.png?raw=true)  |  ![MNIST LE](./experiment_plots/mnist_label_efficiency.png?raw=true)
-
-
+![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
 The label efficiency plot indicates that, when reaching a test accuracy of 98.1% on MNIST, random sampling requires 11000 labeled points, whereas entropy sampling requires only 4000 points while BADGE requires only 4000 points. We observe ~ 3x labeling efficiency.
-
-Zoomed out training plot.
-
-![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
 #### FASHION MNIST
 Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 60,000. In the accuracy plot below, we clip at 15000 points.
@@ -177,7 +171,7 @@ Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 60,000. In th
 
 Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
-![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)  |  ![FMNIST LE](./experiment_plots/fmnist_label_efficiency.png?raw=true)
+![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)
 
 
 The label efficiency plot indicates that, when reaching a test accuracy of 94% on Fashion MNIST, random sampling requires 35,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 12,000 points. As a result, we see ~3x labeling efficiency.
@@ -188,7 +182,7 @@ Budget: 1000, Model: Resnet18, Number of rounds: 10, Total Points: 73000. In the
 
 Test Accuracy              |  Label Efficiency
 :-------------------------:|:-------------------------:
-![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)  |  ![SVHN LE](./experiment_plots/svhn_label_efficiency.png?raw=true)
+![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)
 
 
 The label efficiency plot indicates that, when reaching a test accuracy of 95% on SVHN, random sampling requires 52,000 labeled points, whereas entropy sampling and BADGE achieve the same test accuracy at 16,000 points. As a result, we can observe a labeling efficiency of ~3.2x!
