@@ -9,7 +9,7 @@ class LeastConfidence(Strategy):
     
     Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` 
     and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. 
-    Then for a output node :math:`z_i` from the model, the correponding softmax would be 
+    Then for a output node :math:`z_i` from the model, the corresponding softmax would be 
 
     .. math::
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
