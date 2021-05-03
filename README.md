@@ -40,8 +40,9 @@
 - [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
 - [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
 - [Mailing List](#mailing-list)
-- [Publications](#publications)
 - [Acknowledgement](#acknowledgement)
+- [Team](#team)
+- [Publications](#publications)
 
 ## What is DISTIL?
 <p align="center">
@@ -216,8 +217,11 @@ To receive updates about DISTIL and to be a part of the community, join the Deci
 ```
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
-## Acknowledgement and Credits
+## Acknowledgement
 This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
+
+## Team
+DISTIL is created and maintained by Nathan Beck, Durga Subramanian, [Apurva Dani](https://apurvadani.github.io/index.html), [Rishabh Iyer](rishiyer.com), and [Ganesh Ramakrishnan](https://www.cse.iitb.ac.in/~ganesh/). We look forward to have DISTIL more community driven. Please use it and contribute to it for your active learning research, and feel free to use it for your commercial projects. We will add the major contributors here.
 
 ## Publications
 
