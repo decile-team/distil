@@ -11,6 +11,17 @@ class FASS(Strategy):
     'facility_location' , 'graph_cut', 'saturated_coverage', 'sum_redundancy', 'feature_based' 
     is applied to get the final set of points.
 
+    We select a subset :math:`F` of size :math:`\\beta` based on uncertainty sampling, such 
+    that :math:`\\beta \\ge k`.
+      
+    Then select a subset :math:`S` by solving 
+    
+    .. math::
+        \\max \\{f(S) \\text{ such that } |S| \\leq k, S \\subseteq F\\} 
+    
+    where :math:`k` is the is the `budget` and :math:`f` can be one of these functions - 
+    'facility location' , 'graph cut', 'saturated coverage', 'sum redundancy', 'feature based'. 
+
     Parameters
     ----------
     X: numpy array
