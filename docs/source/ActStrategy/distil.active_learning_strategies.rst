@@ -1,19 +1,27 @@
 Active Learning Strategies
 ===========================================
 
-BADGE
-------------------------------------------------
-
-.. automodule:: distil.active_learning_strategies.badge
-   :members:
-   :show-inheritance:
-
 Core-Set Approch
 ----------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.core_set
    :members:
    :undoc-members:
+   :show-inheritance:
+
+CRAIG-ACTIVE
+----------------------------------------------------
+.. automodule:: distil.active_learning_strategies.craig_active
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+BADGE
+------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.badge
+   :members:
    :show-inheritance:
 
 Entropy Sampling 
@@ -44,6 +52,13 @@ GLISTER
 --------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.glister
+   :members:
+   :show-inheritance:
+
+GRADAMATCH
+--------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.gradmatch_active
    :members:
    :show-inheritance:
 
