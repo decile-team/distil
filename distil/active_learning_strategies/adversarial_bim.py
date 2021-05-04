@@ -36,7 +36,6 @@ class AdversarialBIM(Strategy):
             `eps`-epsilon value for gradients
         """
         
-        
         if 'eps' in args:
             self.eps = args['eps']
         else:
