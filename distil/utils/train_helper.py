@@ -20,7 +20,9 @@ class data_train:
         self.net = net
         self.handler = handler
         self.args = args
-        self.n_pool = len(Y)
+        
+        if Y is not None: #For initialization without data
+            self.n_pool = len(Y)
         
         if 'islogs' not in args:
             self.args['islogs'] = False
