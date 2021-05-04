@@ -55,7 +55,7 @@ GLISTER
    :members:
    :show-inheritance:
 
-GRADAMATCH
+GRADMATCH
 --------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.gradmatch_active
@@ -115,7 +115,6 @@ Adversarial BIM
 
 .. automodule:: distil.active_learning_strategies.adversarial_bim
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Adversarial DeepFool
