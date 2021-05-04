@@ -17,7 +17,7 @@ class LeastConfidenceDropout(Strategy):
     confidence as follows, 
     
     .. math::
-        arg\\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
+        \\mbox{argmin}_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\sum_S(\\mbox{argmax}_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
 
     where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
