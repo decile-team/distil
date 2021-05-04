@@ -19,7 +19,8 @@ class AdversarialBIM(Strategy):
     iteratively as,
 
     .. math::
-        x^*_0 = x,\\
+        x^*_0 = x,
+    .. math::
         x^*_i = clip_{x,e} (x^*_{i-1} + sign(\\nabla_{x^*_{i-1}} J(\\theta, x^*_{i-1} , y)))
 
     Parameters
