@@ -1,6 +1,13 @@
 Active Learning Strategies
 ===========================================
 
+BADGE
+------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.badge
+   :members:
+   :show-inheritance:
+
 Core-Set Approch
 ----------------------------------------------------
 
@@ -16,13 +23,6 @@ CRAIG-ACTIVE
    :undoc-members:
    :show-inheritance:
 
-
-BADGE
-------------------------------------------------
-
-.. automodule:: distil.active_learning_strategies.badge
-   :members:
-   :show-inheritance:
 
 Entropy Sampling 
 ------------------------------------------------------------

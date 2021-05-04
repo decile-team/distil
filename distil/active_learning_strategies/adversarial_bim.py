@@ -6,28 +6,17 @@ from .strategy import Strategy
 class AdversarialBIM(Strategy):
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
         """
-        Implements Adversial Bim Strategy which is motivated by the fact that often the distance 
-        computation from decision boundary is difficult and intractable for margin based 
-        methods. This technique avoids estimating distance by using BIM(Basic Iterative Method) 
-        :footcite:`tramer2017ensemble` to estimate how much adversarial perturbation is required 
-        to cross the boundary. Smaller the required the perturbation, closer the point is to the 
-        boundary. 
-
-        **Basic Iterative Method (BIM)**: Given a base input, the approach is to perturb each
-        feature in the direction of the gradient by magnitude :math:`\\epsilon`, where is a
-        parameter that determines perturbation size. For a model with loss
-        :math:`\\nabla J(\\theta, x, y)`, where :math:`\\theta` represents the model parameters,
-        x is the model input, and y is the label of x, the adversarial sample is generated
-        iteratively as,
- 
-       .. math::
-            x*{\\*}_0 = x,
-            x*{\\*}_i = clip_{x,e} (x*{\\*}_{i-1} + sign(\\nabla_{x*{\\*}_{i-1}} J(\\theta, x*{\\*}_{i-1} , y)))
-
+        Implements Adversial Deep Fool Strategy :footcite:`ducoffe2018adversarial`, a Deep-Fool based 
+        Active Learning strategy that selects unlabeled samples with the smallest adversarial 
+        perturbation. This technique is motivated by the fact that often the distance computation 
+        from decision boundary is difficult and intractable for margin-based methods. This 
+        technique avoids estimating distance by using Deep-Fool :footcite:`Moosavi-Dezfooli_2016_CVPR` 
+        like techniques to estimate how much adversarial perturbation is required to cross the boundary. 
+        The smaller the required perturbation, the closer the point is to the boundary.
 
         Parameters
         ----------
-        X: numpy arrays
+        X: numpy array
             Present training/labeled data   
         y: numpy array
             Labels of present training data
@@ -42,12 +31,11 @@ class AdversarialBIM(Strategy):
         args: dict
             Specify optional parameters
             
-            batch_size 
-            Batch size to be used inside strategy class (int, optional)
+            `batch_size`- Batch size to be used inside strategy class (int, optional)
 
-            eps
-            epsilon value for gradients
+            `eps`-epsilon value for gradients
         """
+        
         
         if 'eps' in args:
             self.eps = args['eps']
