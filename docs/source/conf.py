@@ -22,8 +22,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'DISTIL'
-copyright = '2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer'
-author = 'Durga Sivasubramanian, Apurva Dani, Rishabh Iyer'
+copyright = '2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer'
+author = 'Durga Sivasubramanian,Nathan Beck,Apurva Dani, Rishabh Iyer'
 
 # The full version, including alpha/beta/rc tags
 release = 'v0.1'
