@@ -22,12 +22,12 @@ class GradMatchActive(Strategy):
 
     where,
         - Each gradient is computed with respect to the last layer's parameters
-        - :math:\\theta_t are the model parameters at selection round :math:t
-        - :math:X_t is the queried set of points to label at selection round :math:t
-        - :math:k is the budget
-        - :math:N is the number of points contributing to the full gradient :math:\\nabla_\\theta L(\\theta_t)
-        - :math:\\nabla_\\theta L(\\theta_t) is either the complete hypothesized gradient or a validation gradient
-        - :math:\\sum_{i \\in X_t} \\nabla_\\theta L_T^i (\\theta_t) is the subset's hypothesized gradient with :math:|X_t| = k
+        - :math:`\\theta_t` are the model parameters at selection round :math:`t`
+        - :math:`X_t` is the queried set of points to label at selection round :math:`t`
+        - :math:`k` is the budget
+        - :math:`N` is the number of points contributing to the full gradient :math:`\\nabla_\\theta L(\\theta_t)`
+        - :math:`\\nabla_\\theta L(\\theta_t)` is either the complete hypothesized gradient or a validation gradient
+        - :math:`\\sum_{i \\in X_t} \\nabla_\\theta L_T^i (\\theta_t)` is the subset's hypothesized gradient with :math:`|X_t| = k`
 
 
     Parameters
