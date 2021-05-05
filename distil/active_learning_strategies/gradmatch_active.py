@@ -19,7 +19,7 @@ class GradMatchActive(Strategy):
 
     .. math::
         Err(X_t, L, L_T, \\theta_t) = \\left |\\left| \\sum_{i \\in X_t} \\nabla_\\theta L_T^i (\\theta_t) - \\frac{k}{N} \\nabla_\\theta L(\\theta_t) \\right | \\right|
-    
+
     where,
         - Each gradient is computed with respect to the last layer's parameters
         - :math: `\\theta_t` are the model parameters at selection round :math: `t`
