@@ -17,6 +17,9 @@ class GradMatchActive(Strategy):
     hypothesized labels of the loss function and are matched to either the full gradient of these hypothesized 
     examples or a supplied validation gradient. The indices returned are the ones selected by this algorithm.
 
+    .. math::
+        Err(X_t, L, L_T, \\theta_t) = \\left |\\left| \\sum_{i \\in X_t} \\nabla_\\theta L_T^i (\\theta_t) - \\frac{k}{N} \\nabla_\\theta L(\\theta_t) \\right | \\right|
+
     
     Parameters
     ----------
