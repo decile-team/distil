@@ -127,9 +127,11 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
     * Check the models included in DISTIL for examples!
 
 * Data Handler
-    * Your DataHandler class should have a boolean attribute “select”:
+    * Your DataHandler class should have a boolean attribute “select=True” with default value True:
         * If True: Your __getitem__(self, index) method should return (input, index)
         * If False: Your __getitem__(self, index) method should return (input, label, index)
+    * Your DataHandler class should have a boolean attribute “use_test_transform=False” with default value False.
+    
     * Check the DataHandler classes included in DISTIL for examples!
 
 To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)

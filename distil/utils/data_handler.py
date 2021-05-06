@@ -18,7 +18,7 @@ class DataHandler_Points(Dataset):
     select: bool
         True if loading data without labels, False otherwise
     """
-    def __init__(self, X, Y=None, select=True):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False):
         """
         Constructor
         """
