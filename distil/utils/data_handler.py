@@ -55,6 +55,8 @@ class DataHandler_SVHN(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):
@@ -107,6 +109,8 @@ class DataHandler_MNIST(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):
@@ -159,6 +163,8 @@ class DataHandler_KMNIST(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):
@@ -211,6 +217,8 @@ class DataHandler_FASHION_MNIST(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):
@@ -263,6 +271,8 @@ class DataHandler_CIFAR10(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):
@@ -315,6 +325,8 @@ class DataHandler_CIFAR100(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):
@@ -367,6 +379,8 @@ class DataHandler_STL10(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
+    use_test_transform: bool
+        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False):

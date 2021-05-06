@@ -3,6 +3,34 @@ import random
 import torch
 
 def calculate_class_budgets(budget, num_classes, trn_lbls, N_trn):
+    
+    """
+    Calculates a list of class budgets whose sum is that of the specified budget.
+    Furthermore, each budget calculated for a class is based on the proportion 
+    of labels of that class that appear in trn_lbls. For example, if trn_lbls has 
+    50% "0" labels, then the budget calculated for class "0" will be 50% of the full 
+    budget.
+    
+    Specifically, this function makes sure to at least give every class a budget of 1.
+    If this violates the full budget (the sum of the per-class budgets is greater than 
+    the full budget), then random class budgets are set to 0 until the budget constraint 
+    is satisfied.
+    
+    If the budget constraint is not broken, then it awards the rest of the full budget 
+    in the proportion described above in a best-attempt manner.
+    
+    Parameters
+    ----------
+    budget: int
+        Full budget to split into class budgets
+    num_classes: int
+        Number of per-class budgets to calculate
+    trn_lbls: Torch tensor
+        Label tensor on which to base per-class budgets 
+    N_trn: int
+        Number of labels in trn_lbls
+    """
+    
     # Tabulate class populations
     class_pops = list()
     for i in range(num_classes):
@@ -72,4 +100,4 @@ def calculate_class_budgets(budget, num_classes, trn_lbls, N_trn):
         for i in range(num_classes):
             class_budgets[i] = floored_class_budgets[i][1]
                 
-        return class_budgets
+    return class_budgets
