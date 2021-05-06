@@ -40,8 +40,9 @@
 - [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
 - [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
 - [Mailing List](#mailing-list)
-- [Publications](#publications)
 - [Acknowledgement](#acknowledgement)
+- [Team](#team)
+- [Publications](#publications)
 
 ## What is DISTIL?
 <p align="center">
@@ -126,9 +127,11 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
     * Check the models included in DISTIL for examples!
 
 * Data Handler
-    * Your DataHandler class should have a boolean attribute “select”:
+    * Your DataHandler class should have a boolean attribute “select=True” with default value True:
         * If True: Your __getitem__(self, index) method should return (input, index)
         * If False: Your __getitem__(self, index) method should return (input, label, index)
+    * Your DataHandler class should have a boolean attribute “use_test_transform=False” with default value False.
+    
     * Check the DataHandler classes included in DISTIL for examples!
 
 To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
@@ -142,7 +145,7 @@ To get a clearer idea about how to incorporate DISTIL with your own models, refe
 
 ## Active Learning Benchmarks using DISTIL
 #### Experimentation Method
-The models used below were first trained on n randomly selected points, where n is the budget of the experiment. For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round.
+The models used below were first trained on an initial random set of points (equal to the budget). For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round. The results below are *preliminary* results each obtained only with one run. We are doing a more thorough benchmarking experiment, with more runs and report standard deviations etc. We will also link to a preprint which will include the benchmarking results.
 
 #### CIFAR10
 Model: Resnet18
@@ -216,6 +219,11 @@ To receive updates about DISTIL and to be a part of the community, join the Deci
 ```
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
+## Acknowledgement
+This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
+
+## Team
+DISTIL is created and maintained by Nathan Beck, [Durga Sivasubramanian](https://www.linkedin.com/in/durga-s-352831105), [Apurva Dani](https://apurvadani.github.io/index.html), [Rishabh Iyer](https://www.rishiyer.com), and [Ganesh Ramakrishnan](https://www.cse.iitb.ac.in/~ganesh/). We look forward to have DISTIL more community driven. Please use it and contribute to it for your active learning research, and feel free to use it for your commercial projects. We will add the major contributors here.
 
 ## Publications
 
@@ -239,5 +247,3 @@ https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join
 
 [10] Gal, Yarin, Riashat Islam, and Zoubin Ghahramani. "Deep bayesian active learning with image data." International Conference on Machine Learning. PMLR, 2017.
 
-## Acknowledgement
-This library takes inspiration and also uses pieces of code from [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.

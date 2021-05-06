@@ -10,7 +10,7 @@ class MarginSampling(Strategy):
     
     Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` 
     and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. 
-    Then for a output node :math:`z_i` from the model, the correponding softmax would be 
+    Then for a output node :math:`z_i` from the model, the corresponding softmax would be 
 
     .. math::
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
@@ -18,12 +18,12 @@ class MarginSampling(Strategy):
     Let,
 
     .. math::
-        m = arg\\max_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}
+        m = \\mbox{argmax}_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}
         
     Then using softmax, Margin Sampling Strategy would pick `budget` no. of elements as follows, 
     
     .. math::
-        arg\\min_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{(arg\\max_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}) - (arg\\max_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
+        \\mbox{argmin}_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\sum_S(\\mbox{argmax}_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}) - (\\mbox{argmax}_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
 
     where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.

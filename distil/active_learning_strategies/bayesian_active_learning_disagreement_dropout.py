@@ -3,9 +3,11 @@ from .strategy import Strategy
 
 class BALDDropout(Strategy):
     """
-    Implementation of BALDDropout Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling technique to select data points for active learning.
+    
+    Implements Bayesian Active Learning by Disagreement (BALD) Strategy :footcite:`houlsby2011bayesian`,
+    which assumes a Basiyan setting and selects points which maximise the mutual information 
+    between the predicted labels and model parameters. This implementation is an adaptation for a 
+    non-bayesian setting, with the assumption that there is a dropout layer in the model. 
 
     Parameters
     ----------
