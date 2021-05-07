@@ -28,7 +28,7 @@
 </h3>
 
 # In this README
-- [What is DISTIL?](#what-is-distil) [Key Features of DISTIL](#key-features-of-distil)
+- [What is DISTIL?](#what-is-distil) &nbsp;&nbsp;&nbsp; [Key Features of DISTIL](#key-features-of-distil)
 - [Starting with DISTIL](#starting-with-distil)
 - [Where can DISTIL be used?](#where-can-distil-be-used)
 - [Installation](#installation)
