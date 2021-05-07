@@ -37,7 +37,7 @@
 - [Documentation](#documentation)
 - [Make your PyTorch Model compatible with DISTIL](#make-your-pytorch-model-compatible-with-distil)
 - [Demo Notebooks](#demo-notebooks)
-- [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
+- [Active Learning Benchmarking using DISTIL](active-learning-benchmarking-using-distil)
 - [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
 - [Mailing List](#mailing-list)
 - [Acknowledgement](#acknowledgement)
@@ -145,7 +145,7 @@ To get a clearer idea about how to incorporate DISTIL with your own models, refe
 
 You can also download the .ipynb files from the notebooks folder.
 
-## Active Learning Benchmarks using DISTIL
+## Active Learning Benchmarking using DISTIL
 #### Experimentation Method
 The models used below were first trained on an initial random set of points (equal to the budget). For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round. The results below are *preliminary* results each obtained only with one run. We are doing a more thorough benchmarking experiment, with more runs and report standard deviations etc. We will also link to a preprint which will include the benchmarking results.
 
