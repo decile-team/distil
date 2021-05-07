@@ -28,7 +28,8 @@
 </h3>
 
 # In this README
-- [What is DISTIL?](#what-is-distil) &nbsp;&nbsp;&nbsp; [Key Features of DISTIL](#key-features-of-distil)
+- [What is DISTIL?](#what-is-distil) 
+- [Key Features of DISTIL](#key-features-of-distil)
 - [Starting with DISTIL](#starting-with-distil)
 - [Where can DISTIL be used?](#where-can-distil-be-used)
 - [Installation](#installation)
@@ -51,7 +52,7 @@
     </br>
 </p>
 
-DISTIL is an active learning toolkit that implements a number of state-of-the-art active learning strategies with a particular focus for active learning in the deep learning setting. DISTIL is built on PyTorch and decouples the training loop from the active learning algorithm, thereby providing flexibility to the user by allowing them to control the training procedure and model. It allows users to incorporate new active learning algorithms easily with minimal changes to their existing code. DISTIL also provides support for incorporating active learning with your custom dataset and allows you to experiment on well-known datasets. We are continuously incorporating newer and better active learning selection strategies into DISTIL.
+DISTIL is an active learning toolkit that implements a number of state-of-the-art active learning strategies with a particular focus for active learning in the deep learning setting. DISTIL is built on *PyTorch* and decouples the training loop from the active learning algorithm, thereby providing flexibility to the user by allowing them to control the training procedure and model. It allows users to incorporate new active learning algorithms easily with minimal changes to their existing code. DISTIL also provides support for incorporating active learning with your custom dataset and allows you to experiment on well-known datasets. We are continuously incorporating newer and better active learning selection strategies into DISTIL.
 
 ## Key Features of DISTIL
 - Decouples the active learning strategy from the training loop, allowing users to modify the training and/or the active learning strategy
