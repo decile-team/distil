@@ -137,11 +137,13 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
 To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
 
 ## Demo Notebooks
-1. https://colab.research.google.com/drive/10WkyKlOxSixrMHvA9wEHcd0l5HugnChN?usp=sharing
+1. [CIFAR10 Tutorial](https://colab.research.google.com/drive/1K5eFLtJYbNEpDRI6YsYFCEQyi74tfEou?usp=sharing)
 
-2. https://colab.research.google.com/drive/15427CIEy6rIDwfTWsprUH6yPfufjjY56?usp=sharing
+2. [SATIMAGE Tutorial](https://colab.research.google.com/drive/1wD-so8B14kSswZwCDHDhLGkkGIH7VUdU?usp=sharing)
 
-3. https://colab.research.google.com/drive/1PaMne-hsAMlzZt6Aul3kZbOezx-2CgKc?usp=sharing
+3. [IJCNN1 Tutorial](https://colab.research.google.com/drive/11WRz7CXC4ZCvmEkXQ-FQ2YiwRZY7QIof?usp=sharing)
+
+You can also download the .ipynb files from the notebooks folder.
 
 ## Active Learning Benchmarks using DISTIL
 #### Experimentation Method
