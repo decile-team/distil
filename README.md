@@ -90,6 +90,8 @@ Some of the algorithms currently implemented in DISTIL include the following:
 - [Adversarial Bim](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.adversarial_bim)
 - [Baseline Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.baseline_sampling)
 
+To learn more on different active learning algorithms, check out the [Active Learning Strategies Survey Blog](https://decile-research.medium.com/active-learning-strategies-distil-62ee9fc166f9)
+
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently, it only works in the supervised learning setting for classification. We will be adding extensions to active semi-supervised learning and active learning for object detection. It can be used in scenarios where you want to reduce labeling cost and time by labeling only the few most informative points for your ML model.
 
@@ -148,6 +150,8 @@ You can also download the .ipynb files from the notebooks folder.
 ## Active Learning Benchmarking using DISTIL
 #### Experimentation Method
 The models used below were first trained on an initial random set of points (equal to the budget). For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round. The results below are *preliminary* results each obtained only with one run. We are doing a more thorough benchmarking experiment, with more runs and report standard deviations etc. We will also link to a preprint which will include the benchmarking results.
+
+For more details on the benchmarking results, please check out the [Active Learning Benchmark Blog: Cut Down Labeling Costs with DISTIL](https://decile-research.medium.com/cut-down-on-labeling-costs-with-distil-77bec5c2e864).
 
 #### CIFAR10
 Model: Resnet18
