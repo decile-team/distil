@@ -37,7 +37,7 @@
 - [Documentation](#documentation)
 - [Make your PyTorch Model compatible with DISTIL](#make-your-pytorch-model-compatible-with-distil)
 - [Demo Notebooks](#demo-notebooks)
-- [Active Learning Benchmarking using DISTIL](active-learning-benchmarking-using-distil)
+- [Active Learning Benchmarking using DISTIL](#active-learning-benchmarking-using-distil)
 - [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
 - [Mailing List](#mailing-list)
 - [Acknowledgement](#acknowledgement)
