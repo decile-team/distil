@@ -38,25 +38,25 @@ print('Nclasses ', nclasses)
 # net = ResNet18(channel=1)
 # net = mlpMod(dim, nclasses, embSize=24)
 net = CifarNet()
-train_args = {'n_epoch':10, 'lr':float(0.001), 'batch_size':16} 
-strategy_args = {'batch_size' : 64}
+train_args = {'n_epoch':250, 'lr':float(0.01), 'batch_size':20} 
+strategy_args = {'batch_size' : 20}
 strategy = BADGE(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
 # strategy_args = {'batch_size' : 1, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
 # strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
-# strategy_args = {'batch_size' : 16}
+# strategy_args = {'batch_size' : 20}
 # strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses)
 # strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 # strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
 
-# strategy_args = {'batch_size' : 2, 'n_drop' : 2}
+# strategy_args = {'batch_size' : 20, 'n_drop' : 2}
 # strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 # strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 # strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
 
-# strategy_args = {'batch_size' : 16, 'tor':1e-4}
+# strategy_args = {'batch_size' : 20, 'tor':1e-4}
 # strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 
 #Training first set of points

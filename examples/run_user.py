@@ -14,7 +14,6 @@ from distil.active_learning_strategies.core_set import CoreSet
 from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
 from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
 from distil.active_learning_strategies.kmeans_sampling import KMeansSampling
-from distil.active_learning_strategies.BaselineSampling import BaselineSampling
 from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout     
 
 from distil.utils.models.simple_net import TwoLayerNet
