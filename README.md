@@ -69,6 +69,7 @@ DISTIL is an active learning toolkit that implements a number of state-of-the-ar
 ```
 git clone https://github.com/decile-team/distil.git
 cd distil
+pip install -r requirements/requirements.txt
 python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
 ```
 For making your custom configuration file for training, please refer to [Distil Configuration File Documentation](https://decile-team-distil.readthedocs.io/en/latest/configuration.html)
