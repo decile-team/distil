@@ -32,7 +32,6 @@
 - [Key Features of DISTIL](#key-features-of-distil)
 - [Starting with DISTIL](#starting-with-distil)
 - [Where can DISTIL be used?](#where-can-distil-be-used)
-- [Installation](#installation)
 - [Package Requirements](#package-requirements)
 - [Documentation](#documentation)
 - [Make your PyTorch Model compatible with DISTIL](#make-your-pytorch-model-compatible-with-distil)
@@ -66,6 +65,8 @@ DISTIL is an active learning toolkit that implements a number of state-of-the-ar
 - Contains recipes, tutorials, and benchmarks for all active learning algorithms on many deep learning datasets
 
 ## Starting with DISTIL
+
+### From Git Repository
 ```
 git clone https://github.com/decile-team/distil.git
 cd distil
@@ -73,6 +74,12 @@ pip install -r requirements/requirements.txt
 python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
 ```
 For making your custom configuration file for training, please refer to [Distil Configuration File Documentation](https://decile-team-distil.readthedocs.io/en/latest/configuration.html)
+
+### Pip Installation
+You can also install it directly as a pip package:
+```python
+pip install decile-distil
+```
 
 Some of the algorithms currently implemented in DISTIL include the following:
 
@@ -95,13 +102,6 @@ To learn more on different active learning algorithms, check out the [Active Lea
 
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently, it only works in the supervised learning setting for classification. We will be adding extensions to active semi-supervised learning and active learning for object detection. It can be used in scenarios where you want to reduce labeling cost and time by labeling only the few most informative points for your ML model.
-
-## Installation
-The latest version of  DISTIL package can be installed using the following command:
-
-```python
-pip install decile-distil
-```
 
 ## Package Requirements
 1) "numpy >= 1.14.2",
