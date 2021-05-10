@@ -39,7 +39,7 @@
 - [Active Learning Benchmarking using DISTIL](#active-learning-benchmarking-using-distil)
 - [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
 - [Mailing List](#mailing-list)
-- [Acknowledgement](#acknowledgement)
+- [Acknowledgment](#acknowledgment)
 - [Team](#team)
 - [Publications](#publications)
 
@@ -222,7 +222,7 @@ To receive updates about DISTIL and to be a part of the community, join the Deci
 ```
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
-## Acknowledgement
+## Acknowledgment
 This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
 
 ## Team
