@@ -41,6 +41,7 @@
 - [Mailing List](#mailing-list)
 - [Acknowledgment](#acknowledgment)
 - [Team](#team)
+- [Resources](#resources)
 - [Publications](#publications)
 
 ## What is DISTIL?
@@ -227,6 +228,14 @@ This library takes inspiration, builds upon, and uses pieces of code from severa
 
 ## Team
 DISTIL is created and maintained by Nathan Beck, [Durga Sivasubramanian](https://www.linkedin.com/in/durga-s-352831105), [Apurva Dani](https://apurvadani.github.io/index.html), [Rishabh Iyer](https://www.rishiyer.com), and [Ganesh Ramakrishnan](https://www.cse.iitb.ac.in/~ganesh/). We look forward to have DISTIL more community driven. Please use it and contribute to it for your active learning research, and feel free to use it for your commercial projects. We will add the major contributors here.
+
+## Resources
+Youtube Tutorials on DISTIL:
+- Totorial on Active Learning: https://www.youtube.com/watch?v=tBhjq1gUAv4&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=2
+- Tutorial and Setup of DISTIL: https://www.youtube.com/watch?v=nnNvMBUJdwc&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=3
+- Benchmarking Active Learning through DISTIL: https://www.youtube.com/watch?v=OGgGqk3seaw&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=4
+
+Blogs Articles: https://decile-research.medium.com/
 
 ## Publications
 
