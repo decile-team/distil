@@ -231,11 +231,11 @@ DISTIL is created and maintained by Nathan Beck, [Durga Sivasubramanian](https:/
 
 ## Resources
 Youtube Tutorials on DISTIL:
-- Totorial on Active Learning: https://www.youtube.com/watch?v=tBhjq1gUAv4&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=2
-- Tutorial and Setup of DISTIL: https://www.youtube.com/watch?v=nnNvMBUJdwc&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=3
-- Benchmarking Active Learning through DISTIL: https://www.youtube.com/watch?v=OGgGqk3seaw&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=4
+- [Tutorial on Active Learning](https://www.youtube.com/watch?v=tBhjq1gUAv4&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=2)
+- [Tutorial and Setup of DISTIL](https://www.youtube.com/watch?v=nnNvMBUJdwc&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=3)
+- [Benchmarking Active Learning through DISTIL](https://www.youtube.com/watch?v=OGgGqk3seaw&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=4)
 
-Blogs Articles: https://decile-research.medium.com/
+[Blog Articles](https://decile-research.medium.com/)
 
 ## Publications
 
