@@ -85,7 +85,7 @@ def get_imbalanced_idx(y_trn, num_cls, class_ratio=0.6):
 
     return subset_idxs
 
-def make_data_redundant(X,Y,amtRed=2):
+def make_data_redundant(X,Y,intial_bud,unique_points= 5000,amtRed=2):
 
     """
     Modifies the input dataset in such a way that only X.shape(0)/amtRed are original 
@@ -97,6 +97,10 @@ def make_data_redundant(X,Y,amtRed=2):
         The feature set to be made redundant.
     Y : numpy ndarray
         The label set corresponding to the X.
+    intial_bud : int
+        Number of inital points that are assumed to be labled. 
+    unique_points: int
+        Number of points to be kept unique in unlabled pool. 
     amtRed : float, optional
         Factor that determines redundancy. The default is 2.
 
@@ -105,12 +109,16 @@ def make_data_redundant(X,Y,amtRed=2):
     X : numpy ndarray
         Modified feature set.
     """
+
+    unique_ind = intial_bud + unique_points
     
-    classes,no_elements = np.unique(Y, return_counts=True)
+    classes,no_elements = np.unique(Y[unique_ind:], return_counts=True)
 
     for cl in range(len(classes)):
         retain = math.ceil(no_elements[cl]/amtRed)
-        idxs = np.where(Y == classes[cl])[0]
+        idxs = np.where(Y[unique_ind:] == classes[cl])[0]
+
+        idxs += unique_ind
 
         for i in range(math.ceil(amtRed)):
             if i == 0:

@@ -16,6 +16,14 @@ Core-Set Approch
    :undoc-members:
    :show-inheritance:
 
+CRAIG-ACTIVE
+----------------------------------------------------
+.. automodule:: distil.active_learning_strategies.craig_active
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 Entropy Sampling 
 ------------------------------------------------------------
 
@@ -44,6 +52,13 @@ GLISTER
 --------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.glister
+   :members:
+   :show-inheritance:
+
+GRADMATCH
+--------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.gradmatch_active
    :members:
    :show-inheritance:
 
@@ -100,7 +115,6 @@ Adversarial BIM
 
 .. automodule:: distil.active_learning_strategies.adversarial_bim
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Adversarial DeepFool
@@ -108,7 +122,6 @@ Adversarial DeepFool
 
 .. automodule:: distil.active_learning_strategies.adversarial_deepfool
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Bayesian Active Learning Disagreement Dropout
@@ -123,14 +136,6 @@ KMeans Sampling
 -----------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.kmeans_sampling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Baseline Sampling
------------------------------------------------------
-
-.. automodule:: distil.active_learning_strategies.baseline_sampling
    :members:
    :undoc-members:
    :show-inheritance:

@@ -3,12 +3,20 @@ from .strategy import Strategy
 import torch
 
 from ..utils.submodular import SubmodularFunction
-from ..utils.Disparty_functions import DisparityFunction
-from ..utils.Similarity_mat import SimilarityComputation
-from ..utils.DPP import dpp
+from ..utils.disparity_functions import DisparityFunction
+from ..utils.similarity_mat import SimilarityComputation
+from ..utils.dpp import dpp
 
 class SubmodSampling(Strategy):
     """
+
+    This strategy uses one of  the submodular functions viz. 'facility_location', 'graph_cut', 
+    'saturated_coverage', 'sum_redundancy', 'feature_based' :footcite:`iyer2021submodular` 
+    or Disparity-sum, Disparity-min :footcite:`dasgupta-etal-2013-summarization` or 
+    DPP :footcite:`NEURIPS2018_dbbf603f` is used to select the points to be labeled. These 
+    techniques can be applied directly to the features/embeddings or on the gradients of the 
+    loss functions.
+
     
     Parameters
     ----------

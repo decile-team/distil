@@ -46,34 +46,35 @@ def init_centers(X, K, device):
     return indsAll
 
 class BADGE(Strategy):
-
     """
-    Implementation of Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE) 
-    :footcite:`DBLP:journals/corr/abs-1906-03671` Strategy. This class extends :
-    class:`active_learning_strategies.strategy.Strategy`.
-
-    This method is based on the paper `Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds <https://arxiv.org/abs/1906.03671>`_ 
-    According to the paper, Batch Active learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate and high magnitude when represented in a hallucinated gradient space, a strategy designed to incorporate both predictive uncertainty and sample diversity into every selected batch.
-    Crucially, BADGE trades off between uncertainty and diversity without requiring any hand-tuned hyperparameters.
-    Here at each round of selection, loss gradients are computed using the hypothesised labels. Then to select the points to be labeled are selected by applying k-means++ on these loss gradients. 
+    This method is based on the paper Deep Batch Active Learning by Diverse, Uncertain Gradient 
+    Lower Bounds :footcite:`DBLP-Badge`. According to the paper, this strategy, Batch Active 
+    learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate 
+    and high magnitude when represented in a hallucinated gradient space, a strategy designed to 
+    incorporate both predictive uncertainty and sample diversity into every selected batch. 
+    Crucially, BADGE trades off between uncertainty and diversity without requiring any hand-tuned 
+    hyperparameters. Here at each round of selection, loss gradients are computed using the 
+    hypothesised labels. Then to select the points to be labeled are selected by applying 
+    k-means++ on these loss gradients. 
     
     Parameters
     ----------
-
-    X: Numpy array 
-        Features of the labled set of points 
-    Y: Numpy array
-        Lables of the labled set of points 
-    unlabeled_x: Numpy array
-        Features of the unlabled set of points 
-    net: class object
-        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
-    handler: class object
-        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
-    nclasses: int 
-        No. of classes in tha dataset
-    args: dictionary
-        This dictionary should have 'batch_size' as a key. 
+    X: numpy array
+        Present training/labeled data   
+    Y: numpy array
+        Labels of present training data
+    unlabeled_x: numpy array
+        Data without labels
+    net: class
+        Pytorch Model class
+    handler: class
+        Data Handler, which can load data even without labels.
+    nclasses: int
+        Number of unique target variables
+    args: dict
+        Specify optional parameters.
+        `batch_size` 
+        Batch size to be used inside strategy class (int, optional)
     """
 
     def __init__(self, X, Y, unlabeled_x, net, handler,nclasses, args):
@@ -88,7 +89,7 @@ class BADGE(Strategy):
         ----------
         budget : int
             Number of indices to be selected from unlabeled set
-        batch_size : TYPE
+        batch_size : int
             Size of batches to form
 
         Returns

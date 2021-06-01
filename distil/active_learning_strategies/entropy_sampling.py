@@ -3,43 +3,24 @@ from .strategy import Strategy
 
 class EntropySampling(Strategy):
     """
-    Implementation of Entropy Sampling Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling technique to select data points for active learning.
-
-    Least Confidence and Margin Sampling do not make use of all the label probabilities, whereas entropy sampling calculates entropy based on the hypothesised confidence scores for each label and queries for the true label of a data instance with the highest entropy.
     
+    Implements the Entropy Sampling Strategy, one of the most basic active learning strategies,
+    where we select samples about which the model is most uncertain. To quantify the uncertainity 
+    we use entropy and therefore select points which have maximum entropy. 
 
-    .. list-table:: Example
-       :widths: 50 50
-       :header-rows: 1
-
-       * - Data Instances
-         - Entropy
-       * - p1
-         - 0.2
-       * - p2
-         - 0.5
-       * - p3
-         - 0.7
-
-
-    From the above table, Entropy sampling will query for the true label data instance p3 since it has the highest entropy.
-
-    Let :math:`p_i`  denote probability for ith label of data instance p, and let total possible labels be denoted by n, then Entropy for p is calculated as:
-    
+    Suppose the model has `nclasses` output nodes and each output node is denoted by :math:`z_j`. Thus,  
+    :math:`j \\in [1,nclasses]`. Then for a output node :math:`z_i` from the model, the corresponding
+    softmax would be 
 
     .. math::
-        E = \\sum{p_i*log(p_i)}
+        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}}
     
-   
-    where i=1,2,3....n   
-    Thus Entropy Selection can be mathematically shown as:
+    Then entropy can be calculated as,
 
+    .. math:: 
+        ENTROPY = -\\sum_j \\sigma(z_j)*log(\\sigma(z_i))
 
-    ..math::    
-        \\max{(E)}     
-    
+    The algorithm then selects `budget` no. of elements with highest **ENTROPY**.
     
     Parameters
     ----------

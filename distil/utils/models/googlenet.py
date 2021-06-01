@@ -1,4 +1,11 @@
-'''GoogLeNet with PyTorch.'''
+'''GoogLeNet in PyTorch.
+
+Reference:
+    GoogLeNet
+    https://arxiv.org/abs/1409.4842
+'''
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -45,6 +52,7 @@ class Inception(nn.Module):
             nn.ReLU(True),
         )
 
+
     def forward(self, x):
         y1 = self.b1(x)
         y2 = self.b2(x)
@@ -56,12 +64,14 @@ class Inception(nn.Module):
 class GoogLeNet(nn.Module):
     def __init__(self):
         super(GoogLeNet, self).__init__()
+        self.embDim = 1024
+        
         self.pre_layers = nn.Sequential(
             nn.Conv2d(3, 192, kernel_size=3, padding=1),
             nn.BatchNorm2d(192),
             nn.ReLU(True),
         )
-
+        
         self.a3 = Inception(192,  64,  96, 128, 16, 32, 32)
         self.b3 = Inception(256, 128, 128, 192, 32, 96, 64)
 
@@ -79,23 +89,48 @@ class GoogLeNet(nn.Module):
         self.avgpool = nn.AvgPool2d(8, stride=1)
         self.linear = nn.Linear(1024, 10)
 
-    def forward(self, x):
-        out = self.pre_layers(x)
-        out = self.a3(out)
-        out = self.b3(out)
-        out = self.maxpool(out)
-        out = self.a4(out)
-        out = self.b4(out)
-        out = self.c4(out)
-        out = self.d4(out)
-        out = self.e4(out)
-        out = self.maxpool(out)
-        out = self.a5(out)
-        out = self.b5(out)
-        out = self.avgpool(out)
-        out = out.view(out.size(0), -1)
-        out = self.linear(out)
-        return out
+
+    def forward(self, x, last=False, freeze=False):
+        if freeze:
+            with torch.no_grad():
+                out = self.pre_layers(x)
+                out = self.a3(out)
+                out = self.b3(out)
+                out = self.maxpool(out)
+                out = self.a4(out)
+                out = self.b4(out)
+                out = self.c4(out)
+                out = self.d4(out)
+                out = self.e4(out)
+                out = self.maxpool(out)
+                out = self.a5(out)
+                out = self.b5(out)
+                out = self.avgpool(out)
+                e = out.view(out.size(0), -1)
+        else:
+            out = self.pre_layers(x)
+            out = self.a3(out)
+            out = self.b3(out)
+            out = self.maxpool(out)
+            out = self.a4(out)
+            out = self.b4(out)
+            out = self.c4(out)
+            out = self.d4(out)
+            out = self.e4(out)
+            out = self.maxpool(out)
+            out = self.a5(out)
+            out = self.b5(out)
+            out = self.avgpool(out)
+            e = out.view(out.size(0), -1)
+        out = self.linear(e)
+        if last:
+            return out, e
+        else:
+            return out
+     
+     
+    def get_embedding_dim(self):
+        return self.embDim
 
 
 def test():

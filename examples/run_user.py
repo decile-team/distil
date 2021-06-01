@@ -1,25 +1,23 @@
 import pandas as pd 
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
 from torch import nn
-from torchvision import transforms
 import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 sys.path.append('../')
-from distil.active_learning_strategies import FASS, EntropySampling, EntropySamplingDropout, RandomSampling,\
-                                LeastConfidence,LeastConfidenceDropout, MarginSampling, MarginSamplingDropout, \
-                                CoreSet, GLISTER, BADGE, AdversarialBIM, AdversarialDeepFool, KMeansSampling, BaselineSampling, \
-                                  BALDDropout      
+from distil.utils.data_handler import DataHandler_Points
+from distil.active_learning_strategies.badge import BADGE
+from distil.active_learning_strategies.entropy_sampling import EntropySampling
+from distil.active_learning_strategies.random_sampling import RandomSampling
+from distil.active_learning_strategies.least_confidence import LeastConfidence
+from distil.active_learning_strategies.margin_sampling import MarginSampling
+from distil.active_learning_strategies.core_set import CoreSet
+from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
+from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
+from distil.active_learning_strategies.kmeans_sampling import KMeansSampling
+from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout     
 
-from distil.active_learning_strategies import FASS
-from distil.utils.models.logreg_net import LogisticRegNet
-from distil.utils.models.simpleNN_net import TwoLayerNet
-from distil.utils.DataHandler import DataHandler_Points
-from distil.utils.TrainHelper import data_train
+from distil.utils.models.simple_net import TwoLayerNet
+from distil.utils.train_helper import data_train
 
 def init_weights(m):
     if type(m) == nn.Linear:

@@ -2,48 +2,31 @@ from .strategy import Strategy
 
 class MarginSamplingDropout(Strategy):
     """
-    Implementation of Margin Sampling Dropout Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include margin sampling dropout technique to select data points for active learning.
-
-    While least confidence only takes into consideration the maximum probability, margin sampling considers the difference between the confidence of first and the second most probable labels.  
-  
+    Implements the Margin Sampling Strategy with dropout a active learning strategy similar to Least Confidence 
+    Sampling Strategy with dropout. While least confidence only takes into consideration the maximum probability, 
+    margin sampling considers the difference between the confidence of first and the second most 
+    probable labels.  
     
-    .. list-table:: Example
-       :widths: 25 25 25 25
-       :header-rows: 1
+    Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` 
+    and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. 
+    Then for a output node :math:`z_i` from the model, the corresponding softmax would be 
 
-       * - Data Instances
-         - Label 1
-         - Label 2
-         - Label 3
-       * - p1
-         - 0.1
-         - 0.55
-         - 0.45
-       * - p2
-         - 0.2
-         - 0.3
-         - 0.5
-       * - p3
-         - 0.1
-         - 0.1
-         - 0.8
+    .. math::
+        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
 
-    
-    From the above table, the difference between the probability first and the second labels for p1, p2, p3 are 0.1, 0.2, 0.7 respectively.
-    The margin sampling will query the true label for the data instance p1 since it has the smallest difference among all the different data instances. 
+    Let,
 
-    Let :math:`p_i` represent probability for ith label and let there be n possible labels for data instance p. 
-    Let :math:`\\max{(t)}` represent the maximum value in t and :math:`max1{(t)}` represent second maximum value in t then, mathematically it can be written as:
-    
+    .. math::
+        m = \\mbox{argmax}_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}
+        
+    Then using softmax, Margin Sampling Strategy would pick `budget` no. of elements as follows, 
     
     .. math::
-        \\min{(\\max{(P)} - \\max1{(P)})} 
-
+        \\mbox{argmin}_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\sum_S(\\mbox{argmax}_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}) - (\\mbox{argmax}_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
-    where P=[ :math:`p_1, p_2,… p_n`]
 
+    where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
+    
     The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
     User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
     The final probability is calculated by averaging probabilities obtained in all iteraitons.    

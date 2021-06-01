@@ -5,9 +5,13 @@ from torch.autograd import Variable
 
 class AdversarialDeepFool(Strategy):
     """
-    Implementation of Adversial Deep Fool Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling technique to select data points for active learning.
+    Implements Adversial Deep Fool Strategy :footcite:`ducoffe2018adversarial`, a Deep-Fool based 
+    Active Learning strategy that selects unlabeled samples with the smallest adversarial 
+    perturbation. This technique is motivated by the fact that often the distance computation 
+    from decision boundary is difficult and intractable for margin-based methods. This 
+    technique avoids estimating distance by using Deep-Fool :footcite:`Moosavi-Dezfooli_2016_CVPR` 
+    like techniques to estimate how much adversarial perturbation is required to cross the boundary. 
+    The smaller the required perturbation, the closer the point is to the boundary.
 
     Parameters
     ----------
@@ -43,6 +47,7 @@ class AdversarialDeepFool(Strategy):
         super(AdversarialDeepFool, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
 
     def cal_dis(self, x):
+
         nx = Variable(torch.unsqueeze(x, 0), requires_grad=True)
         eta = Variable(torch.zeros(nx.shape))
 

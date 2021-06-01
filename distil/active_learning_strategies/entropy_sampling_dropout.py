@@ -4,43 +4,25 @@ from .strategy import Strategy
 
 class EntropySamplingDropout(Strategy):
     """
-    Implementation of Entropy Sampling Dropout Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include entropy sampling with dropout technique to select data points for active learning.
+    Implements the Entropy Sampling Strategy with dropout. Entropy Sampling Strategy is one 
+    of the most basic active learning strategies, where we select samples about which the model 
+    is most uncertain. To quantify the uncertainity we use entropy and therefore select points 
+    which have maximum entropy. 
 
-    Least Confidence and Margin Sampling do not make use of all the label probabilities, whereas entropy sampling calculates entropy based on the hypothesised confidence scores for each label and queries for the true label of a data instance with the highest entropy.
-    
-
-    .. list-table:: Example
-       :widths: 50 50
-       :header-rows: 1
-
-       * - Data Instances
-         - Entropy
-       * - p1
-         - 0.2
-       * - p2
-         - 0.5
-       * - p3
-         - 0.7
-
-
-    From the above table, Entropy sampling will query for the true label data instance p3 since it has the highest entropy.
-
-    Let :math:`p_i`  denote probability for ith label of data instance p, and let total possible labels be denoted by n, then Entropy for p is calculated as:
-    
+    Suppose the model has `nclasses` output nodes and each output node is denoted by :math:`z_j`. Thus,  
+    :math:`j \in [1,nclasses]`. Then for a output node :math:`z_i` from the model, the corresponding 
+    softmax would be 
 
     .. math::
-        E = \\sum{p_i*log(p_i)}
+        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}}
     
-   
-    where i=1,2,3....n   
-    Thus Entropy Selection can be mathematically shown as:
+    Then entropy can be calculated as,
 
+    .. math:: 
+        ENTROPY = -\\sum_j \\sigma(z_j)*log(\\sigma(z_i))
 
-    ..math::    
-        \\max{(E)}     
-
+    The algorithm then selects `budget` no. of elements with highest **ENTROPY**.
+    
     The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.
     User can pass n_drop argument which denotes the number of times the probabilities will be calculated.
     The final probability is calculated by averaging probabilities obtained in all iteraitons.    

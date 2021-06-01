@@ -11,8 +11,25 @@ import math
 
 class GLISTER(Strategy):
     """
-    Implementation of GLISTER-ACTIVE Strategy :footcite:`killamsetty2020glister`. 
-    This class extends :class:`active_learning_strategies.strategy.Strategy`.
+    This is implementation of GLISTER-ACTIVE from the paper GLISTER: Generalization based Data 
+    Subset Selection for Efficient and Robust Learning :footcite:`killamsetty2020glister`. GLISTER 
+    methods tries to solve a bi-level optimisation problem.
+
+    .. math::
+        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\underset{\\theta}{\\operatorname{argmin\\hspace{0.7mm}}} L_T( \\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
+        
+    In the above equation, :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x`, 
+    :math:`\\mathcal{V}` denotes the validation set that guides the subset selection process, :math:`L_T` denotes the
+    training loss, :math:`L_V` denotes the validation loss, :math:`S` denotes the data subset selected at each round,  and :math:`k` is the `budget`.
+    Since, solving the complete inner-optimization is expensive, GLISTER-ONLINE adopts a online one-step meta approximation where we approximate the solution to inner problem
+    by taking a single gradient step.
+    The optimization problem after the approximation is as follows:
+    
+    .. math::
+        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\theta - \\eta \\nabla_{\\theta}L_T(\\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
+    
+    In the above equation, :math:`\\eta` denotes the step-size used for one-step gradient update.
+
     
     Parameters
     ----------

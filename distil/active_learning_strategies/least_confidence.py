@@ -2,44 +2,26 @@ from .strategy import Strategy
 
 class LeastConfidence(Strategy):
     """
-    Implementation of Least Confidence Sampling Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy` to include least confidence technique to select data points for active learning.
-    
-    In this active learning strategy, the algorithm selects the data points for which the model has the lowest confidence while predicting its hypothesised label.
-    
-    
-    .. list-table:: Example
-       :widths: 25 25 25 25
-       :header-rows: 1
 
-       * - Data Instances
-         - Label 1
-         - Label 2
-         - Label 3
-       * - p1
-         - 0.1
-         - 0.55
-         - 0.45
-       * - p2
-         - 0.2
-         - 0.3
-         - 0.5
-       * - p3
-         - 0.1
-         - 0.1
-         - 0.8
-
+    Implements the Least Confidence Sampling Strategy a active learning strategy where 
+    the algorithm selects the data points for which the model has the lowest confidence while 
+    predicting its label.
     
-    From the above table, the label for instance p1 is 2 with a confidence of 0.55, for instance p2, the hypothesised label predicted is 3 with confidence of 0.5 and for p3 label 3 is predicted with a confidence of 0.8. Thus, according to least confidence strategy,  the point for which it will query for true label will be instance p2.
+    Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` 
+    and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. 
+    Then for a output node :math:`z_i` from the model, the corresponding softmax would be 
 
-    Let :math:`p_i` represent probability for ith label and let there be n possible labels for data instance p then, mathematically it can be written as:
-    
+    .. math::
+        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
+
+    Then the softmax can be used pick `budget` no. of elements for which the model has the lowest 
+    confidence as follows, 
     
     .. math::
-        \\min{(\\max{(P)})}  
+        \\mbox{argmin}_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\sum_S(\mbox{argmax}_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
 
-    where P=:math:`[p_1, p_2,… p_n]`
+    where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
     
     Parameters
     ----------

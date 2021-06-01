@@ -4,9 +4,8 @@ from .strategy import Strategy
 class RandomSampling(Strategy):
 
     """
-    Implementation of Random Sampling Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include random sampling technique to select data points for active learning.
+    Implementation of Random Sampling Strategy. This strategy is often used as a baseline, 
+    where we pick a set of unlabeled points randomly.
 
     Parameters
     ----------

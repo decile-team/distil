@@ -1,26 +1,19 @@
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
-from torch import nn
-from torchvision import transforms
-import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 from sklearn.preprocessing import StandardScaler
 import argparse
 sys.path.append('./')
 from distil.utils.models.resnet import ResNet18
-from distil.utils.DataHandler import DataHandler_Points,DataHandler_MNIST, DataHandler_CIFAR10, \
-										DataHandler_FASHION_MNIST, DataHandler_SVHN, DataHandler_STL10
-from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
-                            LeastConfidence, MarginSampling, CoreSet, FASS, AdversarialBIM, AdversarialDeepFool, \
-                            KMeansSampling, BaselineSampling, BALDDropout
-from distil.utils.models.simpleNN_net import TwoLayerNet
+from distil.utils.data_handler import DataHandler_Points, DataHandler_MNIST, DataHandler_CIFAR10, \
+										DataHandler_FASHION_MNIST, DataHandler_SVHN, DataHandler_STL10, \
+                                        DataHandler_CIFAR100
+from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, LeastConfidence, \
+                                        MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, KMeansSampling, \
+                                        BALDDropout, FASS
+from distil.utils.models.simple_net import TwoLayerNet
 from distil.utils.dataset import get_dataset
-from distil.utils.TrainHelper import data_train
-from distil.utils.ConfigHelper import read_config_file
+from distil.utils.train_helper import data_train
+from distil.utils.config_helper import read_config_file
 import time
 import pickle
 
@@ -265,6 +258,9 @@ class TrainClassifier:
 		print('***************************')
 	    ##User Controlled Loop
 		for rd in range(1, n_rounds):
+			print('***************************')
+			print('Round', rd)
+			print('***************************')		
 			logs = {}
 			t0 = time.time()
 			idx = strategy.select(budget)
@@ -278,6 +274,8 @@ class TrainClassifier:
 			#Human In Loop, Assuming user adds new labels here
 			y_tr = np.concatenate((y_tr, y_unlabeled[idx]), axis = 0)
 			y_unlabeled = np.delete(y_unlabeled, idx, axis = 0)
+
+			print('Total training points in this round', X_tr.shape[0])
 
 			#Reload state and start training
 			strategy.load_state('./state.pkl')

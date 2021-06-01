@@ -1,23 +1,18 @@
 #import pandas as pd 
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
 from torch import nn
-from torchvision import transforms
 import torch
-import torch.optim as optim
-from torch.autograd import Variable
 import sys
 from sklearn.preprocessing import StandardScaler
 import argparse
 sys.path.append('./')
-from distil.utils.DataHandler import DataHandler_Points
-from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, \
-                            LeastConfidence, MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, \
-                            KMeansSampling, BaselineSampling, BALDDropout
-from distil.utils.models.simpleNN_net import TwoLayerNet
-from distil.utils.TrainHelper import data_train
+from distil.utils.data_handler import DataHandler_Points
+from distil.active_learning_strategies import GLISTER, BADGE, EntropySampling, RandomSampling, LeastConfidence, \
+                                        MarginSampling, CoreSet, AdversarialBIM, AdversarialDeepFool, KMeansSampling, \
+                                        BALDDropout
+
+from distil.utils.models.simple_net import TwoLayerNet
+from distil.utils.train_helper import data_train
 
 def test_individual_strategy(selected_strat):
     """
@@ -29,7 +24,7 @@ def test_individual_strategy(selected_strat):
         Strategy to be tested.
         badge, glister, entropy_sampling, random_sampling
         margin_sampling, least_confidence, core_set, bald_dropout, adversarial_bim,
-        kmeans_sampling, baseline_sampling, adversarial_deepfool
+        kmeans_sampling, adversarial_deepfool
     """
 
     def init_weights(m):
@@ -63,8 +58,6 @@ def test_individual_strategy(selected_strat):
         return (X_data, Y_label)
 
     print('Strategy to be tested on -', selected_strat)
-
-    dset_name = 'satimage'
 
     #User Execution
     trn_file = '../datasets/satimage/satimage.scale.trn'
@@ -123,14 +116,12 @@ def test_individual_strategy(selected_strat):
         strategy = AdversarialBIM(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     elif selected_strat == 'kmeans_sampling':
         strategy = KMeansSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-    elif selected_strat == 'baseline_sampling':
-        strategy = BaselineSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     elif selected_strat == 'adversarial_deepfool':
         strategy = AdversarialDeepFool(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
     else:
         print('Enter a valid strategy. You can select from the following: badge, glister, entropy_sampling, random_sampling,\
                 margin_sampling, least_confidence, core_set, bald_dropout, adversarial_bim,\
-                kmeans_sampling, baseline_sampling, adversarial_deepfool')
+                kmeans_sampling, adversarial_deepfool')
         sys.exit()
 
     train_args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args

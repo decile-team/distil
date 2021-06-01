@@ -1,10 +1,7 @@
 <p align="center">
     <br>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_logo_transparent.png" width="500" height="150"/>
-    </br>
-    <br>
-        <strong> Deep dIverSified inTeractIve Learning </strong>
+        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_logo.svg" width="500" height="150"/>
     </br>
 </p>
 
@@ -27,52 +24,65 @@
 </p>
 
 <h3 align="center">
-<p>Cut down your labeling cost and time 5x-10x times!
+<p>Cut down your labeling cost and time by 3x-5x!
 </h3>
 
-DISTIL is an active learning toolkit and supports all the state of art selection strategies. DISTIL's main focus is to decouple the training loop from the active learning module, thus providing maximum flexibility to the user to control the training procedure. It allows to incorporate active learning with minimal changes to the existing code. DISTIL provides support for incorporating active learning with your custom dataset as well as experimentation on well known datasets.
-
 # In this README
-- [What is DISTIL?](#what-is-distil)
-- [What does DISTIL offer that other's don't?](#what-does-distil-offer-that-others-dont)
+- [What is DISTIL?](#what-is-distil) 
+- [Key Features of DISTIL](#key-features-of-distil)
 - [Starting with DISTIL](#starting-with-distil)
 - [Where can DISTIL be used?](#where-can-distil-be-used)
-- [Installation](#installation)
 - [Package Requirements](#package-requirements)
 - [Documentation](#documentation)
+- [Make your PyTorch Model compatible with DISTIL](#make-your-pytorch-model-compatible-with-distil)
 - [Demo Notebooks](#demo-notebooks)
-- [Evaluation of Active Learning Strategies](#evaluation-of-active-learning-strategies)
-- [Testing Individual strategy and Running Examples](#testing-individual-strategy-and-running-examples)
+- [Active Learning Benchmarking using DISTIL](#active-learning-benchmarking-using-distil)
+- [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
 - [Mailing List](#mailing-list)
+- [Acknowledgment](#acknowledgment)
+- [Team](#team)
+- [Resources](#resources)
 - [Publications](#publications)
-- [Acknowledgement](#acknowledgement)
 
 ## What is DISTIL?
-DISTIL implements a number of state of the art active learning algorithms. The following are the goals that DISTIL tries to acheive:
-<p align="center"><i><b>Reducing Labeling Time</b></i></p>
-<p align="center"><i><b>Reducing Labeling Effort & Costs</b></i></p>
-<p align="center"><i><b>Reducing Amount of Data to be Labeled</b></i></p>
-<p align="center"><i><b>Reducing Deal with imbalance, OOD data, and distribution shift</b></i></p>
+<p align="center">
+    <br>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        <img src="https://github.com/decile-team/distil/blob/main/experiment_plots/distil_explanation.png" width="543" height="390"/>
+    </br>
+</p>
 
-## What does DISTIL offer that other's don't?
-- A one of its kind active learning toolkit that decouples the active learning module from        training loop and allows users to have full control over the training.
-- Faster and efficient implementation of several active learning strategies.
-- Run the basic experiments with just one command.
-- Minimal changes in configuration files to run your own experiments.
-- Achieving similar test accuracy with less amount of training data.
-- Minimal changes to add it to the existing training structure.
-- Huge reduction in labelling cost and time.
-- Access to various active learning strategies with just one line of code.
-- We are continuously incorporating newer and better selection strategies into DISTIL.
+DISTIL is an active learning toolkit that implements a number of state-of-the-art active learning strategies with a particular focus for active learning in the deep learning setting. DISTIL is built on *PyTorch* and decouples the training loop from the active learning algorithm, thereby providing flexibility to the user by allowing them to control the training procedure and model. It allows users to incorporate new active learning algorithms easily with minimal changes to their existing code. DISTIL also provides support for incorporating active learning with your custom dataset and allows you to experiment on well-known datasets. We are continuously incorporating newer and better active learning selection strategies into DISTIL.
+
+## Key Features of DISTIL
+- Decouples the active learning strategy from the training loop, allowing users to modify the training and/or the active learning strategy
+- Implements faster and more efficient versions of several active learning strategies
+- Contains most state-of-the-art active learning algorithms
+- Allows running basic experiments with just one command
+- Presents interface to various active learning strategies through only a couple lines of code
+- Requires only minimal changes to the configuration files to run your own experiments
+- Achieves higher test accuracies with less amount of training data, admitting a huge reduction in labeling cost and time
+- Requires minimal change to add it to existing training structures
+- Contains recipes, tutorials, and benchmarks for all active learning algorithms on many deep learning datasets
 
 ## Starting with DISTIL
+
+### From Git Repository
 ```
 git clone https://github.com/decile-team/distil.git
 cd distil
+pip install -r requirements/requirements.txt
 python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
 ```
+For making your custom configuration file for training, please refer to [Distil Configuration File Documentation](https://decile-team-distil.readthedocs.io/en/latest/configuration.html)
 
-Some of the algorithms currently implemented with DISTIL include:
+### Pip Installation
+You can also install it directly as a pip package:
+```python
+pip install decile-distil
+```
+
+Some of the algorithms currently implemented in DISTIL include the following:
 
 - [Uncertainty Sampling [1]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.entropy_sampling)
 - [Margin Sampling [2]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.margin_sampling)
@@ -81,7 +91,7 @@ Some of the algorithms currently implemented with DISTIL include:
 - [BADGE [4]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.badge)
 - [GLISTER ACTIVE [6]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.glister)
 - [CoreSets based Active Learning [5]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.core_set)
-- [Ramdom Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.random_sampling)
+- [Random Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.random_sampling)
 - [Submodular Sampling [3,6,7]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.submod_sampling)
 - [Adversarial DeepFool [9]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.adversarial_deepfool)
 - [BALD [10]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout)
@@ -89,19 +99,10 @@ Some of the algorithms currently implemented with DISTIL include:
 - [Adversarial Bim](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.adversarial_bim)
 - [Baseline Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.baseline_sampling)
 
+To learn more on different active learning algorithms, check out the [Active Learning Strategies Survey Blog](https://decile-research.medium.com/active-learning-strategies-distil-62ee9fc166f9)
+
 ## Where can DISTIL be used?
-DISTIL is a toolkit which provides support for various active learning algorithms. Presently it only works with classification task. It can be used in scenarios where you only want to label few data points which can provide maximum information to the classification model and thus reduce labeling cost and time.
-
-## Installation
-The latest version of  DISTIL package can be installed using the following command:
-
-```python
-pip install --extra-index-url https://test.pypi.org/simple/ decile-distil
-```
-### NOTE
-```
-Please make sure to enter the space between simple/ and decile-distil in the above command while installing DISTIL package
-```
+DISTIL is a toolkit which provides support for various active learning algorithms. Presently, it only works in the supervised learning setting for classification. We will be adding extensions to active semi-supervised learning and active learning for object detection. It can be used in scenarios where you want to reduce labeling cost and time by labeling only the few most informative points for your ML model.
 
 ## Package Requirements
 1) "numpy >= 1.14.2",
@@ -112,45 +113,90 @@ Please make sure to enter the space between simple/ and decile-distil in the abo
 6) "apricot-select >= 0.6.0"
 
 ## Documentation
-Learn more about distil at our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
+Learn more about DISTIL by reading our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
+
+## Make your PyTorch Model compatible with DISTIL
+DISTIL provides various models and data handlers which can be used directly.
+DISTIL makes it extremely easy to integrate your custom models with active learning. There are two main things that need to be incorporated in your code before using DISTIL.
+
+* Model
+    * Your model should have a function get_embedding_dim() which returns the number of hidden units in the last layer.
+    * Your forward() function should have an optional boolean parameter “last” where:
+        * If True: It should return the model output and the output of the second last layer
+        * If False: It should return only the model output.
+    * Check the models included in DISTIL for examples!
+
+* Data Handler
+    * Your DataHandler class should have a boolean attribute “select=True” with default value True:
+        * If True: Your __getitem__(self, index) method should return (input, index)
+        * If False: Your __getitem__(self, index) method should return (input, label, index)
+    * Your DataHandler class should have a boolean attribute “use_test_transform=False” with default value False.
+    
+    * Check the DataHandler classes included in DISTIL for examples!
+
+To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
 
 ## Demo Notebooks
-1. https://colab.research.google.com/drive/10WkyKlOxSixrMHvA9wEHcd0l5HugnChN?usp=sharing
+1. [CIFAR10 Tutorial](https://colab.research.google.com/drive/1K5eFLtJYbNEpDRI6YsYFCEQyi74tfEou?usp=sharing)
 
-2. https://colab.research.google.com/drive/15427CIEy6rIDwfTWsprUH6yPfufjjY56?usp=sharing
+2. [SATIMAGE Tutorial](https://colab.research.google.com/drive/1wD-so8B14kSswZwCDHDhLGkkGIH7VUdU?usp=sharing)
 
-3. https://colab.research.google.com/drive/1PaMne-hsAMlzZt6Aul3kZbOezx-2CgKc?usp=sharing
+3. [IJCNN1 Tutorial](https://colab.research.google.com/drive/11WRz7CXC4ZCvmEkXQ-FQ2YiwRZY7QIof?usp=sharing)
 
-## Evaluation of Active Learning Strategies
-### Experimentation Method
-The model was first trained on randomly selected n points where n is the budget of the experiment. For each set of new points added, the model was trained from scratch till the training accuracy crossed the max accuracy threshold.
+You can also download the .ipynb files from the notebooks folder.
 
-### CIFAR10
-Budget: 5000, Model: Resnet18, Number of rounds: 10, Total Points: 50,000
+## Active Learning Benchmarking using DISTIL
+#### Experimentation Method
+The models used below were first trained on an initial random set of points (equal to the budget). For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round. The results below are *preliminary* results each obtained only with one run. We are doing a more thorough benchmarking experiment, with more runs and report standard deviations etc. We will also link to a preprint which will include the benchmarking results.
 
-![CIFAR10 Plot](./experiment_plots/cifar10_plot_50k.png?raw=true)
+For more details on the benchmarking results, please check out the [Active Learning Benchmark Blog: Cut Down Labeling Costs with DISTIL](https://decile-research.medium.com/cut-down-on-labeling-costs-with-distil-77bec5c2e864).
 
-### MNIST
-Budget: 1000, Model: Resnet18, Number of rounds: 11, Total Points: 12,000 (20%)
+#### CIFAR10
+Model: Resnet18
 
-Zoomed Plot
 
-![MNIST Zoomed Plot](./experiment_plots/mnist_zoom_plot.png?raw=true)
+![CIFAR10](./experiment_plots/cifar10_plot_50k.png?raw=true)
+
+
+The best strategies show 2x labeling efficiency compared to random sampling. BADGE does better than entropy sampling with a larger budget, and all strategies do better than random sampling.
+
+
+#### MNIST
+Model: MnistNet
+
 
 ![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
 
-### FASHION MNIST
-Budget: 1000, Model: Resnet18, Number of rounds: 14, Total Points: 15,000 (25%)
+All strategies exhibit a gain over random sampling, and both entropy sampling and BADGE achieve a 4x labeling efficiency compared to random sampling.
+
+
+#### FASHION MNIST
+Model: Resnet18
+
 
 ![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)
 
-### OPENML-6
+
+All strategies exhibit a gain over random sampling, and both entropy sampling and BADGE achieve a 4x labeling efficiency compared to random sampling.
+
+
+#### SVHN
+Model: Resnet18
+
+
+![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)
+
+
+All strategies exhibit a gain over random sampling, and both entropy sampling and BADGE achieve a 3x labeling efficiency compared to random sampling.
+
+
+#### OPENML-6
 Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
 
 ![OPENML6 Plot](./experiment_plots/openml6_plot.png?raw=true)
 
-## Testing Individual strategy and Running Examples
-Before running the examples or test, please clone the dataset repository, along with this one. The default data path expects the repository in the same root directory as that of distil. If you change the location, the data paths in the exmples or tests needs to be changed accordingly.
+## Testing Individual Strategies and Running Examples
+Before running the examples or test script, please clone the dataset repository in addition to this one. The default data path expects the repository in the same root directory as that of DISTIL. If you change the location, the data paths in the examples and test scripts need to be changed accordingly.
 
 Dataset repository:
 ```
@@ -173,10 +219,23 @@ python test_strategy.py -h
 ```
 
 ## Mailing List
-To receive updates about distil and be a part of the community, join the Decile_DISTIL_Dev group.
+To receive updates about DISTIL and to be a part of the community, join the Decile_DISTIL_Dev group.
 ```
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
+## Acknowledgment
+This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
+
+## Team
+DISTIL is created and maintained by Nathan Beck, [Durga Sivasubramanian](https://www.linkedin.com/in/durga-s-352831105), [Apurva Dani](https://apurvadani.github.io/index.html), [Rishabh Iyer](https://www.rishiyer.com), and [Ganesh Ramakrishnan](https://www.cse.iitb.ac.in/~ganesh/). We look forward to have DISTIL more community driven. Please use it and contribute to it for your active learning research, and feel free to use it for your commercial projects. We will add the major contributors here.
+
+## Resources
+Youtube Tutorials on DISTIL:
+- [Tutorial on Active Learning](https://www.youtube.com/watch?v=tBhjq1gUAv4&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=2)
+- [Tutorial and Setup of DISTIL](https://www.youtube.com/watch?v=nnNvMBUJdwc&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=3)
+- [Benchmarking Active Learning through DISTIL](https://www.youtube.com/watch?v=OGgGqk3seaw&list=PLIQ2KoP-CQ5HU4hjT2S-HNewam8sEW-9c&index=4)
+
+[Blog Articles](https://decile-research.medium.com/)
 
 ## Publications
 
@@ -200,5 +259,3 @@ https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join
 
 [10] Gal, Yarin, Riashat Islam, and Zoubin Ghahramani. "Deep bayesian active learning with image data." International Conference on Machine Learning. PMLR, 2017.
 
-## Acknowledgement
-This library takes inspiration and also uses pieces of code from [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning) and [JordanAsh's Badge repository](https://github.com/JordanAsh/badge).

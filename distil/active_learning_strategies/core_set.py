@@ -4,15 +4,16 @@ from sklearn.metrics import pairwise_distances
 
 class CoreSet(Strategy):
     """
-    Implementation of CoreSet :footcite:`sener2018active` Strategy.
-    This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include coreset sampling technique to select data points for active learning.
-    
+    Implementation of CoreSet :footcite:`sener2018active` Strategy. A diversity-based 
+    approach using coreset selection. The embedding of each example is computed by the network’s 
+    penultimate layer and the samples at each round are selected using a greedy furthest-first 
+    traversal conditioned on all labeled examples.
+
     Parameters
     ----------
     X: numpy array
         Present training/labeled data   
-    y: numpy array
+    Y: numpy array
         Labels of present training data
     unlabeled_x: numpy array
         Data without labels
