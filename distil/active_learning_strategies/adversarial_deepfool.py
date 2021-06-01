@@ -72,8 +72,8 @@ class AdversarialDeepFool(Strategy):
 
         input_shape = image.shape
         pert_image = copy.deepcopy(image)
-        w = np.zeros(input_shape)
-        r_tot = np.zeros(input_shape)
+        w = torch.zeros(input_shape).to(self.device)
+        r_tot = torch.zeros(input_shape).to(self.device)
 
         loop_i = 0
 
@@ -86,13 +86,13 @@ class AdversarialDeepFool(Strategy):
 
             pert = np.inf
             fs[0, I[0]].backward(retain_graph=True)
-            grad_orig = x.grad.copy()
+            grad_orig = x.grad.clone()
 
             for k in range(1, num_classes):
                 zero_gradients(x)
 
                 fs[0, I[k]].backward(retain_graph=True)
-                cur_grad = x.grad.copy()
+                cur_grad = x.grad.clone()
 
                 # set new w_k and new f_k
                 w_k = cur_grad - grad_orig
@@ -107,10 +107,10 @@ class AdversarialDeepFool(Strategy):
 
             # compute r_i and r_tot
             # Added 1e-4 for numerical stability
-            r_i =  (pert+1e-4) * w / torch.sqrt(torch.dot(w,w))
+            r_i =  (pert+1e-4) * w / torch.sqrt(torch.dot(w.flatten(),w.flatten()))
             r_tot = r_tot + r_i
 
-            pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).to(self.device)
+            pert_image = image + (1+overshoot)*r_tot.to(self.device)
 
             x = Variable(pert_image, requires_grad=True)
             fs = net.forward(x)
@@ -120,7 +120,7 @@ class AdversarialDeepFool(Strategy):
 
         r_tot = (1+overshoot)*r_tot
 
-        return np.dot(r_tot.flatten(), r_tot.flatten())
+        return torch.dot(r_tot.flatten(), r_tot.flatten())
         
 
     def cal_dis(self, x):
