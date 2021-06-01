@@ -64,13 +64,13 @@ class AdversarialDeepFool(Strategy):
         image = image.to(self.device)
         net = net.to(self.device)
 
-        f_image = net.forward(Variable(image[None, :, :, :], requires_grad=True)).data.cpu().numpy().flatten()
-        I = (np.array(f_image)).flatten().argsort()[::-1]
+        f_image = net.forward(Variable(image[None, :, :, :], requires_grad=True)).flatten()
+        I = f_image.argsort(descending=True)
 
         I = I[0:num_classes]
         label = I[0]
 
-        input_shape = image.cpu().numpy().shape
+        input_shape = image.shape
         pert_image = copy.deepcopy(image)
         w = np.zeros(input_shape)
         r_tot = np.zeros(input_shape)
@@ -86,19 +86,19 @@ class AdversarialDeepFool(Strategy):
 
             pert = np.inf
             fs[0, I[0]].backward(retain_graph=True)
-            grad_orig = x.grad.data.cpu().numpy().copy()
+            grad_orig = x.grad.copy()
 
             for k in range(1, num_classes):
                 zero_gradients(x)
 
                 fs[0, I[k]].backward(retain_graph=True)
-                cur_grad = x.grad.data.cpu().numpy().copy()
+                cur_grad = x.grad.copy()
 
                 # set new w_k and new f_k
                 w_k = cur_grad - grad_orig
-                f_k = (fs[0, I[k]] - fs[0, I[0]]).data.cpu().numpy()
+                f_k = (fs[0, I[k]] - fs[0, I[0]]).data
 
-                pert_k = abs(f_k)/np.linalg.norm(w_k.flatten())
+                pert_k = abs(f_k)/torch.sqrt(torch.dot(w_k.flatten(), w_k.flatten())).item()
 
                 # determine which w_k to use
                 if pert_k < pert:
@@ -107,8 +107,8 @@ class AdversarialDeepFool(Strategy):
 
             # compute r_i and r_tot
             # Added 1e-4 for numerical stability
-            r_i =  (pert+1e-4) * w / np.linalg.norm(w)
-            r_tot = np.float32(r_tot + r_i)
+            r_i =  (pert+1e-4) * w / torch.sqrt(torch.dot(w,w))
+            r_tot = r_tot + r_i
 
             pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).to(self.device)
 
@@ -120,7 +120,7 @@ class AdversarialDeepFool(Strategy):
 
         r_tot = (1+overshoot)*r_tot
 
-        return r_tot
+        return np.dot(r_tot.flatten(), r_tot.flatten())
         
 
     def cal_dis(self, x):
@@ -183,7 +183,8 @@ class AdversarialDeepFool(Strategy):
         data_pool = self.handler(self.unlabeled_x)
         for i in range(self.unlabeled_x.shape[0]):
             x, idx = data_pool[i]
-            dis[i] = self.deepfool(x, self.model, self.target_classes)
+            dist = self.deepfool(x, self.model, self.target_classes)
+            dis[i] = dist
 
         self.model.to(self.device)
         idxs = dis.argsort()[:budget]
