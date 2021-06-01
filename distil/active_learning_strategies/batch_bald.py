@@ -53,6 +53,11 @@ class BatchBALDDropout(Strategy):
         else:
             self.n_samples = 1000
         
+        if 'mod_inject' in args:
+            self.mod_inject = args['mod_inject']
+        else:
+            self.mod_inject = 'linear'
+        
         super(BatchBALDDropout, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
 
     def do_MC_dropout_before_linear(self, X, n_drop):
@@ -62,20 +67,20 @@ class BatchBALDDropout(Strategy):
         
         # Check that there is a linear layer attribute in the supplied model
         try:
-            self.model.linear
+            getattr(self.model, self.mod_inject)
         except:
-            raise ValueError("Model does not have attribute 'linear' as the last layer")
+            raise ValueError(F"Model does not have attribute {self.mod_inject} as the last layer")
             
         # Make sure that the model is in eval mode
         self.model.eval()
             
         # Store the linear layer in a temporary variable
-        lin_layer_temp = self.model.linear
+        lin_layer_temp = getattr(self.model, self.mod_inject)
         
         # Inject dropout into the model by using ConsistentMCDropout module from BatchBALD repo
         dropout_module = ConsistentMCDropout()
-        dropout_injection = torch.nn.Sequential(dropout_module, self.model.linear)
-        self.model.linear = dropout_injection
+        dropout_injection = torch.nn.Sequential(dropout_module, lin_layer_temp)
+        setattr(self.model, self.mod_inject, dropout_injection)
 
         # Create a tensor that will store the probabilities 
         probs = torch.zeros([n_drop, X.shape[0], self.target_classes]).to(self.device)
@@ -90,7 +95,7 @@ class BatchBALDDropout(Strategy):
         probs = probs.permute(1,0,2)
         
         # Restore the linear layer
-        self.model.linear = lin_layer_temp
+        setattr(self.model, self.mod_inject, lin_layer_temp)
         
         # Return the MC samples for each data instance
         return probs
