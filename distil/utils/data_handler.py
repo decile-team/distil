@@ -275,7 +275,7 @@ class DataHandler_CIFAR10(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -289,6 +289,8 @@ class DataHandler_CIFAR10(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -297,7 +299,11 @@ class DataHandler_CIFAR10(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -306,7 +312,11 @@ class DataHandler_CIFAR10(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
