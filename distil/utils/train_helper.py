@@ -129,6 +129,7 @@ class data_train:
         self.clf.train()
         accFinal = 0.
         criterion = self.args['criterion']
+        criterion.reduction = "mean"
 
         for batch_id, (x, y, idxs) in enumerate(loader_tr):
             x, y = x.to(device=self.device), y.to(device=self.device)
