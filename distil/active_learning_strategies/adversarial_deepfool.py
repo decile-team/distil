@@ -121,48 +121,6 @@ class AdversarialDeepFool(Strategy):
         r_tot = (1+overshoot)*r_tot
 
         return torch.dot(r_tot.flatten(), r_tot.flatten())
-        
-
-    def cal_dis(self, x):
-
-        nx = Variable(torch.unsqueeze(x, 0), requires_grad=True)
-        eta = Variable(torch.zeros(nx.shape))
-
-        out = self.model(nx + eta)
-        n_class = out.shape[1]
-        py = int(out.max(1)[1])
-        ny = int(out.max(1)[1])
-
-        i_iter = 0
-
-        while py == ny and i_iter < self.max_iter:
-            out[0, py].backward(retain_graph=True)
-            grad_np = nx.grad.data.clone()
-            value_l = np.inf
-            ri = None
-
-            for i in range(n_class):
-                if i == py:
-                    continue
-
-                nx.grad.data.zero_()
-                out[0, i].backward(retain_graph=True)
-                grad_i = nx.grad.data.clone()
-
-                wi = grad_i - grad_np
-                fi = out[0, i] - out[0, py]
-                value_i = np.abs(float(fi)) / np.linalg.norm(wi.numpy().flatten())
-
-                if value_i < value_l:
-                    ri = value_i/np.linalg.norm(wi.numpy().flatten()) * wi
-
-            eta += Variable(ri.clone())
-            nx.grad.data.zero_()
-            out = self.model(nx + eta)
-            py = int(out.max(1)[1])
-            i_iter += 1
-
-        return (eta*eta).sum()
 
     def select(self, budget):
         """
