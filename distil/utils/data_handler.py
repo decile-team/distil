@@ -18,7 +18,7 @@ class DataHandler_Points(Dataset):
     select: bool
         True if loading data without labels, False otherwise
     """
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -30,13 +30,22 @@ class DataHandler_Points(Dataset):
         else:
         	self.X = X.astype(np.float32)  #For unlabeled Data
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
-    	if not self.select:
-    		x, y = self.X[index], self.Y[index]
-    		return x, y, index
-    	else:
-        	x = self.X[index]              #For unlabeled Data
-        	return x, index
+        if not self.select:
+            x, y = self.X[index], self.Y[index]
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
+        else:
+            x = self.X[index]              #For unlabeled Data
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -59,7 +68,7 @@ class DataHandler_SVHN(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -73,6 +82,8 @@ class DataHandler_SVHN(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -81,7 +92,11 @@ class DataHandler_SVHN(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -90,7 +105,11 @@ class DataHandler_SVHN(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -113,7 +132,7 @@ class DataHandler_MNIST(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -127,6 +146,8 @@ class DataHandler_MNIST(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -135,7 +156,10 @@ class DataHandler_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -144,7 +168,11 @@ class DataHandler_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -167,7 +195,7 @@ class DataHandler_KMNIST(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -181,6 +209,8 @@ class DataHandler_KMNIST(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -189,7 +219,11 @@ class DataHandler_KMNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -198,7 +232,11 @@ class DataHandler_KMNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -221,7 +259,7 @@ class DataHandler_FASHION_MNIST(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -235,6 +273,8 @@ class DataHandler_FASHION_MNIST(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -243,7 +283,11 @@ class DataHandler_FASHION_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -252,7 +296,11 @@ class DataHandler_FASHION_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -275,7 +323,7 @@ class DataHandler_CIFAR10(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -289,6 +337,8 @@ class DataHandler_CIFAR10(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -297,7 +347,11 @@ class DataHandler_CIFAR10(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -306,7 +360,11 @@ class DataHandler_CIFAR10(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -329,7 +387,7 @@ class DataHandler_CIFAR100(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -343,6 +401,8 @@ class DataHandler_CIFAR100(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -351,7 +411,11 @@ class DataHandler_CIFAR100(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -360,7 +424,11 @@ class DataHandler_CIFAR100(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
@@ -383,7 +451,7 @@ class DataHandler_STL10(Dataset):
         True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
         """
         Constructor
         """
@@ -397,6 +465,8 @@ class DataHandler_STL10(Dataset):
         else:
             self.X = X
 
+        self.return_index = return_index
+
     def __getitem__(self, index):
         if not self.select:
             x, y = self.X[index], self.Y[index]
@@ -405,7 +475,11 @@ class DataHandler_STL10(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, y, index
+            
+            if self.return_index:
+                return x, y, index
+            else:
+                return x, y
 
         else:
             x = self.X[index]
@@ -414,7 +488,11 @@ class DataHandler_STL10(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            return x, index
+            
+            if self.return_index:
+                return x, index
+            else:
+                return x
 
     def __len__(self):
         return len(self.X)
