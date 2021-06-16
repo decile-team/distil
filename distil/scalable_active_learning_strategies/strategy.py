@@ -42,24 +42,16 @@ class Strategy:
         P = torch.zeros(len(to_predict_dataloader.dataset)).long().to(self.device)
         
         with torch.no_grad():
-            # Instantiate the lower slice index to insert this batch's predictions into P
-            low_insert_index = 0
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+            for batch_idx, (elements_to_predict, element_idxs) in enumerate(to_predict_dataloader):
                 
                 # Predict the most likely class
                 elements_to_predict = elements_to_predict.to(self.device)
                 out = self.model(elements_to_predict)
                 pred = out.max(1)[1]
                 
-                # Calculate high slice index
-                current_batch_size = elements_to_predict.shape[0]
-                high_insert_index = low_insert_index + current_batch_size
-                
                 # Insert the calculated batch of predictions into the tensor to return
-                P[low_insert_index:high_insert_index] = pred
-                # Update lower slice index for next batch
-                low_insert_index = high_insert_index
-
+                P[element_idxs] = pred
+                
         return P
 
     def predict_prob(self, to_predict_dataloader):
@@ -72,24 +64,15 @@ class Strategy:
         probs = torch.zeros([len(to_predict_dataloader.dataset), self.target_classes]).to(self.device)
         
         with torch.no_grad():
-            # Instantiate the lower slice index to insert this batch's predictions into probs
-            low_insert_index = 0
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+            for batch_idx, (elements_to_predict, element_idxs) in enumerate(to_predict_dataloader):
                 
                 # Calculate softmax (probabilities) of predictions
                 elements_to_predict = elements_to_predict.to(self.device)
                 out = self.model(elements_to_predict)
                 pred = F.softmax(out, dim=1)
                 
-                # Calculate high slice index
-                current_batch_size = elements_to_predict.shape[0]
-                high_insert_index = low_insert_index + current_batch_size
-                
                 # Insert the calculated batch of probabilities into the tensor to return
-                probs[low_insert_index:high_insert_index] = pred
-                
-                # Update lower slice index for next batch
-                low_insert_index = high_insert_index
+                probs[element_idxs] = pred
 
         return probs        
 
@@ -107,25 +90,15 @@ class Strategy:
             # Repeat n_drop number of times to obtain n_drop dropout samples per data instance
             for i in range(n_drop):
                 
-                # Instantiate the lower slice index to insert this batch's predictions into probs
-                low_insert_index = 0
-                
-                for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+                for batch_idx, (elements_to_predict, element_idxs) in enumerate(to_predict_dataloader):
                 
                     # Calculate softmax (probabilities) of predictions
                     elements_to_predict = elements_to_predict.to(self.device)
                     out = self.model(elements_to_predict)
                     pred = F.softmax(out, dim=1)
                 
-                    # Calculate high slice index
-                    current_batch_size = elements_to_predict.shape[0]
-                    high_insert_index = low_insert_index + current_batch_size
-                
                     # Accumulate the calculated batch of probabilities into the tensor to return
-                    probs[low_insert_index:high_insert_index] += pred
-                
-                    # Update lower slice index for next batch
-                    low_insert_index = high_insert_index
+                    probs[element_idxs] += pred
 
         # Divide through by n_drop to get average prob.
         probs /= n_drop
@@ -146,25 +119,15 @@ class Strategy:
             # Repeat n_drop number of times to obtain n_drop dropout samples per data instance
             for i in range(n_drop):
                 
-                # Instantiate the lower slice index to insert this batch's predictions into P
-                low_insert_index = 0
-                
-                for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+                for batch_idx, (elements_to_predict, element_idxs) in enumerate(to_predict_dataloader):
                 
                     # Calculate softmax (probabilities) of predictions
                     elements_to_predict = elements_to_predict.to(self.device)
                     out = self.model(elements_to_predict)
                     pred = F.softmax(out, dim=1)
                 
-                    # Calculate high slice index
-                    current_batch_size = elements_to_predict.shape[0]
-                    high_insert_index = low_insert_index + current_batch_size
-                
                     # Accumulate the calculated batch of probabilities into the tensor to return
-                    probs[i][low_insert_index:high_insert_index] = pred
-                
-                    # Update lower slice index for next batch
-                    low_insert_index = high_insert_index
+                    probs[i][element_idxs] = pred
 
         return probs 
 
@@ -178,23 +141,15 @@ class Strategy:
         embedding = torch.zeros([len(to_predict_dataloader.dataset), self.model.get_embedding_dim()]).to(self.device)
         
         with torch.no_grad():
-            # Instantiate the lower slice index to insert this batch's embeddings into embedding
-            low_insert_index = 0
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+
+            for batch_idx, (elements_to_predict, element_idxs) in enumerate(to_predict_dataloader):
                 
                 # Calculate softmax (probabilities) of predictions
                 elements_to_predict = elements_to_predict.to(self.device)
                 out, l1 = self.model(elements_to_predict, last=True)
                 
-                # Calculate high slice index
-                current_batch_size = elements_to_predict.shape[0]
-                high_insert_index = low_insert_index + current_batch_size
-                
                 # Insert the calculated batch of probabilities into the tensor to return
-                embedding[low_insert_index:high_insert_index] = l1
-                
-                # Update lower slice index for next batch
-                low_insert_index = high_insert_index
+                embedding[element_idxs] = l1
 
         return embedding
 
@@ -210,15 +165,13 @@ class Strategy:
         if grad_embedding_type == "bias":
             grad_embedding = torch.zeros([len(dataloader.dataset), self.target_classes]).to(self.device)
         elif grad_embedding_type == "linear":
-            grad_embedding = torch.zeros([len(dataloader.dataset), embDim]).to(self.device)
+            grad_embedding = torch.zeros([len(dataloader.dataset), embDim * self.target_classes]).to(self.device)
         elif grad_embedding_type == "bias_linear":
             grad_embedding = torch.zeros([len(dataloader.dataset), (embDim + 1) * self.target_classes]).to(self.device)
         else:
             raise ValueError("Grad embedding type not supported: Pick one of 'bias', 'linear', or 'bias_linear'")
-        
-        low_insert_index = 0
-        
-        for batch_idx, possible_data_label_pair in enumerate(dataloader):
+          
+        for batch_idx, (possible_data_label_pair, element_idxs) in enumerate(dataloader):
             
             # If labels need to be predicted, then do so. Calculate output as normal.
             if predict_labels:
@@ -238,23 +191,16 @@ class Strategy:
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
                 l1_grads = l0_expand * l1.repeat(1, self.target_classes)
 
-            # Calculate high slice index
-            current_batch_size = inputs.shape[0]
-            high_insert_index = low_insert_index + current_batch_size
-                        
             # Populate embedding tensor according to the supplied argument.
             if grad_embedding_type == "bias":                
-                grad_embedding[low_insert_index:high_insert_index] = l0_grads
+                grad_embedding[element_idxs] = l0_grads
             elif grad_embedding_type == "linear":
-                grad_embedding[low_insert_index:high_insert_index] = l1_grads
+                grad_embedding[element_idxs] = l1_grads
             else:
-                grad_embedding[low_insert_index:high_insert_index] = torch.cat([l0_grads, l1_grads], dim=1) 
+                grad_embedding[element_idxs] = torch.cat([l0_grads, l1_grads], dim=1) 
             
             # Empty the cache as the gradient embeddings could be very large
             torch.cuda.empty_cache()
-            
-            # Update low insert index
-            low_insert_index = high_insert_index
         
         # Return final gradient embedding
         return grad_embedding
