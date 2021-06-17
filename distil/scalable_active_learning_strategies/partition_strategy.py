@@ -1,7 +1,7 @@
 import torch
 import math
 from distil.utils.data_handler import DataHandler_Points
-from strategy import Strategy
+from distil.scalable_active_learning_strategies.strategy import Strategy
 
 class PartitionStrategy(Strategy):
     
@@ -18,7 +18,7 @@ class PartitionStrategy(Strategy):
         
     def retrieve_labeled_points_as_numpy(self):
         
-        for batch_idx, (batch_data, batch_labels) in enumerate(self.labeled_dataloader):
+        for batch_idx, (batch_data, batch_labels, element_idxs) in enumerate(self.labeled_dataloader):
             
             if batch_idx == 0:
                 data_tensor = batch_data
@@ -40,12 +40,12 @@ class PartitionStrategy(Strategy):
         
         # Furthermore, the number of partitions cannot be more than the size of the unlabeled set
         if self.num_partitions > len(self.unlabeled_dataloader.dataset):
-            raise ValueError("There cannot be more partitions than th e size of the dataset!")
+            raise ValueError("There cannot be more partitions than the size of the dataset!")
                
         # Calculate partition splits and budgets for each partition
         full_unlabeled_size = len(self.unlabeled_dataloader.dataset)
-        split_indices = [math.floor(full_unlabeled_size * ((1+x) / self.num_partitions)) for x in range(self.num_partitions)]        
-        partition_budget_splits = [math.floor(budget * (split_index / full_unlabeled_size)) for split_index in split_indices]
+        split_indices = [math.ceil(full_unlabeled_size * ((1+x) / self.num_partitions)) for x in range(self.num_partitions)]        
+        partition_budget_splits = [math.ceil(budget * (split_index / full_unlabeled_size)) for split_index in split_indices]
                     
         # Keep track of the total number of data instances evaluated and the index start of the current partition.
         evaluated_data_instances = 0
@@ -81,7 +81,7 @@ class PartitionStrategy(Strategy):
                 # This batch eventually crosses a partition boundary. Iteratively fragment this batch so that 
                 # the rest of the partition is not overfilled.
                 while evaluated_data_instances + unlabeled_batch.shape[0] >= split_indices[partition_number]:
-                
+                    
                     # Calculate remaining partition to take from the batch
                     remaining_point_count = split_indices[partition_number] - evaluated_data_instances
                 
@@ -124,6 +124,10 @@ class PartitionStrategy(Strategy):
                     # Lastly, clear unlabeled_tensor and increment partition number
                     partition_number += 1
                     clear_unlabeled_tensor = True
+
+                    # Break out of the loop if the partition number is ge to number of partitions                    
+                    if partition_number >= self.num_partitions:
+                        break
                     
                 # At this point, the last bit of the loaded batch can be added.
                 if unlabeled_batch.shape[0] > 0:
