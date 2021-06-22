@@ -15,9 +15,9 @@
 
 	"active_learning":{
 		"strategy": "random_sampling",
-		"budget": 1000,
+		"budget": 4000,
 		"rounds": 15,
-		"initial_points":1000,
+		"initial_points":4000,
 		
 		"strategy_args":{	
 			"batch_size" : 64
