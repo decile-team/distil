@@ -21,7 +21,7 @@
 		"initial_points":1000,
 		
 		"strategy_args":{	
-			"batch_size" : 1000, 
+			"batch_size" : 64, 
 			"submod" : "feature_based", 
 			"selection_type" : "Full"
 		}

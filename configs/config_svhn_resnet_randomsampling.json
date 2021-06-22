@@ -4,7 +4,7 @@
 		"target_classes": 10
 	},
 	"train_parameters": {
-		"lr": 0.001,
+		"lr": 0.01,
 		"batch_size": 64,
 		"n_epoch": 150,
 		"max_accuracy": 0.99,
@@ -20,7 +20,7 @@
 		"initial_points":1000,
 		
 		"strategy_args":{	
-			"batch_size" : 1000
+			"batch_size" : 64
 		}
 	},
 	"dataset":{
