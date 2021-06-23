@@ -2,9 +2,19 @@ import numpy as np
 import torch
 from .strategy import Strategy
 from torch.autograd import Variable
-from torch.utils.data import DataLoader
+import collections
 import copy
-from torch.autograd.gradcheck import zero_gradients
+
+# Reflects the most recent version of zero_gradients before it 
+# was removed from PyTorch's current deployment.
+def zero_gradients(x):
+    if isinstance(x, torch.Tensor):
+        if x.grad is not None:
+            x.grad.detach_()
+            x.grad.zero_()
+    elif isinstance(x, collections.abc.Iterable):
+        for elem in x:
+            zero_gradients(elem)
 
 class AdversarialDeepFool(Strategy):
     """

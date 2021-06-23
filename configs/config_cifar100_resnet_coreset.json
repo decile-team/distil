@@ -4,12 +4,13 @@
 		"target_classes": 100
 	},
 	"train_parameters": {
-		"lr": 0.001,
-		"batch_size": 64,
-		"n_epoch": 50,
+		"lr": 0.01,
+		"batch_size": 20,
+		"n_epoch": 300,
 		"max_accuracy": 0.99,
 		"isreset": true,
 		"islogs":  true,
+		"isverbose":  true,
 		"logs_location": "./logs.txt"
 	},
 
@@ -20,7 +21,7 @@
 		"initial_points":1000,
 		
 		"strategy_args":{	
-			"batch_size" : 1000
+			"batch_size" : 20
 		}
 	},
 	"dataset":{
