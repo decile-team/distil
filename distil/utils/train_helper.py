@@ -13,16 +13,14 @@ def init_weights(m):
 #custom training
 class data_train:
 
-    def __init__(self, X, Y, net, handler, args):
+    def __init__(self, training_dataset, net, handler, args):
 
-        self.X = X
-        self.Y = Y
+        self.training_dataset
         self.net = net
         self.handler = handler
         self.args = args
         
-        if Y is not None: #For initialization without data
-            self.n_pool = len(Y)
+        self.n_pool = len(training_dataset)
         
         if 'islogs' not in args:
             self.args['islogs'] = False
@@ -56,38 +54,31 @@ class data_train:
     def update_index(self, idxs_lb):
         self.idxs_lb = idxs_lb
 
-    def update_data(self, X, Y):
-    	self.X = X
-    	self.Y = Y
+    def update_data(self, new_training_dataset):
+    	self.training_dataset = self.new_training_dataset
 
-    def get_acc_on_set(self, X_test, Y_test):
+    def get_acc_on_set(self, test_dataset):
         
         try:
             self.clf
         except:
             self.clf = self.net
 
-        if X_test is None:
+        if test_dataset is None:
             raise ValueError("Test data not present")
-        
-        if Y_test is None:
-            raise ValueError("Test labels not present")
-            
-        if X_test.shape[0] != Y_test.shape[0]:
-            raise ValueError("X_test has {self.X_test.shape[0]} values but {self.Y_test.shape[0]} labels")
         
         if 'batch_size' in self.args:
             batch_size = self.args['batch_size']
         else:
             batch_size = 1 
         
-        loader_te = DataLoader(self.handler(X_test, Y_test, False, use_test_transform=True), shuffle=False, pin_memory=True, batch_size=batch_size)
+        loader_te = DataLoader(test_dataset, shuffle=False, pin_memory=True, batch_size=batch_size)
         self.clf.eval()
         accFinal = 0.
 
         with torch.no_grad():        
             self.clf = self.clf.to(device=self.device)
-            for batch_id, (x,y,idxs) in enumerate(loader_te):     
+            for batch_id, (x,y) in enumerate(loader_te):     
                 x, y = x.to(device=self.device), y.to(device=self.device)
                 out = self.clf(x)
                 accFinal += torch.sum(1.0*(torch.max(out,1)[1] == y)).item() #.data.item()
@@ -190,7 +181,7 @@ class data_train:
             batch_size = 1
 
         # Set shuffle to true to encourage stochastic behavior for SGD
-        loader_tr = DataLoader(self.handler(self.X, self.Y, False), batch_size=batch_size, shuffle=True, pin_memory=True)
+        loader_tr = DataLoader(self.training_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
         epoch = 1
         accCurrent = 0
         is_saturated = False
