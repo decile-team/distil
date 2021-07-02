@@ -114,14 +114,17 @@ class DataHandler_MNIST(Dataset):
         True if loading data without labels, False otherwise
     use_test_transform: bool, optional
         Use test transform without augmentations like crop, flip, etc.
+    duplicateChannels: bool, optional
+        Duplicate channels for black and white images
     """
 
-    def __init__(self, X, Y=None, image_dim=28, select=True, use_test_transform=False):
+    def __init__(self, X, Y=None, image_dim=28, select=True, use_test_transform=False, duplicateChannels=False):
         """
         Constructor
         """
         self.select = select
         self.use_test_transform=use_test_transform
+        self.duplicateChannels = duplicateChannels
         self.training_gen_transform = transforms.Compose([transforms.RandomCrop(image_dim, padding=4), transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         self.test_gen_transform = transforms.Compose([transforms.Resize((image_dim, image_dim)), transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         if not self.select:
@@ -138,7 +141,7 @@ class DataHandler_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            if(x.shape[0]==1): x = torch.repeat_interleave(x, 3, 0)
+            if(x.shape[0]==1 and self.duplicateChannels): x = torch.repeat_interleave(x, 3, 0)
             return x, y, index
 
         else:
@@ -148,7 +151,7 @@ class DataHandler_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            if(x.shape[0]==1): x = torch.repeat_interleave(x, 3, 0)
+            if(x.shape[0]==1 and self.duplicateChannels): x = torch.repeat_interleave(x, 3, 0)
             return x, index
 
     def __len__(self):
