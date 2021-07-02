@@ -15,7 +15,7 @@ class data_train:
 
     def __init__(self, training_dataset, net, args):
 
-        self.training_dataset
+        self.training_dataset = training_dataset
         self.net = net
         self.args = args
         
