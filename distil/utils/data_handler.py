@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 import numpy as np
 from PIL import Image
 from torchvision import transforms
+import torch 
 
 class DataHandler_Points(Dataset):
     """
@@ -64,8 +65,8 @@ class DataHandler_SVHN(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
@@ -126,20 +127,25 @@ class DataHandler_MNIST(Dataset):
         Data to be loaded   
     y: numpy array, optional
         Labels to be loaded (default: None)
+    image_dim: int, optional
+        dimension of the input image (32 for LeNet, 28 for MNISTNet)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
+    duplicateChannels: bool, optional
+        Duplicate channels for black and white images
     """
 
-    def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
+    def __init__(self, X, Y=None, select=True, use_test_transform=False, image_dim=28, duplicateChannels=False):
         """
         Constructor
         """
         self.select = select
         self.use_test_transform=use_test_transform
-        self.training_gen_transform = transforms.Compose([transforms.RandomCrop(28, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
-        self.test_gen_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+        self.duplicateChannels = duplicateChannels
+        self.training_gen_transform = transforms.Compose([transforms.RandomCrop(image_dim, padding=4), transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+        self.test_gen_transform = transforms.Compose([transforms.Resize((image_dim, image_dim)), transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         if not self.select:
             self.X = X
             self.Y = Y
@@ -156,11 +162,9 @@ class DataHandler_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            if self.return_index:
-                return x, y, index
-            else:
-                return x, y
 
+            if(x.shape[0]==1 and self.duplicateChannels): x = torch.repeat_interleave(x, 3, 0)
+            return x, y, index
         else:
             x = self.X[index]
             x = Image.fromarray(x)
@@ -168,11 +172,10 @@ class DataHandler_MNIST(Dataset):
                 x = self.test_gen_transform(x)
             else:
                 x = self.training_gen_transform(x)
-            
-            if self.return_index:
-                return x, index
-            else:
-                return x
+                
+            if(x.shape[0]==1 and self.duplicateChannels): x = torch.repeat_interleave(x, 3, 0)
+            return x, index
+
 
     def __len__(self):
         return len(self.X)
@@ -191,8 +194,9 @@ class DataHandler_KMNIST(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
+
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
@@ -255,8 +259,8 @@ class DataHandler_FASHION_MNIST(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
@@ -319,8 +323,8 @@ class DataHandler_CIFAR10(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
@@ -383,8 +387,8 @@ class DataHandler_CIFAR100(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
@@ -447,8 +451,8 @@ class DataHandler_STL10(Dataset):
         Labels to be loaded (default: None)
     select: bool
         True if loading data without labels, False otherwise
-    use_test_transform: bool
-        True if the data handler should apply the test transform. Otherwise, the data handler will use the training transform (default: False)
+    use_test_transform: bool, optional
+        Use test transform without augmentations like crop, flip, etc. (default: False)
     """
 
     def __init__(self, X, Y=None, select=True, use_test_transform=False,return_index=True):
