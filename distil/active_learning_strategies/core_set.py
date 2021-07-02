@@ -13,7 +13,7 @@ class CoreSet(Strategy):
     ----------
     X: numpy array
         Present training/labeled data   
-    y: numpy array
+    Y: numpy array
         Labels of present training data
     unlabeled_x: numpy array
         Data without labels

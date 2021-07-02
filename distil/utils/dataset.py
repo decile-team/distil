@@ -2,6 +2,8 @@ import math
 import numpy as np
 import torch
 from torchvision import datasets
+from torchvision import transforms
+from PIL import Image
 
 def add_label_noise(y_trn, num_cls, noise_ratio=0.8):
     """
@@ -129,6 +131,61 @@ def make_data_redundant(X,Y,intial_bud,unique_points= 5000,amtRed=2):
         X[idxs] = X[idxs_rep[:no_elements[cl]]]
 
     return X
+
+def make_aug_data_redundant(X,Y,intial_bud,unique_points= 5000,amtRed=2):
+
+    """
+    Modifies the input dataset in such a way that only X.shape(0)/amtRed are original 
+    points and rest are agumented versions of original. 
+
+    Parameters
+    ----------
+    X : numpy ndarray
+        The feature set to be made redundant.
+    Y : numpy ndarray
+        The label set corresponding to the X.
+    intial_bud : int
+        Number of inital points that are assumed to be labled. 
+    unique_points: int
+        Number of points to be kept unique in unlabled pool. 
+    amtRed : float, optional
+        Factor that determines redundancy. The default is 2.
+
+    Returns
+    -------
+    X : numpy ndarray
+        Modified feature set.
+    """
+
+    unique_ind = intial_bud + unique_points
+    
+    classes,no_elements = np.unique(Y[unique_ind:], return_counts=True)
+
+    crop_transform = transforms.RandomCrop(X.shape[1], padding=5)
+    trans_transform = transforms.RandomAffine(degrees=0, translate=(0.5, 0.5))
+
+    for cl in range(len(classes)):
+        retain = math.ceil(no_elements[cl]/amtRed)
+        idxs = np.where(Y[unique_ind:] == classes[cl])[0]
+
+        idxs += unique_ind
+
+        for i in range(1,math.ceil(amtRed)):
+            
+            for j in range(retain):
+                if len(idxs) <= i*retain+j:
+                    break 
+                img = Image.fromarray(X[idxs[j]])
+                if j%2 == 0:
+                    img = crop_transform(img)
+                else:
+                    img = trans_transform(img)
+                X[idxs[i*retain+j]] = np.asarray(img)
+
+        #X[idxs] = X[idxs_rep[:no_elements[cl]]]
+
+    return X
+
 
 
 def get_dataset(name, path, tr_load_args = None, te_load_args = None):

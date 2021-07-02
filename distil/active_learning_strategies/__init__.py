@@ -19,4 +19,4 @@ from .margin_sampling_dropout import MarginSamplingDropout
 from .random_sampling import RandomSampling
 from .submod_sampling import SubmodSampling
 
-__version__ = '0.0.1'
+__version__ = '0.1'

@@ -217,7 +217,7 @@ class TrainClassifier:
 		    strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses)
 		elif selected_strat == 'least_confidence':
 		    strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
-		elif selected_strat == 'core_set':
+		elif selected_strat == 'coreset':
 		    strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
 		elif selected_strat == 'random_sampling':
 		    strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
@@ -258,6 +258,9 @@ class TrainClassifier:
 		print('***************************')
 	    ##User Controlled Loop
 		for rd in range(1, n_rounds):
+			print('***************************')
+			print('Round', rd)
+			print('***************************')		
 			logs = {}
 			t0 = time.time()
 			idx = strategy.select(budget)
@@ -271,6 +274,8 @@ class TrainClassifier:
 			#Human In Loop, Assuming user adds new labels here
 			y_tr = np.concatenate((y_tr, y_unlabeled[idx]), axis = 0)
 			y_unlabeled = np.delete(y_unlabeled, idx, axis = 0)
+
+			print('Total training points in this round', X_tr.shape[0])
 
 			#Reload state and start training
 			strategy.load_state('./state.pkl')

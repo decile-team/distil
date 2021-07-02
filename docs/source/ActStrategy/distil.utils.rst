@@ -4,8 +4,6 @@ utils
 .. toctree::
    :maxdepth: 4
 
-   distil.utils.models
-
 
 DataHandler
 -------------------------------

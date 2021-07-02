@@ -6,3 +6,4 @@ DISTIL
 
    distil.active_learning_strategies
    distil.utils
+   distil.utils.models

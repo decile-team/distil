@@ -37,16 +37,14 @@ class FASS(Strategy):
     nclasses: int
         Number of unique target variables
     args: dict
-        Specify optional parameters
-        
-        batch_size 
+        Specify optional parameters - `batch_size` 
         Batch size to be used inside strategy class (int, optional)
 
-        submod: str
-        Choice of submodular function - 'facility_location' | 'graph_cut' | 'saturated_coverage' | 'sum_redundancy' | 'feature_based'
-        
-        selection_type: str
-        Choice of selection strategy - 'PerClass' | 'Supervised'
+    submod: str
+    Choice of submodular function - 'facility_location' | 'graph_cut' | 'saturated_coverage' | 'sum_redundancy' | 'feature_based'
+    
+    selection_type: str
+    Choice of selection strategy - 'PerClass' | 'Supervised'
     """
 
     def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):

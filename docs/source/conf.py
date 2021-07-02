@@ -22,8 +22,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'DISTIL'
-copyright = '2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer'
-author = 'Durga Sivasubramanian, Apurva Dani, Rishabh Iyer'
+copyright = '2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer'
+author = 'Durga Sivasubramanian,Nathan Beck,Apurva Dani, Rishabh Iyer'
 
 # The full version, including alpha/beta/rc tags
 release = 'v0.1'
@@ -69,6 +69,9 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+
+# Logo to appear in top left of docs
+html_logo = "../../experiment_plots/distil_logo.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

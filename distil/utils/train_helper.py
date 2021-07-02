@@ -20,7 +20,9 @@ class data_train:
         self.net = net
         self.handler = handler
         self.args = args
-        self.n_pool = len(Y)
+        
+        if Y is not None: #For initialization without data
+            self.n_pool = len(Y)
         
         if 'islogs' not in args:
             self.args['islogs'] = False
@@ -127,6 +129,7 @@ class data_train:
         self.clf.train()
         accFinal = 0.
         criterion = self.args['criterion']
+        criterion.reduction = "mean"
 
         for batch_id, (x, y, idxs) in enumerate(loader_tr):
             x, y = x.to(device=self.device), y.to(device=self.device)

@@ -16,6 +16,14 @@ Core-Set Approch
    :undoc-members:
    :show-inheritance:
 
+CRAIG-ACTIVE
+----------------------------------------------------
+.. automodule:: distil.active_learning_strategies.craig_active
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 Entropy Sampling 
 ------------------------------------------------------------
 
@@ -44,6 +52,13 @@ GLISTER
 --------------------------------------------------
 
 .. automodule:: distil.active_learning_strategies.glister
+   :members:
+   :show-inheritance:
+
+GRADMATCH
+--------------------------------------------------
+
+.. automodule:: distil.active_learning_strategies.gradmatch_active
    :members:
    :show-inheritance:
 
