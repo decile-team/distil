@@ -82,7 +82,7 @@ class data_train:
                 out = self.clf(x)
                 accFinal += torch.sum(1.0*(torch.max(out,1)[1] == y)).item() #.data.item()
 
-        return accFinal / len(loader_te.dataset.X)
+        return accFinal / len(test_dataset)
 
     def _train_weighted(self, epoch, loader_tr, optimizer, gradient_weights):
         self.clf.train()
@@ -113,7 +113,7 @@ class data_train:
             # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
 
             optimizer.step()
-        return accFinal / len(loader_tr.dataset.X), weighted_loss
+        return accFinal / len(loader_tr.dataset), weighted_loss
 
     def _train(self, epoch, loader_tr, optimizer):
         self.clf.train()
@@ -134,7 +134,7 @@ class data_train:
             # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
 
             optimizer.step()
-        return accFinal / len(loader_tr.dataset.X), loss
+        return accFinal / len(loader_tr.dataset), loss
 
     def check_saturation(self, acc_monitor):
         
