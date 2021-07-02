@@ -6,7 +6,7 @@ from distil.scalable_active_learning_strategies.strategy import Strategy
 
 class PartitionStrategy(Strategy):
     
-    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}): #
+    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}, query_dataset=None, private_dataset=None): #
         
         super(PartitionStrategy, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
         
@@ -19,7 +19,9 @@ class PartitionStrategy(Strategy):
             raise ValueError("args dictionary requires 'wrapped_strategy_class' key")
             
         self.wrapped_strategy_class = args["wrapped_strategy_class"]
-        
+        self.query_dataset = query_dataset
+        self.private_dataset = private_dataset
+
     def select(self, budget):
         
         # The number of partitions should be less than or equal to the budget.
@@ -57,7 +59,14 @@ class PartitionStrategy(Strategy):
                 partition_budget = partition_budget_splits[i] - partition_budget_splits[i - 1]
                 
             # With the new subset, create an instance of the wrapped strategy and call its select function.
-            wrapped_strategy = self.wrapped_strategy_class(self.labeled_dataset, current_partition, self.model, self.target_classes, self.args)
+            if(self.query_dataset != None and self.private_dataset != None):
+                wrapped_strategy = self.wrapped_strategy_class(self.labeled_dataset, current_partition, self.query_dataset, self.private_dataset, self.model, self.target_classes, self.args)
+            elif(self.query_dataset != None):
+                wrapped_strategy = self.wrapped_strategy_class(self.labeled_dataset, current_partition, self.query_dataset, self.model, self.target_classes, self.args)
+            elif(self.private_dataset != None):
+                wrapped_strategy = self.wrapped_strategy_class(self.labeled_dataset, current_partition, self.private_dataset, self.model, self.target_classes, self.args)
+            else:
+                wrapped_strategy = self.wrapped_strategy_class(self.labeled_dataset, current_partition, self.model, self.target_classes, self.args)
             selected_partition_idxs = wrapped_strategy.select(partition_budget)
             
             # Use the partition_index_list to map the selected indices w/ respect to the current partition to the indices w/ respect to the dataset
