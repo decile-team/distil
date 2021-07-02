@@ -54,7 +54,7 @@ class data_train:
         self.idxs_lb = idxs_lb
 
     def update_data(self, new_training_dataset):
-    	self.training_dataset = self.new_training_dataset
+    	self.training_dataset = new_training_dataset
 
     def get_acc_on_set(self, test_dataset):
         
