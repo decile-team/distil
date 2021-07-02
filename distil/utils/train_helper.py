@@ -13,11 +13,10 @@ def init_weights(m):
 #custom training
 class data_train:
 
-    def __init__(self, training_dataset, net, handler, args):
+    def __init__(self, training_dataset, net, args):
 
         self.training_dataset
         self.net = net
-        self.handler = handler
         self.args = args
         
         self.n_pool = len(training_dataset)
