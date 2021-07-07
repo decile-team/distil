@@ -132,6 +132,7 @@ class GLISTER(Strategy):
                     l1_grads = l0_expand * init_l1.repeat(1, self.target_classes)
 
                     self.grads_val_curr += torch.cat((l0_grads, l1_grads), dim=1).sum(dim=0).view(-1, 1)
+                    evaluated_points += y.shape[0]
             
             if self.validation_dataset is not None:
                 self.grads_val_curr /= len(self.validation_dataset)
