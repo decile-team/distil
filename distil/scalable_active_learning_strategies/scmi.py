@@ -54,7 +54,7 @@ class SCMI(Strategy):
                                                                       queryData=query_embedding, 
                                                                       privateData=private_embedding,
                                                                       metric=metric, 
-                                                                      magnificationLambda=eta,
+                                                                      magnificationEta=eta,
                                                                       privacyHardness=nu)
     
         if(self.args['scmi_function']=='logdetcmi'):
@@ -66,7 +66,7 @@ class SCMI(Strategy):
                                                                       queryData=query_embedding, 
                                                                       privateData=private_embedding,
                                                                       metric=metric, 
-                                                                      magnificationLambda=eta,
+                                                                      magnificationEta=eta,
                                                                       privacyHardness=nu,
                                                                       lambdaVal=lambdaVal)
 

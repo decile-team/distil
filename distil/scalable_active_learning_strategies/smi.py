@@ -36,12 +36,12 @@ class SMI(Strategy):
         stopIfZeroGain = self.args['stopIfZeroGain'] if 'stopIfZeroGain' in self.args else False
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
         verbose = self.args['verbose'] if 'verbose' in self.args else False
+        labeled = self.args['labeled'] if 'labeled' in self.args else False
         
 
         #Compute Embeddings
-        unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, True, gradType)
-        query_embedding = self.get_grad_embedding(self.query_dataset, True, gradType)
-
+        unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, labeled, gradType)
+        query_embedding = self.get_grad_embedding(self.query_dataset, labeled, gradType)
 
         
         if(self.args['smi_function']=='fl1mi'):
@@ -50,7 +50,7 @@ class SMI(Strategy):
                                                                       data=unlabeled_data_embedding, 
                                                                       queryData=query_embedding, 
                                                                       metric=metric, 
-                                                                      magnificationLambda=eta)
+                                                                      magnificationEta=eta)
 
         if(self.args['smi_function']=='fl2mi'):
             obj = submodlib.FacilityLocationVariantMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
@@ -58,7 +58,7 @@ class SMI(Strategy):
                                                                       data=unlabeled_data_embedding, 
                                                                       queryData=query_embedding, 
                                                                       metric=metric, 
-                                                                      magnificationLambda=eta)
+                                                                      queryDiversityEta=eta)
         
         if(self.args['smi_function']=='com'):
             from submodlib_cpp import ConcaveOverModular
@@ -67,7 +67,7 @@ class SMI(Strategy):
                                                                       data=unlabeled_data_embedding, 
                                                                       queryData=query_embedding, 
                                                                       metric=metric, 
-                                                                      magnificationLambda=eta,
+                                                                      magnificationEta=eta,
                                                                       mode=ConcaveOverModular.logarithmic)
         if(self.args['smi_function']=='gcmi'):
             obj = submodlib.GraphCutMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
@@ -82,7 +82,7 @@ class SMI(Strategy):
                                                                     data=unlabeled_data_embedding, 
                                                                     queryData=query_embedding, 
                                                                     metric=metric, 
-                                                                    magnificationLambda=eta,
+                                                                    magnificationEta=eta,
                                                                     lambdaVal=lambdaVal)
 
         greedyList = obj.maximize(budget=budget,optimizer=optimizer, stopIfZeroGain=stopIfZeroGain, 
