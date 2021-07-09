@@ -30,6 +30,12 @@ class Strategy:
     def update_data(self, labeled_dataset, unlabeled_dataset): #
         self.labeled_dataset = labeled_dataset
         self.unlabeled_dataset = unlabeled_dataset
+        
+    def update_queries(self, query_dataset):
+        self.query_dataset= query_dataset
+
+    def update_privates(self, private_dataset):
+        self.private_dataset= private_dataset
 
     def update_model(self, clf):
         self.model = clf
