@@ -53,10 +53,10 @@ class AdversarialBIM(Strategy):
         else:
             self.eps = 0.05
         
-        super(AdversarialBIM, self).__init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={})
+        super(AdversarialBIM, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args={})
 
     def cal_dis(self, x):
-        nx = torch.unsqueeze(x, 0)
+        nx = torch.unsqueeze(x, 0).detach()
         nx.requires_grad_()
         eta = torch.zeros(nx.shape).to(self.device)
 
@@ -64,7 +64,7 @@ class AdversarialBIM(Strategy):
         py = out.max(1)[1]
         ny = out.max(1)[1]
         while py.item() == ny.item():
-            loss = F.cross_entropy(out, ny)
+            loss = self.loss(out, ny)
             loss.backward()
 
             eta += self.eps * torch.sign(nx.grad.data)

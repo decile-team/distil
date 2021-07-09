@@ -59,7 +59,7 @@ class AdversarialDeepFool(Strategy):
         super(AdversarialDeepFool, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args={})
 
 
-    def deepfool(self, image, net, num_classes=10, overshoot=0.02, max_iter=50):
+    def deepfool(self, image, net, num_classes=10, overshoot=0.02):
 
         """
         :param image: Image of size HxWx3
@@ -80,7 +80,7 @@ class AdversarialDeepFool(Strategy):
         label = I[0]
 
         input_shape = image.shape
-        pert_image = copy.deepcopy(image)
+        pert_image = image.clone()
         w = torch.zeros(input_shape).to(self.device)
         r_tot = torch.zeros(input_shape).to(self.device)
 
@@ -91,7 +91,7 @@ class AdversarialDeepFool(Strategy):
         fs_list = [fs[0,I[k]] for k in range(num_classes)]
         k_i = label
 
-        while k_i == label and loop_i < max_iter:
+        while k_i == label and loop_i < self.max_iter:
 
             pert = np.inf
             fs[0, I[0]].backward(retain_graph=True)
