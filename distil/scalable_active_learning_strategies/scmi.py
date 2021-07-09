@@ -1,4 +1,4 @@
-from distil.scalable_active_learning_strategies.strategy import Strategy
+from .strategy import Strategy
 import numpy as np
 
 import torch
