@@ -38,12 +38,13 @@ class SCMI(Strategy):
         stopIfZeroGain = self.args['stopIfZeroGain'] if 'stopIfZeroGain' in self.args else False
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
         verbose = self.args['verbose'] if 'verbose' in self.args else False
+        unlabeled = self.args['unlabeled'] if 'unlabeled' in self.args else False
         
 
         #Compute Embeddings
-        unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, True, gradType)
-        query_embedding = self.get_grad_embedding(self.query_dataset, True, gradType)
-        private_embedding = self.get_grad_embedding(self.private_dataset, True, gradType)
+        unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, unlabeled, gradType)
+        query_embedding = self.get_grad_embedding(self.query_dataset, unlabeled, gradType)
+        private_embedding = self.get_grad_embedding(self.private_dataset, unlabeled, gradType)
 
         
         if(self.args['scmi_function']=='flcmi'):
