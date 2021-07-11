@@ -1,10 +1,10 @@
 from distil.scalable_active_learning_strategies.score_streaming_strategy import ScoreStreamingStrategy
 
-class MarginSampling(ScoreStreamingStrategy):
+class MarginSamplingDropout(ScoreStreamingStrategy):
     
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
-        super(MarginSampling, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
+        super(MarginSamplingDropout, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
         
         if 'n_drop' in args:
             self.n_drop = args['n_drop']

@@ -54,6 +54,7 @@ class AVLTreeBuffer:
 
         if self.nodes > self.capacity:
             self.root = self.delete_least_(self.root)
+            self.nodes -= 1
     
     def delete_least_(self, compare_node):
         

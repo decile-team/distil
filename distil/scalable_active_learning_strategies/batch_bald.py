@@ -56,7 +56,7 @@ class BatchBALDDropout(Strategy):
         else:
             self.mod_inject = 'linear'
         
-        super(BatchBALDDropout, self).__init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={})
+        super(BatchBALDDropout, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args={})
 
     def do_MC_dropout_before_linear(self, unlabeled_dataset, n_drop):
         
@@ -115,6 +115,9 @@ class BatchBALDDropout(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """	
 		
+        # Move the model to the correct device
+        self.model = self.model.to(self.device)
+        
         # Get the MC samples from 
         probs = self.do_MC_dropout_before_linear(self.unlabeled_dataset, self.n_drop)
         

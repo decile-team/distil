@@ -19,7 +19,7 @@ class CoreSet(Strategy):
             min_dist = torch.tile(float("inf"), m)
         else:
             dist_ctr = torch.cdist(unlabeled_embeddings, labeled_embeddings, p=2)
-            min_dist = torch.min(dist_ctr, dim=1)
+            min_dist = torch.min(dist_ctr, dim=1)[0]
   
         idxs = []
         
