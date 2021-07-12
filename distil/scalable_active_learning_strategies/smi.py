@@ -37,26 +37,36 @@ class SMI(Strategy):
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
         verbose = self.args['verbose'] if 'verbose' in self.args else False
         unlabeled = self.args['unlabeled'] if 'unlabeled' in self.args else False
-        
+        embedding_type = self.args['embedding_type'] if 'embedding_type' in self.args else "gradients"
+        if(embedding_type=="features"):
+            layer_name = self.args['layer_name'] if 'layer_name' in self.args else "avgpool"
 
         #Compute Embeddings
-        unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, unlabeled, gradType)
-        query_embedding = self.get_grad_embedding(self.query_dataset, unlabeled, gradType)
-
+        if(embedding_type == "gradients"):
+            unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, unlabeled, gradType)
+            query_embedding = self.get_grad_embedding(self.query_dataset, unlabeled, gradType)
         
+        #Compute image-image kernel
+        if(self.args['smi_function']=='fl1mi' or self.args['smi_function']=='logdetmi'): 
+            data_sijs = submodlib.helper.create_kernel(X=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
+        #Compute query-query kernel
+        if(self.args['smi_function']=='logdetmi'):
+            query_query_sijs = submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), metric=metric, method="sklearn")
+        #Compute image-query kernel
+        query_sijs = submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), X_rep=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
+
         if(self.args['smi_function']=='fl1mi'):
             obj = submodlib.FacilityLocationMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
                                                                       num_queries=query_embedding.shape[0], 
-                                                                      data=unlabeled_data_embedding, 
-                                                                      queryData=query_embedding, 
+                                                                      data_sijs=data_sijs , 
+                                                                      query_sijs=query_sijs, 
                                                                       metric=metric, 
                                                                       magnificationEta=eta)
 
         if(self.args['smi_function']=='fl2mi'):
             obj = submodlib.FacilityLocationVariantMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
                                                                       num_queries=query_embedding.shape[0], 
-                                                                      data=unlabeled_data_embedding, 
-                                                                      queryData=query_embedding, 
+                                                                      query_sijs=query_sijs, 
                                                                       metric=metric, 
                                                                       queryDiversityEta=eta)
         
@@ -64,23 +74,22 @@ class SMI(Strategy):
             from submodlib_cpp import ConcaveOverModular
             obj = submodlib.ConcaveOverModularFunction(n=unlabeled_data_embedding.shape[0],
                                                                       num_queries=query_embedding.shape[0], 
-                                                                      data=unlabeled_data_embedding, 
-                                                                      queryData=query_embedding, 
+                                                                      query_sijs=query_sijs, 
                                                                       metric=metric, 
-                                                                      magnificationEta=eta,
+                                                                      queryDiversityEta=eta,
                                                                       mode=ConcaveOverModular.logarithmic)
         if(self.args['smi_function']=='gcmi'):
             obj = submodlib.GraphCutMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
-                                                                      num_queries=query_embedding.shape[0], 
-                                                                      data=unlabeled_data_embedding, 
-                                                                      queryData=query_embedding, 
+                                                                      num_queries=query_embedding.shape[0],
+                                                                      query_sijs=query_sijs, 
                                                                       metric=metric)
         if(self.args['smi_function']=='logdetmi'):
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
             obj = submodlib.LogDeterminantMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
-                                                                    num_queries=query_embedding.shape[0], 
-                                                                    data=unlabeled_data_embedding, 
-                                                                    queryData=query_embedding, 
+                                                                    num_queries=query_embedding.shape[0],
+                                                                    data_sijs=data_sijs,  
+                                                                    query_sijs=query_sijs,
+                                                                    query_query_sijs=query_query_sijs, 
                                                                     metric=metric, 
                                                                     magnificationEta=eta,
                                                                     lambdaVal=lambdaVal)
