@@ -32,7 +32,7 @@ class SMI(Strategy):
         optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
         metric = self.args['metric'] if 'metric' in self.args else 'cosine'
         eta = self.args['eta'] if 'eta' in self.args else 1
-        gradType = self.args['gradType'] if 'gradType' in self.args else "linear"
+        gradType = self.args['gradType'] if 'gradType' in self.args else "bias_linear"
         stopIfZeroGain = self.args['stopIfZeroGain'] if 'stopIfZeroGain' in self.args else False
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
         verbose = self.args['verbose'] if 'verbose' in self.args else False
@@ -45,6 +45,11 @@ class SMI(Strategy):
         if(embedding_type == "gradients"):
             unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, unlabeled, gradType)
             query_embedding = self.get_grad_embedding(self.query_dataset, unlabeled, gradType)
+        elif(embedding_type == "features"):
+            unlabeled_data_embedding = self.get_feature_embedding(self.unlabeled_dataset, layer_name)
+            query_embedding = self.get_feature_embedding(self.query_dataset, layer_name)
+        else:
+            raise ValueError("Provided representation must be one of gradients or features")
         
         #Compute image-image kernel
         if(self.args['smi_function']=='fl1mi' or self.args['smi_function']=='logdetmi'): 
@@ -60,14 +65,12 @@ class SMI(Strategy):
                                                                       num_queries=query_embedding.shape[0], 
                                                                       data_sijs=data_sijs , 
                                                                       query_sijs=query_sijs, 
-                                                                      metric=metric, 
                                                                       magnificationEta=eta)
 
         if(self.args['smi_function']=='fl2mi'):
             obj = submodlib.FacilityLocationVariantMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
                                                                       num_queries=query_embedding.shape[0], 
                                                                       query_sijs=query_sijs, 
-                                                                      metric=metric, 
                                                                       queryDiversityEta=eta)
         
         if(self.args['smi_function']=='com'):
@@ -75,7 +78,6 @@ class SMI(Strategy):
             obj = submodlib.ConcaveOverModularFunction(n=unlabeled_data_embedding.shape[0],
                                                                       num_queries=query_embedding.shape[0], 
                                                                       query_sijs=query_sijs, 
-                                                                      metric=metric, 
                                                                       queryDiversityEta=eta,
                                                                       mode=ConcaveOverModular.logarithmic)
         if(self.args['smi_function']=='gcmi'):
@@ -89,8 +91,7 @@ class SMI(Strategy):
                                                                     num_queries=query_embedding.shape[0],
                                                                     data_sijs=data_sijs,  
                                                                     query_sijs=query_sijs,
-                                                                    query_query_sijs=query_query_sijs, 
-                                                                    metric=metric, 
+                                                                    query_query_sijs=query_query_sijs,
                                                                     magnificationEta=eta,
                                                                     lambdaVal=lambdaVal)
 
