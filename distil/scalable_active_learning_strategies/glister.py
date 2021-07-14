@@ -3,7 +3,6 @@ from .strategy import Strategy
 import numpy as np
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from torch.utils.data import DataLoader, ConcatDataset, Dataset
@@ -13,12 +12,11 @@ import math
 class GLISTER(Strategy):
     
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}, validation_dataset = None,
-                 loss_criterion = nn.CrossEntropyLoss(), typeOf = 'none', lam = None, kernel_batch_size = 200):
+                 typeOf = 'none', lam = None, kernel_batch_size = 200):
         
         super(GLISTER, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
     
         self.validation_dataset = validation_dataset
-        self.loss = loss_criterion
         self.typeOf = typeOf
         self.lam = lam
         self.kernel_batch_size = kernel_batch_size
@@ -80,7 +78,7 @@ class GLISTER(Strategy):
                 self.out = torch.zeros(len(self.validation_dataset), self.target_classes).to(self.device)
                 self.emb = torch.zeros(len(self.validation_dataset), embDim).to(self.device)
             else:
-                predicted_y = self.predict(self.unlabeled_dataset)
+                predicted_y = self.predict(self.unlabeled_dataset).cpu() # Bring to CPU as the loaders used require it
                 
                 class AddLabelDataset(Dataset):
                     
@@ -99,7 +97,7 @@ class GLISTER(Strategy):
                 
                 pseudolabeled_dataset = AddLabelDataset(self.unlabeled_dataset, predicted_y)
                 
-                self.new_dataset = ConcatDataset(pseudolabeled_dataset, self.labeled_dataset)
+                self.new_dataset = ConcatDataset([pseudolabeled_dataset, self.labeled_dataset])
 
                 loader = DataLoader(self.new_dataset, shuffle=False, batch_size=self.args['batch_size'])
                 self.out = torch.zeros(len(self.new_dataset), self.target_classes).to(self.device)
@@ -122,7 +120,7 @@ class GLISTER(Strategy):
                             self.out[idxs, j] = init_out[:, j] - (1 * self.args['lr'] * (torch.matmul(init_l1, self.prev_grads_sum[0][(j * embDim) +
                                     self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) + self.prev_grads_sum[0][j])).view(-1)
                         except KeyError:
-                            print("Please pass learning rate used during the training")
+                            raise ValueError("Please pass learning rate used during the training")
                 
                     scores = F.softmax(self.out[idxs], dim=1)
                     one_hot_label = torch.zeros(len(y), self.target_classes).to(self.device)
@@ -152,13 +150,13 @@ class GLISTER(Strategy):
 
             
                 scores = F.softmax(self.out, dim=1)
-                if self.valid:
-                    _, Y_Val = DataLoader(self.validation_dataset, shuffle = False, batch_size = len(self.validation_dataset))[0]
+                if self.validation_dataset is not None:
+                    _, Y_Val = next(iter(DataLoader(self.validation_dataset, shuffle = False, batch_size = len(self.validation_dataset))))
                     Y_Val = Y_Val.to(self.device)
                     one_hot_label = torch.zeros(Y_Val.shape[0], self.target_classes).to(self.device)
                     one_hot_label.scatter_(1,Y_Val.view(-1, 1), 1)   
                 else:
-                    _, Y_new = DataLoader(self.new_dataset, shuffle = False, batch_size = len(self.new_dataset))[0]
+                    _, Y_new = next(iter(DataLoader(self.new_dataset, shuffle = False, batch_size = len(self.new_dataset))))
                     Y_new = Y_new.to(self.device)
                     one_hot_label = torch.zeros(Y_new.shape[0], self.target_classes).to(self.device)
                     one_hot_label.scatter_(1, Y_new.view(-1, 1), 1)
