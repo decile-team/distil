@@ -23,8 +23,8 @@ class GradMatchActive(Strategy):
         
         self.validation_dataset = validation_dataset
             
-    def fixed_weight_greedy_parallel(self, A, b, val_set_size, nnz=None):
-        '''approximately solves min_x ||Ax - b||_2 s.t. x_i \in \{0,1\}
+    def fixed_weight_greedy_parallel(self, A, b, val_set_size, nnz):
+        '''approximately solves min_x ||Ax - b||_2 s.t. x_i \in \{0,1\}, ||x||_0 = nnz
         Args:
         A: design matrix of size (d, n)
         b: measurement vector of length d
@@ -33,8 +33,6 @@ class GradMatchActive(Strategy):
         vector of length n
         '''
         d, n = A.shape
-        if nnz is None:
-            nnz = n
         x = torch.zeros(n, device=self.device)  # ,dtype=torch.float64)
 
         # Calculate b * n / val_set_size

@@ -31,6 +31,9 @@ class KMeansSampling(Strategy):
             
         if 'kmeans_args' in args:
             self.kmeans_args = args['kmeans_args']
+        else:
+            args['kmeans_args'] = dict()
+            self.kmeans_args = args['kmeans_args']
             
         if 'tol' not in self.kmeans_args:
             self.kmeans_args['tol'] = 1e-4
@@ -41,13 +44,13 @@ class KMeansSampling(Strategy):
         if 'n_init' not in self.kmeans_args:
             self.kmeans_args['n_init'] = 10
     
-    def get_closest_distances(self, ground_set, center_set):
+    def get_closest_distances(self, ground_set, center_tensor):
         
         ground_set_loader = DataLoader(ground_set, batch_size = self.args['batch_size'], shuffle = False)
 
         # Store the minimum distances in this tensor    
         ground_set_min_distances = torch.zeros(len(ground_set)).to(self.device)
-        ground_set_closest_center_indices = torch.zeros(len(ground_set)).to(self.device)
+        ground_set_closest_center_indices = torch.zeros(len(ground_set), dtype=torch.long).to(self.device)
         evaluated_ground_set_points = 0
     
         with torch.no_grad():
@@ -63,7 +66,7 @@ class KMeansSampling(Strategy):
                     raise ValueError("Representation must be one of 'linear', 'raw'")
                                  
                 # Calculate the distance of each point in the ground set batch to each center in the center batch.
-                inter_batch_distances = torch.cdist(ground_set_batch, center_set, p=2)
+                inter_batch_distances = torch.cdist(ground_set_batch, center_tensor, p=2)
                     
                 # Calculate the minimum distances across each row; this will reflect the distance to the closest center
                 batch_min_distances, batch_min_idx = torch.min(inter_batch_distances, dim=1)                   
@@ -73,7 +76,7 @@ class KMeansSampling(Strategy):
                 ground_set_closest_center_indices[evaluated_ground_set_points:(evaluated_ground_set_points + len(ground_set_batch))] = batch_min_idx
                 evaluated_ground_set_points += len(ground_set_batch)
 
-        return ground_set_min_distances, ground_set_closest_center_indices
+        return ground_set_min_distances, ground_set_closest_center_indices.tolist()
     
     def kmeans_plusplus(self, num_centers):
         
@@ -88,17 +91,22 @@ class KMeansSampling(Strategy):
             if self.representation == 'linear':
                 selected_centers_tensor = self.get_embedding(selected_centers)
             elif self.representation == 'raw':
-                selected_centers_tensor = DataLoader(selected_centers, shuffle=False, batch_size=len(selected_points))[0].to(self.device)
+                selected_centers_tensor = next(iter(DataLoader(selected_centers, shuffle=False, batch_size=len(selected_points)))).to(self.device)
                 selected_centers_tensor = selected_centers_tensor.view(len(selected_points), -1)
             else:
                 raise ValueError("Representation must be one of 'linear', 'raw'")
             
-            ground_set_min_distances, _ = self.get_closest_distances(self.unlabeled_dataset, selected_centers)
+            ground_set_min_distances, _ = self.get_closest_distances(self.unlabeled_dataset, selected_centers_tensor)
             ground_set_min_distances = torch.pow(ground_set_min_distances, 2)
             
             # 3. Sample a random point with probability proportional to the squared distance
-            distance_probability_distribution = ground_set_min_distances / ground_set_min_distances.sum().item()
-            random_choice = random.choice(num_centers, p=distance_probability_distribution)
+            # Note: torch.multinomial does not require that the weight tensor sum to 1 
+            # (e.g., forms a probability distribution). It simply requires non-negative weights 
+            # and will form the distribution itself. torch.multinomial can be used as it allows 
+            # the tensor to stay on the GPU and because sampling from the multinomial distribution 
+            # assigns the probability of sampling element i with the calculated distance weight. 
+            distance_probability_distribution = ground_set_min_distances
+            random_choice = torch.multinomial(distance_probability_distribution, 1).item()
             
             # 4. Add the chosen index to the center list
             selected_points.append(random_choice)
@@ -147,13 +155,13 @@ class KMeansSampling(Strategy):
 
         return means
     
-    def kmeans_calculate_clusters(self, center_set):
+    def kmeans_calculate_clusters(self, center_tensor):
         
         # Calculate the closest center indices
-        _, ground_set_closest_center_indices = self.get_closest_distances(self.unlabeled_dataset, center_set)
+        _, ground_set_closest_center_indices = self.get_closest_distances(self.unlabeled_dataset, center_tensor)
         
         # For each center, create an associated cluster and add points to them
-        clusters = [[] for x in range(len(center_set))]
+        clusters = [[] for x in range(len(center_tensor))]
         for i, index in enumerate(ground_set_closest_center_indices):
             clusters[index].append(i)
             
@@ -170,7 +178,12 @@ class KMeansSampling(Strategy):
         for i in range(self.kmeans_args['n_init']):   
             
             # Use kmeans++ initialization
-            centers = self.kmeans_plusplus(num_centers)
+            centers_subset = Subset(self.unlabeled_dataset, self.kmeans_plusplus(num_centers))
+            
+            if self.representation == "linear":
+                centers = self.get_embedding(centers_subset)
+            else:
+                centers = next(iter(DataLoader(centers_subset, shuffle=False, batch_size=len(centers_subset)))).to(self.device)
         
             # Alternate between means/assignment steps until max_iter reached
             for i in range(self.kmeans_args['max_iter']):
@@ -187,7 +200,7 @@ class KMeansSampling(Strategy):
 
             # Lastly, evaluate the inertia of this kmeans solution. If it is the best one so far, keep it.
             ground_set_min_distances, ground_set_closest_center_indices = self.get_closest_distances(self.unlabeled_dataset, centers)
-            inertia = torch.pow(ground_set_min_distances, p=2).sum().item()
+            inertia = torch.pow(ground_set_min_distances, 2).sum().item()
 
             if best_inertia is None or inertia < best_inertia:
                 best_inertia = inertia
