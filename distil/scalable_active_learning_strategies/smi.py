@@ -36,15 +36,14 @@ class SMI(Strategy):
         stopIfZeroGain = self.args['stopIfZeroGain'] if 'stopIfZeroGain' in self.args else False
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
         verbose = self.args['verbose'] if 'verbose' in self.args else False
-        unlabeled = self.args['unlabeled'] if 'unlabeled' in self.args else False
         embedding_type = self.args['embedding_type'] if 'embedding_type' in self.args else "gradients"
         if(embedding_type=="features"):
             layer_name = self.args['layer_name'] if 'layer_name' in self.args else "avgpool"
 
         #Compute Embeddings
         if(embedding_type == "gradients"):
-            unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, unlabeled, gradType)
-            query_embedding = self.get_grad_embedding(self.query_dataset, unlabeled, gradType)
+            unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, True, gradType)
+            query_embedding = self.get_grad_embedding(self.query_dataset, False, gradType)
         elif(embedding_type == "features"):
             unlabeled_data_embedding = self.get_feature_embedding(self.unlabeled_dataset, layer_name)
             query_embedding = self.get_feature_embedding(self.query_dataset, layer_name)
