@@ -1,4 +1,4 @@
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from torch import nn
 import torch
 import torch.optim as optim
@@ -10,12 +10,24 @@ def init_weights(m):
         torch.nn.init.xavier_uniform_(m.weight)
         m.bias.data.fill_(0.01)
 
+class AddIndexDataset(Dataset):
+    
+    def __init__(self, wrapped_dataset):
+        self.wrapped_dataset = wrapped_dataset
+        
+    def __getitem__(self, index):
+        data, label = self.wrapped_dataset[index]
+        return data, label, index
+    
+    def __len__(self):
+        return len(self.wrapped_dataset)
+
 #custom training
 class data_train:
 
     def __init__(self, training_dataset, net, args):
 
-        self.training_dataset = training_dataset
+        self.training_dataset = AddIndexDataset(training_dataset)
         self.net = net
         self.args = args
         
