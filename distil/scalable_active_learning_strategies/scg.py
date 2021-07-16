@@ -45,8 +45,8 @@ class SCG(Strategy):
             unlabeled_data_embedding = self.get_grad_embedding(self.unlabeled_dataset, True, gradType)
             private_embedding = self.get_grad_embedding(self.private_dataset, False, gradType)
         elif(embedding_type == "features"):
-            unlabeled_data_embedding = self.get_feature_embedding(self.unlabeled_dataset, layer_name)
-            private_embedding = self.get_feature_embedding(self.private_dataset, layer_name)
+            unlabeled_data_embedding = self.get_feature_embedding(self.unlabeled_dataset, True, layer_name)
+            private_embedding = self.get_feature_embedding(self.private_dataset, False, layer_name)
         else:
             raise ValueError("Provided representation must be one of gradients or features")
         
