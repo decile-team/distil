@@ -30,6 +30,12 @@ class Strategy:
     def update_data(self, labeled_dataset, unlabeled_dataset): #
         self.labeled_dataset = labeled_dataset
         self.unlabeled_dataset = unlabeled_dataset
+        
+    def update_queries(self, query_dataset):
+        self.query_dataset= query_dataset
+
+    def update_privates(self, private_dataset):
+        self.private_dataset= private_dataset
 
     def update_model(self, clf):
         self.model = clf
@@ -279,3 +285,31 @@ class Strategy:
         
         # Return final gradient embedding
         return grad_embedding
+
+    def feature_extraction(self, inp, layer_name):
+        feature = {}
+        model = self.model
+        def get_features(name):
+            def hook(model, inp, output):
+                feature[name] = output.detach()
+            return hook
+        for name, layer in self.model._modules.items():
+            if name == layer_name:
+                layer.register_forward_hook(get_features(layer_name))
+        output = self.model(inp)
+        return torch.squeeze(feature[layer_name])
+
+    def get_feature_embedding(self, dataset, unlabeled, layer_name='avgpool'):
+        dataloader = DataLoader(dataset, batch_size = self.args['batch_size'], shuffle = False)
+        features = []
+        if(unlabeled):
+            for batch_idx, inputs in enumerate(dataloader):
+                inputs = inputs.to(self.device)
+                batch_features = self.feature_extraction(inputs, layer_name)
+                features.append(batch_features)
+        else:
+            for batch_idx, (inputs,_) in enumerate(dataloader):
+                inputs = inputs.to(self.device)
+                batch_features = self.feature_extraction(inputs, layer_name)
+                features.append(batch_features)
+        return torch.vstack(features)
