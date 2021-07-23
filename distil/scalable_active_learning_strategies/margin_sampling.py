@@ -1,4 +1,4 @@
-from distil.scalable_active_learning_strategies.score_streaming_strategy import ScoreStreamingStrategy
+from .score_streaming_strategy import ScoreStreamingStrategy
 
 class MarginSampling(ScoreStreamingStrategy):
     
