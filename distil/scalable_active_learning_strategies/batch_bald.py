@@ -69,9 +69,6 @@ class BatchBALDDropout(Strategy):
         except:
             raise ValueError(F"Model does not have attribute {self.mod_inject} as the last layer")
             
-        # Make sure that the model is in eval mode
-        self.model.eval()
-            
         # Store the linear layer in a temporary variable
         lin_layer_temp = getattr(self.model, self.mod_inject)
         
@@ -79,6 +76,12 @@ class BatchBALDDropout(Strategy):
         dropout_module = ConsistentMCDropout()
         dropout_injection = torch.nn.Sequential(dropout_module, lin_layer_temp)
         setattr(self.model, self.mod_inject, dropout_injection)
+
+        # Make sure that the model is in eval mode
+        self.model.eval()
+        
+        # For safety, explicitly set the dropout module to be in evaluation mode
+        dropout_module.train(mode=False)
 
         # Create a tensor that will store the probabilities 
         probs = torch.zeros([n_drop, len(unlabeled_dataset), self.target_classes]).to(self.device)
