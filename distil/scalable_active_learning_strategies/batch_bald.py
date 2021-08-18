@@ -88,6 +88,14 @@ class BatchBALDDropout(Strategy):
         with torch.no_grad():
             for i in range(n_drop):
                 evaluated_points = 0
+                
+                # In original BatchBALD code, inference samples were predicted in a single forward pass via an additional forward parameter.
+                # Hence, only 1 mask needed to be generated during eval time for consistent MC sampling (as there was only 1 pass). Here, 
+                # our models do not assume this forward parameter. Hence, we must have a different generated mask for each PASS of the 
+                # dataset. Note, however, that the mask is CONSISTENT within a pass, which is functionally equivalent to the original 
+                # BatchBALD code.
+                dropout_module.reset_mask()
+                
                 for x in loader_te:
                     idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + len(x))]
                     x = x.to(self.device)
