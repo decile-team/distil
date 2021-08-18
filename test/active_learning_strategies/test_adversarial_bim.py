@@ -1,5 +1,5 @@
 from distil.utils.models.simple_net import TwoLayerNet
-from distil.scalable_active_learning_strategies.adversarial_bim import AdversarialBIM
+from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
 from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest
@@ -28,7 +28,7 @@ class TestAdversarialBIM(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04}
+        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'verbose': True}
         
         self.strategy = AdversarialBIM(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)    
         

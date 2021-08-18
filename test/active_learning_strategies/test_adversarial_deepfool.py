@@ -1,5 +1,5 @@
 from distil.utils.models.resnet import ResNet18
-from distil.scalable_active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
+from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
 from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest
@@ -14,13 +14,13 @@ class TestAdversarialDeepFool(unittest.TestCase):
         mymodel = ResNet18(self.classes)
 
         # Create labeled dataset            
-        self.num_labeled_points = 1000
+        self.num_labeled_points = 100
         rand_data_tensor = torch.randn((self.num_labeled_points, 3, 32, 32), requires_grad=True)
         rand_label_tensor = torch.randint(low=0,high=self.classes,size=(self.num_labeled_points,))
         rand_labeled_dataset = MyLabeledDataset(rand_data_tensor, rand_label_tensor)
         
         # Create unlabeled dataset
-        self.num_unlabeled_points = 10000
+        self.num_unlabeled_points = 500
         rand_data_tensor = torch.randn((self.num_unlabeled_points, 3, 32, 32), requires_grad=True)
         rand_unlabeled_dataset = MyUnlabeledDataset(rand_data_tensor)
         

@@ -1,5 +1,5 @@
 from distil.utils.models.simple_net import TwoLayerNet
-from distil.scalable_active_learning_strategies.margin_sampling import MarginSampling
+from distil.active_learning_strategies.margin_sampling import MarginSampling
 from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest

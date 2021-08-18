@@ -1,5 +1,5 @@
 from distil.utils.models.simple_net import TwoLayerNet
-from distil.scalable_active_learning_strategies.batch_bald import BatchBALDDropout
+from distil.active_learning_strategies.batch_bald import BatchBALDDropout
 from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest
@@ -16,19 +16,19 @@ class TestBatchBALDDropout(unittest.TestCase):
         mymodel = TwoLayerNet(self.input_dimension, self.classes, self.hidden_units)
 
         # Create labeled dataset            
-        self.num_labeled_points = 1000
+        self.num_labeled_points = 100
         rand_data_tensor = torch.randn((self.num_labeled_points, self.input_dimension), requires_grad=True)
         rand_label_tensor = torch.randint(low=0,high=self.classes,size=(self.num_labeled_points,))
         rand_labeled_dataset = MyLabeledDataset(rand_data_tensor, rand_label_tensor)
         
         # Create unlabeled dataset
-        self.num_unlabeled_points = 10000
+        self.num_unlabeled_points = 500
         rand_data_tensor = torch.randn((self.num_unlabeled_points, self.input_dimension), requires_grad=True)
         rand_unlabeled_dataset = MyUnlabeledDataset(rand_data_tensor)
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'mod_inject': 'linear2'}
+        args = {'batch_size': 5, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'mod_inject': 'linear2'}
         
         self.strategy = BatchBALDDropout(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)
         
@@ -69,7 +69,7 @@ class TestBatchBALDDropout(unittest.TestCase):
                 
             # Ensure there were different samples
             self.assertFalse(same_samples)
-    """
+    
     def test_select(self):
         
         budget = 10
@@ -85,4 +85,4 @@ class TestBatchBALDDropout(unittest.TestCase):
         
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
-    """
+    

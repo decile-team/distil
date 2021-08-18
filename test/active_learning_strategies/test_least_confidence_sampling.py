@@ -1,11 +1,11 @@
 from distil.utils.models.simple_net import TwoLayerNet
-from distil.scalable_active_learning_strategies.least_confidence_sampling_dropout import LeastConfidenceSamplingDropout
+from distil.active_learning_strategies.least_confidence_sampling import LeastConfidenceSampling
 from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest
 import torch
 
-class TestLeastConfidenceSamplingDropout(unittest.TestCase):
+class TestLeastConfidenceSampling(unittest.TestCase):
     
     def setUp(self):
         
@@ -30,7 +30,7 @@ class TestLeastConfidenceSamplingDropout(unittest.TestCase):
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
         args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy}
         
-        self.strategy = LeastConfidenceSamplingDropout(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)  
+        self.strategy = LeastConfidenceSampling(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)  
         
     def test_acquire_scores(self):
         

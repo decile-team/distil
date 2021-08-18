@@ -1,10 +1,10 @@
 from .score_streaming_strategy import ScoreStreamingStrategy
 
-class LeastConfidence(ScoreStreamingStrategy):
+class LeastConfidenceSampling(ScoreStreamingStrategy):
     
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
-        super(LeastConfidence, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
+        super(LeastConfidenceSampling, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
     
     def acquire_scores(self, unlabeled_buffer):
         

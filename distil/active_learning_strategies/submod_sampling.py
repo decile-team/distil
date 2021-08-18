@@ -1,164 +1,131 @@
 from .strategy import Strategy
 
-import torch
+import submodlib
 
-from ..utils.submodular import SubmodularFunction
-from ..utils.disparity_functions import DisparityFunction
-from ..utils.similarity_mat import SimilarityComputation
-from ..utils.dpp import dpp
-
-class SubmodSampling(Strategy):
-    """
-
-    This strategy uses one of  the submodular functions viz. 'facility_location', 'graph_cut', 
-    'saturated_coverage', 'sum_redundancy', 'feature_based' :footcite:`iyer2021submodular` 
-    or Disparity-sum, Disparity-min :footcite:`dasgupta-etal-2013-summarization` or 
-    DPP :footcite:`NEURIPS2018_dbbf603f` is used to select the points to be labeled. These 
-    techniques can be applied directly to the features/embeddings or on the gradients of the 
-    loss functions.
-
+class SubmodularSampling(Strategy):
     
-    Parameters
-    ----------
-
-    X: Numpy array 
-        Features of the labled set of points 
-    Y: Numpy array
-        Lables of the labled set of points 
-    unlabeled_x: Numpy array
-        Features of the unlabled set of points 
-    net: class object
-        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
-    handler: class object
-        It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
-    nclasses: int 
-        No. of classes in tha dataset
-    typeOf: str
-        Choice of submodular function - 'facility_location' | 'graph_cut' | 'saturated_coverage' | 'sum_redundancy' | 'feature_based'\
-            | 'Disparity-min' | 'Disparity-sum' | 'DPP'
-    selection_type : str
-       selection strategy - 'Full' |'PerClass' | 'Supervised' 
-    if_grad : boolean, optional
-        Determines if gradients to be used for subset selection. Default is False.
-    args: dictionary
-        This dictionary should have keys 'batch_size' and  'lr'. 
-        'lr' should be the learning rate used for training. 'batch_size'  'batch_size' should be such 
-        that one
-    kernel_batch_size: int, optional
-        For 'Diversity' and 'FacLoc' regualrizer versions, similarity kernel is to be computed, which 
-        entails creating a 3d torch tensor of dimenssions kernel_batch_size*kernel_batch_size*
-        feature dimenssion.Again kernel_batch_size should be such that one can exploit the benefits of 
-        tensorization while honouring the resourse constraits.      
-    """
-
-    def __init__(self,X, Y,unlabeled_x, net, handler, nclasses,typeOf,selection_type,\
-        if_grad=False,args={},kernel_batch_size = 200): # 
-        super(SubmodSampling, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
-
-        self.typeOf = typeOf
-        self.if_grad = if_grad
-        self.selection_type = selection_type
-        self.kernel_batch_size = kernel_batch_size
-
-    def _compute_per_element_grads(self):
+    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
-        self.grads_per_elem = self.get_grad_embedding(self.unlabeled_x)
-    
-    def select(self, budget):
-
-        """
-        Select next set of points
+        super(SubmodularSampling, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
         
-        Parameters
-        ----------
-        budget: int
-            Number of indexes to be returned for next set
-        
-        Returns
-        ----------
-        chosen: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
-
-        if self.if_grad:
-            self._compute_per_element_grads()
-            selection_matrix = self.grads_per_elem
+        if 'submod_args' in args:
+            self.submod_args = args['submod_args']
         else:
-            selection_matrix = self.unlabeled_x
-
-        submod_choices = ['facility_location', 'graph_cut', 'saturated_coverage', 'sum_redundancy',\
-             'feature_based','Disparity-min', 'Disparity-sum','DPP']
-        
-        if self.typeOf not in submod_choices:
-            raise ValueError('Submodular function is invalid, Submodular functions can only be '+ str(submod_choices))
-        selection_type = ['PerClass', 'Supervised','Full']
-        if self.selection_type not in selection_type:
-            raise ValueError('Selection type is invalid, Selection type can only be '+ str(selection_type))
-
-        predicted_y = self.predict(self.unlabeled_x)  # Hypothesised Labels
-        
-        if self.typeOf in submod_choices[:-3]:
-            func = SubmodularFunction(self.device, selection_matrix, predicted_y,\
-                len(predicted_y), self.kernel_batch_size, self.typeOf, self.selection_type)
+            self.submod_args = {'submod': 'facility_location',
+                                'metric': 'cosine',
+                                'representation': 'linear'}
             
-            greedySet = func.lazy_greedy_max(budget)
-
-        elif self.typeOf in submod_choices[-3:-1]:
-            if self.typeOf in submod_choices[-3]:
-                sub_type = "min"
+    def select(self, budget):
+        
+        self.model.eval()
+        
+        # Get the ground set size, which is the size of the unlabeled dataset
+        ground_set_size = len(self.unlabeled_dataset)
+        
+        # Get the representation of each element.
+        if 'representation' in self.submod_args:
+            representation = self.submod_args['representation']
+        else:
+            representation = 'linear'
+        
+        if representation == 'linear':
+            ground_set_representation = self.get_embedding(self.unlabeled_dataset)
+        elif representation == 'grad_bias':
+            ground_set_representation = self.get_grad_embedding(self.unlabeled_dataset, True, "bias")
+        elif representation == 'grad_linear':
+            ground_set_representation = self.get_grad_embedding(self.unlabeled_dataset, True, "linear")
+        elif representation == 'grad_bias_linear':
+            ground_set_representation = self.get_grad_embedding(self.unlabeled_dataset, True, "bias_linear")
+        else:
+            raise ValueError("Provided representation must be one of 'linear', 'grad_bias', 'grad_linear', 'grad_bias_linear'")            
+        
+        if self.submod_args['submod'] == 'facility_location':
+            if 'metric' in self.submod_args:
+                metric = self.submod_args['metric']
             else:
-                sub_type = "sum"
-
-            func = DisparityFunction(self.device, selection_matrix, predicted_y, len(predicted_y),\
-                 self.kernel_batch_size,sub_type, self.selection_type)
-
-            greedySet = func.naive_greedy_max(budget)
-
-        elif self.typeOf == submod_choices[-1]:
-            simil = SimilarityComputation(self.device, selection_matrix, predicted_y, len(predicted_y),\
-                 self.kernel_batch_size)
-
-            classes, no_elements = torch.unique(predicted_y, return_counts=True)
-            len_unique_elements = no_elements.shape[0]
-            per_class_bud = int(budget / len(classes))
-            final_per_class_bud = []
-            _, sorted_indices = torch.sort(no_elements, descending = True)
+                metric = 'cosine'
+            submod_function = submodlib.FacilityLocationFunction(n=ground_set_size,
+                                                                 mode="dense",
+                                                                 data=ground_set_representation.cpu().numpy(),
+                                                                 metric=metric)
+        elif self.submod_args['submod'] == "feature_based":
+            if 'feature_weights' in self.submod_args:
+                feature_weights = self.submod_args['feature_weights']
+            else:
+                feature_weights = None
+                
+            if 'concave_function' in self.submod_args:
+                concave_function = self.submod_args['concave_function']
+            else:
+                from submodlib_cpp import FeatureBased
+                concave_function = FeatureBased.logarithmic
+                
+            submod_function = submodlib.FeatureBasedFunction(n=ground_set_size,
+                                                             features=ground_set_representation.cpu().numpy().tolist(),
+                                                             numFeatures=ground_set_representation.shape[1],
+                                                             sparse=False,
+                                                             featureWeights=feature_weights,
+                                                             mode=concave_function)
+        elif self.submod_args['submod'] == "graph_cut":
+            if 'lambda_val' not in self.submod_args:
+                raise ValueError("Graph Cut Requires submod_args parameter 'lambda_val'")
             
-            if self.selection_type == 'PerClass':
+            if 'metric' in self.submod_args:
+                metric = self.submod_args['metric']
+            else:
+                metric = 'cosine'
+            
+            submod_function = submodlib.GraphCutFunction(n=ground_set_size,
+                                                         mode="dense",
+                                                         lambdaVal=self.submod_args['lambda_val'],
+                                                         data=ground_set_representation.cpu().numpy(),
+                                                         metric=metric)
+        elif self.submod_args['submod'] == 'log_determinant':
+            if 'lambda_val' not in self.submod_args:
+                raise ValueError("Log Determinant Requires submod_args parameter 'lambda_val'")
+            
+            if 'metric' in self.submod_args:
+                metric = self.submod_args['metric']
+            else:
+                metric = 'cosine'
+            
+            submod_function = submodlib.LogDeterminantFunction(n=ground_set_size,
+                                                         mode="dense",
+                                                         lambdaVal=self.submod_args['lambda_val'],
+                                                         data=ground_set_representation.cpu().numpy(),
+                                                         metric=metric)
+        elif self.submod_args['submod'] == 'disparity_min':
+            if 'metric' in self.submod_args:
+                metric = self.submod_args['metric']
+            else:
+                metric = 'cosine'
+            submod_function = submodlib.DisparityMinFunction(n=ground_set_size,
+                                                             mode="dense",
+                                                             data=ground_set_representation.cpu().numpy(),
+                                                             metric=metric)
+        elif self.submod_args['submod'] == 'disparity_sum':
+            if 'metric' in self.submod_args:
+                metric = self.submod_args['metric']
+            else:
+                metric = 'cosine'
+            submod_function = submodlib.DisparitySumFunction(n=ground_set_size,
+                                                             mode="dense",
+                                                             data=ground_set_representation.cpu().numpy(),
+                                                             metric=metric)
+        else:
+            raise ValueError(F"{self.submod_args['submod']} is not currently supported. Choose one of 'facility_location', 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', or 'disparity_sum'")
+            
+        # Get solver arguments
+        optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
+        stopIfZeroGain = self.submod_args['stopIfZeroGain'] if 'stopIfZeroGain' in self.submod_args else False
+        stopIfNegativeGain = self.submod_args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.submod_args else False
+        verbose = self.submod_args['verbose'] if 'verbose' in self.submod_args else False
         
-                total_idxs = 0
-                for n_element in no_elements:
-                    final_per_class_bud.append(min(per_class_bud, torch.IntTensor.item(n_element)))
-                    total_idxs += min(per_class_bud, torch.IntTensor.item(n_element))
-                
-                if total_idxs < budget:
-                    bud_difference = budget - total_idxs
-                    for i in range(len_unique_elements):
-                        available_idxs = torch.IntTensor.item(no_elements[sorted_indices[i]])-per_class_bud 
-                        final_per_class_bud[sorted_indices[i]] += min(bud_difference, available_idxs)
-                        total_idxs += min(bud_difference, available_idxs)
-                        bud_difference = budget - total_idxs
-                        if bud_difference == 0:
-                            break
-
-                greedySet = []
-                for i in range(len_unique_elements):
-                    idxs = torch.where(predicted_y == classes[i])[0]
-                    simil.compute_score(idxs)
-
-                    greedyList = dpp(simil.dist_mat.cpu().numpy(),final_per_class_bud[i])
-                    greedySet.extend(idxs[greedyList])            
-            
-            elif self.selection_type == 'Full':
-
-                greedySet = []
-                
-                simil.compute_score([i for i in range(len(predicted_y))])
-
-                greedySet = dpp(simil.dist_mat.cpu().numpy(),budget)    
-
-            elif self.selection_type == 'Supervised':
-                 raise ValueError('Please use Full or PerClass')
-             
-
-        return greedySet
+        # Use solver to get indices from the filtered set via the submodular function
+        greedy_list = submod_function.maximize(budget=budget,
+                                              optimizer=optimizer,
+                                              stopIfZeroGain=stopIfZeroGain,
+                                              stopIfNegativeGain=stopIfNegativeGain,
+                                              verbose=verbose)
+        greedy_indices = [x[0] for x in greedy_list]
+        return greedy_indices

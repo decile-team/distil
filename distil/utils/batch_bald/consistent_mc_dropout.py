@@ -98,7 +98,7 @@ class _ConsistentMCDropout(Module):
         if self.p == 0.0:
             return input
 
-        k = BayesianModule.k
+        k = 1 # Was BayesianModule.k; now is 1 to support BatchBALDDropout's MC computation
         if self.training:
             # Create a new mask on each call and for each batch element.
             k = input.shape[0]

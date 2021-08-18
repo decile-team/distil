@@ -1,9 +1,9 @@
 from distil.utils.models.simple_net import TwoLayerNet
-from distil.scalable_active_learning_strategies.scmi import SCMI
-from distil.scalable_active_learning_strategies.smi import SMI
-from distil.scalable_active_learning_strategies.scg import SCG
-from distil.scalable_active_learning_strategies.partition_strategy import PartitionStrategy
-from distil.scalable_active_learning_strategies.badge import BADGE
+from distil.active_learning_strategies.scmi import SCMI
+from distil.active_learning_strategies.smi import SMI
+from distil.active_learning_strategies.scg import SCG
+from distil.active_learning_strategies.partition_strategy import PartitionStrategy
+from distil.active_learning_strategies.badge import BADGE
 from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest

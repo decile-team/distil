@@ -1,7 +1,7 @@
 import random
 import unittest
 
-from distil.scalable_active_learning_strategies.score_streaming_strategy import AVLTreeBuffer, AVLNode
+from distil.active_learning_strategies.score_streaming_strategy import AVLTreeBuffer, AVLNode
 
 class TestAVLTree(unittest.TestCase):
     
