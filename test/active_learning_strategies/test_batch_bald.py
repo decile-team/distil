@@ -56,7 +56,20 @@ class TestBatchBALDDropout(unittest.TestCase):
                 for predicted_prob in predicted_prob_vector:
                     self.assertLessEqual(predicted_prob, 1)
                     self.assertGreaterEqual(predicted_prob, 0)
-       
+                    
+        # Ensure probabilities are not all the same
+        for predict_prob_dropout in mc_dropout_injection_samples:
+            same_samples = True
+            first_mc_sample = predict_prob_dropout[0]
+            for other_mc_sample in predict_prob_dropout:
+                is_close_vector = torch.isclose(first_mc_sample, other_mc_sample)
+                for is_close_component in is_close_vector:
+                    if not is_close_component:
+                        same_samples = False
+                
+            # Ensure there were different samples
+            self.assertFalse(same_samples)
+    """
     def test_select(self):
         
         budget = 10
@@ -72,3 +85,4 @@ class TestBatchBALDDropout(unittest.TestCase):
         
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
+    """

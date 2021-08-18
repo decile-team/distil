@@ -248,6 +248,8 @@ class ScoreStreamingStrategy(Strategy):
         
     def select(self, budget):
         
+        self.model.eval()
+        
         # Go through the unlabeled data in a stream-like manner, holding only the top `budget` scores in memory at any given point.
         tree_buffer = AVLTreeBuffer(capacity = budget)
 

@@ -29,6 +29,8 @@ class SCMI(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """ 
 
+        self.model.eval()
+
         #Get hyperparameters from args dict
         optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
         metric = self.args['metric'] if 'metric' in self.args else 'cosine'
@@ -38,7 +40,6 @@ class SCMI(Strategy):
         stopIfZeroGain = self.args['stopIfZeroGain'] if 'stopIfZeroGain' in self.args else False
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
         verbose = self.args['verbose'] if 'verbose' in self.args else False
-        unlabeled = self.args['unlabeled'] if 'unlabeled' in self.args else False
         embedding_type = self.args['embedding_type'] if 'embedding_type' in self.args else "gradients"
         if(embedding_type=="features"):
             layer_name = self.args['layer_name'] if 'layer_name' in self.args else "avgpool"
@@ -58,7 +59,7 @@ class SCMI(Strategy):
         #Compute image-image kernel
         data_sijs = submodlib.helper.create_kernel(X=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
         #Compute query-query kernel
-        if(self.args['smi_function']=='logdetmi'):
+        if(self.args['scmi_function']=='logdetcmi'):
             query_query_sijs = submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), metric=metric, method="sklearn")
             private_private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), metric=metric, method="sklearn")
             query_private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), X_rep=query_embedding.cpu().numpy(), metric=metric, method="sklearn")

@@ -46,6 +46,7 @@ class CoreSet(Strategy):
             def __len__(self):
                 return len(self.wrapped_dataset)
         
+        self.model.eval()
         embedding_unlabeled = self.get_embedding(self.unlabeled_dataset)
         embedding_labeled = self.get_embedding(NoLabelDataset(self.labeled_dataset))
         chosen = self.furthest_first(embedding_unlabeled, embedding_labeled, budget)

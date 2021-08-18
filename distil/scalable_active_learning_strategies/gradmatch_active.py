@@ -153,6 +153,8 @@ class GradMatchActive(Strategy):
             List of selected data point indexes with respect to unlabeled_x and, if use_weights is true, the weights associated with each point
         """ 
         
+        self.model.eval()
+        
         # Compute hypothesized gradients.
         hypothesized_gradients = self.get_grad_embedding(self.unlabeled_dataset, True, grad_embedding_type=self.grad_embedding)
         

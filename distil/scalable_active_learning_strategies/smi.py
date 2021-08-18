@@ -28,6 +28,8 @@ class SMI(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """ 
 
+        self.model.eval()
+
         #Get hyperparameters from args dict
         optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
         metric = self.args['metric'] if 'metric' in self.args else 'cosine'

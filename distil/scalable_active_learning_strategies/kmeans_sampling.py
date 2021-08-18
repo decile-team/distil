@@ -210,6 +210,8 @@ class KMeansSampling(Strategy):
 
     def select(self, budget):
         
+        self.model.eval()
+        
         # Get the best centers through kmeans clustering
         best_centers = self.kmeans_clustering(budget)
         

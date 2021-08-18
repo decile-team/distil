@@ -28,6 +28,8 @@ class SCG(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """ 
 
+        self.model.eval()
+
         #Get hyperparameters from args dict
         optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
         metric = self.args['metric'] if 'metric' in self.args else 'cosine'
@@ -53,7 +55,7 @@ class SCG(Strategy):
         #Compute image-image kernel
         data_sijs = submodlib.helper.create_kernel(X=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
         #Compute private-private kernel
-        if(self.args['smi_function']=='logdetcg'):
+        if(self.args['scg_function']=='logdetcg'):
             private_private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), metric=metric, method="sklearn")
         #Compute image-private kernel
         private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), X_rep=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")

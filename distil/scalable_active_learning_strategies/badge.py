@@ -62,6 +62,7 @@ class BADGE(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """ 
 
+        self.model.eval()
         gradEmbedding = self.get_grad_embedding(self.unlabeled_dataset, True, "linear")
         chosen = init_centers(gradEmbedding.cpu().numpy(), budget, self.device)
         return chosen

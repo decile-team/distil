@@ -26,6 +26,8 @@ class FASS(Strategy):
         
     def select(self, budget, top_n=5):
         
+        self.model.eval()
+        
         # Determine if top_n * budget points can be drawn; otherwise, set filtered set size 
         # to be the size of the unlabeled_dataset
         filtered_set_size = min(budget * top_n, len(self.unlabeled_dataset))

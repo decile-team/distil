@@ -196,6 +196,8 @@ class GLISTER(Strategy):
             List of selected data point indexes with respect to unlabeled_x
         """ 
 
+        self.model.eval()
+
         self._compute_per_element_grads()
         self._update_grads_val(first_init=True)
         

@@ -17,6 +17,8 @@ class SubmodularSampling(Strategy):
             
     def select(self, budget):
         
+        self.model.eval()
+        
         # Get the ground set size, which is the size of the unlabeled dataset
         ground_set_size = len(self.unlabeled_dataset)
         
@@ -44,7 +46,7 @@ class SubmodularSampling(Strategy):
                 metric = 'cosine'
             submod_function = submodlib.FacilityLocationFunction(n=ground_set_size,
                                                                  mode="dense",
-                                                                 data=ground_set_representation.numpy(),
+                                                                 data=ground_set_representation.cpu().numpy(),
                                                                  metric=metric)
         elif self.submod_args['submod'] == "feature_based":
             if 'feature_weights' in self.submod_args:
@@ -59,7 +61,7 @@ class SubmodularSampling(Strategy):
                 concave_function = FeatureBased.logarithmic
                 
             submod_function = submodlib.FeatureBasedFunction(n=ground_set_size,
-                                                             features=ground_set_representation.numpy().tolist(),
+                                                             features=ground_set_representation.cpu().numpy().tolist(),
                                                              numFeatures=ground_set_representation.shape[1],
                                                              sparse=False,
                                                              featureWeights=feature_weights,
@@ -76,7 +78,7 @@ class SubmodularSampling(Strategy):
             submod_function = submodlib.GraphCutFunction(n=ground_set_size,
                                                          mode="dense",
                                                          lambdaVal=self.submod_args['lambda_val'],
-                                                         data=ground_set_representation.numpy(),
+                                                         data=ground_set_representation.cpu().numpy(),
                                                          metric=metric)
         elif self.submod_args['submod'] == 'log_determinant':
             if 'lambda_val' not in self.submod_args:
@@ -90,7 +92,7 @@ class SubmodularSampling(Strategy):
             submod_function = submodlib.LogDeterminantFunction(n=ground_set_size,
                                                          mode="dense",
                                                          lambdaVal=self.submod_args['lambda_val'],
-                                                         data=ground_set_representation.numpy(),
+                                                         data=ground_set_representation.cpu().numpy(),
                                                          metric=metric)
         elif self.submod_args['submod'] == 'disparity_min':
             if 'metric' in self.submod_args:
@@ -99,16 +101,16 @@ class SubmodularSampling(Strategy):
                 metric = 'cosine'
             submod_function = submodlib.DisparityMinFunction(n=ground_set_size,
                                                              mode="dense",
-                                                             data=ground_set_representation.numpy(),
+                                                             data=ground_set_representation.cpu().numpy(),
                                                              metric=metric)
-        elif self.submod_args['submod'] == 'disparity_min':
+        elif self.submod_args['submod'] == 'disparity_sum':
             if 'metric' in self.submod_args:
                 metric = self.submod_args['metric']
             else:
                 metric = 'cosine'
             submod_function = submodlib.DisparitySumFunction(n=ground_set_size,
                                                              mode="dense",
-                                                             data=ground_set_representation.numpy(),
+                                                             data=ground_set_representation.cpu().numpy(),
                                                              metric=metric)
         else:
             raise ValueError(F"{self.submod_args['submod']} is not currently supported. Choose one of 'facility_location', 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', or 'disparity_sum'")
