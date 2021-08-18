@@ -11,6 +11,61 @@ import math
 
 class GLISTER(Strategy):
     
+    """
+    This is implementation of GLISTER-ACTIVE from the paper GLISTER: Generalization based Data 
+    Subset Selection for Efficient and Robust Learning :footcite:`killamsetty2020glister`. GLISTER 
+    methods tries to solve a bi-level optimisation problem.
+    
+    .. math::
+        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\underset{\\theta}{\\operatorname{argmin\\hspace{0.7mm}}} L_T( \\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
+        
+    In the above equation, :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x`, 
+    :math:`\\mathcal{V}` denotes the validation set that guides the subset selection process, :math:`L_T` denotes the
+    training loss, :math:`L_V` denotes the validation loss, :math:`S` denotes the data subset selected at each round,  and :math:`k` is the `budget`.
+    Since, solving the complete inner-optimization is expensive, GLISTER-ONLINE adopts a online one-step meta approximation where we approximate the solution to inner problem
+    by taking a single gradient step.
+    The optimization problem after the approximation is as follows:
+    
+    .. math::
+        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\theta - \\eta \\nabla_{\\theta}L_T(\\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
+    
+    In the above equation, :math:`\\eta` denotes the step-size used for one-step gradient update.
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **lr**: The learning rate used for training (float)
+    validation_dataset: torch.utils.data.Dataset
+        The validation dataset to be used in GLISTER objective
+    typeOf: str, optional
+        Determines the type of regulariser to be used. Default is **'none'**.
+        For random regulariser use **'Rand'**.
+        To use Facility Location set functiom as a regulariser use **'FacLoc'**.
+        To use Diversity set functiom as a regulariser use **'Diversity'**.
+    lam: float, optional
+        Determines the amount of regularisation to be applied. Mandatory if is not `typeOf='none'` and by default set to `None`.
+        For random regulariser use values should be between 0 and 1 as it determines fraction of points replaced by random points.
+        For both 'Diversity' and 'FacLoc', `lam` determines the weightage given to them while computing the gain.
+    kernel_batch_size: int, optional
+        For 'Diversity' and 'FacLoc' regualrizer versions, similarity kernel is to be computed, which 
+        entails creating a 3d torch tensor of dimenssions kernel_batch_size*kernel_batch_size*
+        feature dimenssion.Again kernel_batch_size should be such that one can exploit the benefits of 
+        tensorization while honouring the resourse constraits. 
+    """
+    
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}, validation_dataset = None,
                  typeOf = 'none', lam = None, kernel_batch_size = 200):
         
@@ -183,18 +238,18 @@ class GLISTER(Strategy):
     def select(self, budget):
 
         """
-        Select next set of points
+        Selects next set of points
         
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
-        
+            Number of data points to select for labeling
+            
         Returns
         ----------
-        chosen: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
 
         self.model.eval()
 

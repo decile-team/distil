@@ -6,6 +6,49 @@ from scipy.optimize import nnls
 
 class GradMatchActive(Strategy):
     
+    """
+    This is an implementation of an active learning variant of GradMatch from the paper GRAD-MATCH: A 
+    Gradient Matching Based Data Subset Selection for Efficient Learning :footcite:`killamsetty2021grad`.
+    This algorithm solves a fixed-weight version of the error term present in the paper by a greedy selection 
+    algorithm akin to the original GradMatch's Orthogonal Matching Pursuit. The gradients computed are on the 
+    hypothesized labels of the loss function and are matched to either the full gradient of these hypothesized 
+    examples or a supplied validation gradient. The indices returned are the ones selected by this algorithm.
+    
+    .. math::
+        Err(X_t, L, L_T, \\theta_t) = \\left |\\left| \\sum_{i \\in X_t} \\nabla_\\theta L_T^i (\\theta_t) - \\frac{k}{N} \\nabla_\\theta L(\\theta_t) \\right | \\right|  
+    
+    where,
+    
+        - Each gradient is computed with respect to the last layer's parameters
+        - :math:`\\theta_t` are the model parameters at selection round :math:`t`
+        - :math:`X_t` is the queried set of points to label at selection round :math:`t`
+        - :math:`k` is the budget
+        - :math:`N` is the number of points contributing to the full gradient :math:`\\nabla_\\theta L(\\theta_t)`
+        - :math:`\\nabla_\\theta L(\\theta_t)` is either the complete hypothesized gradient or a validation gradient
+        - :math:`\\sum_{i \\in X_t} \\nabla_\\theta L_T^i (\\theta_t)` is the subset's hypothesized gradient with :math:`|X_t| = k`
+
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **grad_embedding**: The type of gradient embedding that should be used (string, optional)
+        - **omp_reg**: The regularization constant to use in GradMatch objective
+    validation_dataset: torch.utils.data.Dataset, optional
+        The validation dataset to use in GradMatch objective
+    """
+    
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}, validation_dataset = None):
         
         # Run super constructor
@@ -24,14 +67,22 @@ class GradMatchActive(Strategy):
         self.validation_dataset = validation_dataset
             
     def fixed_weight_greedy_parallel(self, A, b, val_set_size, nnz):
-        '''approximately solves min_x ||Ax - b||_2 s.t. x_i \in \{0,1\}, ||x||_0 = nnz
-        Args:
-        A: design matrix of size (d, n)
-        b: measurement vector of length d
-        nnz = maximum number of nonzero coefficients (if None set to n)
-        Returns:
-        vector of length n
-        '''
+        """
+        Approximately solves :math:`\\min_x ||Ax - b||_2 s.t. x_i \in \{0,1\}, ||x||_0 = nnz`
+        
+        Parameters
+        ----------
+        A: torch.Tensor
+            Design matrix of size (d, n)
+        b: torch.Tensor
+            Measurement vector of length d
+        nnz: int
+            Maximum number of nonzero coefficients (if None, set to n)
+        Returns
+        -------
+        x: torch.Tensor
+            Vector of length n
+        """
         d, n = A.shape
         x = torch.zeros(n, device=self.device)  # ,dtype=torch.float64)
 
@@ -138,20 +189,20 @@ class GradMatchActive(Strategy):
     def select(self, budget, use_weights=False):
         
         """
-        Select next set of points
+        Selects next set of points
         
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
+            Number of data points to select for labeling
         use_weights: bool
             Whether to use fixed-weight version (false) or OMP version (true)
-        
+            
         Returns
         ----------
-        subset_idxs: list
-            List of selected data point indexes with respect to unlabeled_x and, if use_weights is true, the weights associated with each point
-        """ 
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         
         self.model.eval()
         

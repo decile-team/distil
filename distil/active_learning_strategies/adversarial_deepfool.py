@@ -25,27 +25,24 @@ class AdversarialDeepFool(Strategy):
     technique avoids estimating distance by using Deep-Fool :footcite:`Moosavi-Dezfooli_2016_CVPR` 
     like techniques to estimate how much adversarial perturbation is required to cross the boundary. 
     The smaller the required perturbation, the closer the point is to the boundary.
+    
     Parameters
     ----------
-    X: numpy array
-        Present training/labeled data   
-    y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
     nclasses: int
-        Number of unique target variables
+        Number of unique values for the target
     args: dict
-        Specify optional parameters
+        Specify additional parameters
         
-        batch_size 
-        Batch size to be used inside strategy class (int, optional)
-        max_iter
-        Maximum Number of Iterations (int, optional)
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **max_iter**: Maximum Number of Iterations (int, optional)
     """
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         """
@@ -60,15 +57,6 @@ class AdversarialDeepFool(Strategy):
 
 
     def deepfool(self, image, net, num_classes=10, overshoot=0.02):
-
-        """
-        :param image: Image of size HxWx3
-        :param net: network (input: images, output: values of activation **BEFORE** softmax).
-        :param num_classes: num_classes (limits the number of classes to test against, by default = 10)
-        :param overshoot: used as a termination criterion to prevent vanishing updates (default = 0.02).
-        :param max_iter: maximum number of iterations for deepfool (default = 50)
-        :return: minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
-        """
 
         image = image.to(self.device)
         net = net.to(self.device)
@@ -133,16 +121,18 @@ class AdversarialDeepFool(Strategy):
 
     def select(self, budget):
         """
-        Select next set of points
+        Selects next set of points
+        
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
+            Number of data points to select for labeling
+            
         Returns
         ----------
         idxs: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         self.model.eval()
         self.model = self.model.to(self.device)
         

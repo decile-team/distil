@@ -1,25 +1,23 @@
-utils
+Utilities
 ====================
 
 .. toctree::
    :maxdepth: 4
 
-   distil.utils.models
+Predefined Training Loop
+------------------------
 
-
-DataHandler
--------------------------------
-
-.. automodule:: distil.utils.DataHandler
+.. automodule:: distil.utils.train_helper
    :members:
    :undoc-members:
    :show-inheritance:
 
-Dataset
----------------------------
+Utilities
+---------
 
-.. automodule:: distil.utils.dataset
+.. automodule:: distil.utils.utils
    :members:
    :undoc-members:
    :show-inheritance:
+
 

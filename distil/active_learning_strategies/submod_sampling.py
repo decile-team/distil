@@ -4,6 +4,42 @@ import submodlib
 
 class SubmodularSampling(Strategy):
     
+    """
+    This strategy uses one of the submodular functions viz. 'facility_location', 'feature_based', 'graph_cut', 
+    'log_determinant', 'disparity_min', or 'disparity_sum' :footcite:`iyer2021submodular`, :footcite:`dasgupta-etal-2013-summarization`
+    to select new points via submodular maximization. These techniques can be applied directly to the features/embeddings 
+    or on the gradients of the loss functions.
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: Batch size to be used inside strategy class (int, optional)
+        - **device**: The device that this strategy class should use for computation (string, optional)
+        - **loss**: The loss that should be used for relevant computations (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **submod_args**: Additional parameters for submodular selection (dict, optional)
+        
+            - **submod**: The choice of submodular function to use. Must be one of 'facility_location', 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', 'disparity_sum' (string)
+            - **metric**: The similarity metric to use in relevant functions. Must be one of 'cosine' or 'euclidean' (string)
+            - **representation**: The representation of each data point to be used in submodular selection. Must be one of 'linear', 'grad_bias', 'grad_linear', 'grad_bias_linear' (string)
+            - **feature_weights**: If using 'feature_based', then this specifies the weights for each feature (list)
+            - **concave_function**: If using 'feature_based', then this specifies the concave function to apply in the feature-based objective (typing.Callable)
+            - **lambda_val**: If using 'graph_cut' or 'log_determinant', then this specifies the lambda constant to be used in both functions (float)
+            - **optimizer**: The choice of submodular optimization technique to use. Must be one of 'NaiveGreedy', 'StochasticGreedy', 'LazyGreedy', or 'LazierThanLazyGreedy' (string)
+            - **stopIfZeroGain**: Whether to stop if adding a point results in zero gain in the submodular objective function (bool)
+            - **stopIfNegativeGain**: Whether to stop if adding a point results in negative gain in the submodular objective function (bool)
+            - **verbose**: Whether to print more verbose output
+    """
+    
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
         super(SubmodularSampling, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
@@ -16,6 +52,20 @@ class SubmodularSampling(Strategy):
                                 'representation': 'linear'}
             
     def select(self, budget):
+        
+        """
+        Selects next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of data points to select for labeling
+            
+        Returns
+        ----------
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         
         self.model.eval()
         
@@ -116,7 +166,7 @@ class SubmodularSampling(Strategy):
             raise ValueError(F"{self.submod_args['submod']} is not currently supported. Choose one of 'facility_location', 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', or 'disparity_sum'")
             
         # Get solver arguments
-        optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
+        optimizer = self.submod_args['optimizer'] if 'optimizer' in self.submod_args else 'NaiveGreedy'
         stopIfZeroGain = self.submod_args['stopIfZeroGain'] if 'stopIfZeroGain' in self.submod_args else False
         stopIfNegativeGain = self.submod_args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.submod_args else False
         verbose = self.submod_args['verbose'] if 'verbose' in self.submod_args else False

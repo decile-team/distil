@@ -42,6 +42,34 @@ def init_centers(X, K, device):
     return indsAll
 
 class BADGE(Strategy):
+    """
+    This method is based on the paper Deep Batch Active Learning by Diverse, Uncertain Gradient 
+    Lower Bounds :footcite:`DBLP-Badge`. According to the paper, this strategy, Batch Active 
+    learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate 
+    and high magnitude when represented in a hallucinated gradient space, a strategy designed to 
+    incorporate both predictive uncertainty and sample diversity into every selected batch. 
+    Crucially, BADGE trades off between uncertainty and diversity without requiring any hand-tuned 
+    hyperparameters. Here at each round of selection, loss gradients are computed using the 
+    hypothesised labels. Then to select the points to be labeled are selected by applying 
+    k-means++ on these loss gradients.
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+    """
     
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}): #
         
@@ -49,18 +77,18 @@ class BADGE(Strategy):
         
     def select(self, budget):
         """
-        Select next set of points
+        Selects next set of points
         
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
-        
+            Number of data points to select for labeling
+            
         Returns
         ----------
-        chosen: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
 
         self.model.eval()
         gradEmbedding = self.get_grad_embedding(self.unlabeled_dataset, True, "linear")

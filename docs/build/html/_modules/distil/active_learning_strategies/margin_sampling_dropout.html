@@ -1,60 +1,58 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>distil.active_learning_strategies.margin_sampling_dropout &mdash; DISTIL v0.1 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
             <a href="../../../index.html" class="icon icon-home"> DISTIL
           
 
+          
+            
+            <img src="../../../_static/distil_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -75,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,7 +89,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -127,13 +123,11 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -153,135 +147,93 @@
            <div itemprop="articleBody">
             
   <h1>Source code for distil.active_learning_strategies.margin_sampling_dropout</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
+<span></span><span class="kn">from</span> <span class="nn">.score_streaming_strategy</span> <span class="kn">import</span> <span class="n">ScoreStreamingStrategy</span>
 
-<div class="viewcode-block" id="MarginSamplingDropout"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout">[docs]</a><span class="k">class</span> <span class="nc">MarginSamplingDropout</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+<div class="viewcode-block" id="MarginSamplingDropout"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout">[docs]</a><span class="k">class</span> <span class="nc">MarginSamplingDropout</span><span class="p">(</span><span class="n">ScoreStreamingStrategy</span><span class="p">):</span>
+    
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implementation of Margin Sampling Dropout Strategy.</span>
-<span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`</span>
-<span class="sd">    to include margin sampling dropout technique to select data points for active learning.</span>
-
-<span class="sd">    While least confidence only takes into consideration the maximum probability, margin sampling considers the difference between the confidence of first and the second most probable labels.  </span>
-<span class="sd">  </span>
+<span class="sd">    Implements the Margin Sampling Strategy with dropout a active learning strategy similar to Least Confidence </span>
+<span class="sd">    Sampling Strategy with dropout. While least confidence only takes into consideration the maximum probability, </span>
+<span class="sd">    margin sampling considers the difference between the confidence of first and the second most </span>
+<span class="sd">    probable labels.  </span>
 <span class="sd">    </span>
-<span class="sd">    .. list-table:: Example</span>
-<span class="sd">       :widths: 25 25 25 25</span>
-<span class="sd">       :header-rows: 1</span>
-
-<span class="sd">       * - Data Instances</span>
-<span class="sd">         - Label 1</span>
-<span class="sd">         - Label 2</span>
-<span class="sd">         - Label 3</span>
-<span class="sd">       * - p1</span>
-<span class="sd">         - 0.1</span>
-<span class="sd">         - 0.55</span>
-<span class="sd">         - 0.45</span>
-<span class="sd">       * - p2</span>
-<span class="sd">         - 0.2</span>
-<span class="sd">         - 0.3</span>
-<span class="sd">         - 0.5</span>
-<span class="sd">       * - p3</span>
-<span class="sd">         - 0.1</span>
-<span class="sd">         - 0.1</span>
-<span class="sd">         - 0.8</span>
-
-<span class="sd">    </span>
-<span class="sd">    From the above table, the difference between the probability first and the second labels for p1, p2, p3 are 0.1, 0.2, 0.7 respectively.</span>
-<span class="sd">    The margin sampling will query the true label for the data instance p1 since it has the smallest difference among all the different data instances. </span>
-
-<span class="sd">    Let :math:`p_i` represent probability for ith label and let there be n possible labels for data instance p. </span>
-<span class="sd">    Let :math:`\\max{(t)}` represent the maximum value in t and :math:`max1{(t)}` represent second maximum value in t then, mathematically it can be written as:</span>
-<span class="sd">    </span>
+<span class="sd">    Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` </span>
+<span class="sd">    and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. </span>
+<span class="sd">    Then for a output node :math:`z_i` from the model, the corresponding softmax would be </span>
 <span class="sd">    </span>
 <span class="sd">    .. math::</span>
-<span class="sd">        \\min{(\\max{(P)} - \\max1{(P)})} </span>
-
+<span class="sd">        \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} </span>
+<span class="sd">        </span>
+<span class="sd">    Let,</span>
 <span class="sd">    </span>
-<span class="sd">    where P=[ :math:`p_1, p_2,… p_n`]</span>
-
+<span class="sd">    .. math::</span>
+<span class="sd">        m = \\mbox{argmax}_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}</span>
+<span class="sd">        </span>
+<span class="sd">    Then using softmax, Margin Sampling Strategy would pick `budget` no. of elements as follows, </span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\mbox{argmin}_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\sum_S(\\mbox{argmax}_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}) - (\\mbox{argmax}_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  </span>
+<span class="sd">    </span>
+<span class="sd">    where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.</span>
+<span class="sd">    </span>
 <span class="sd">    The drop out version uses the predict probability dropout function from the base strategy class to find the hypothesised labels.</span>
 <span class="sd">    User can pass n_drop argument which denotes the number of times the probabilities will be calculated.</span>
 <span class="sd">    The final probability is calculated by averaging probabilities obtained in all iteraitons.    </span>
-
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    X: numpy array</span>
-<span class="sd">        Present training/labeled data   </span>
-<span class="sd">    y: numpy array</span>
-<span class="sd">        Labels of present training data</span>
-<span class="sd">    unlabeled_x: numpy array</span>
-<span class="sd">        Data without labels</span>
-<span class="sd">    net: class</span>
-<span class="sd">        Pytorch Model class</span>
-<span class="sd">    handler: class</span>
-<span class="sd">        Data Handler, which can load data even without labels.</span>
+<span class="sd">    labeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The labeled training dataset</span>
+<span class="sd">    unlabeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The unlabeled pool dataset</span>
+<span class="sd">    net: torch.nn.Module</span>
+<span class="sd">        The deep model to use</span>
 <span class="sd">    nclasses: int</span>
-<span class="sd">        Number of unique target variables</span>
+<span class="sd">        Number of unique values for the target</span>
 <span class="sd">    args: dict</span>
-<span class="sd">        Specify optional parameters</span>
-<span class="sd">            </span>
-<span class="sd">        batch_size </span>
-<span class="sd">        Batch size to be used inside strategy class (int, optional)</span>
-
-<span class="sd">        n_drop</span>
-<span class="sd">        Dropout value to be used (int, optional)</span>
+<span class="sd">        Specify additional parameters</span>
+<span class="sd">        </span>
+<span class="sd">        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)</span>
+<span class="sd">        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of &#39;cuda&#39; or &#39;cpu&#39;. (string, optional)</span>
+<span class="sd">        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)</span>
+<span class="sd">        - **n_drop**: Number of dropout runs (int, optional)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructor method</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{}):</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">MarginSamplingDropout</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        
         <span class="k">if</span> <span class="s1">&#39;n_drop&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_drop</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;n_drop&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_drop</span> <span class="o">=</span> <span class="mi">10</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">MarginSamplingDropout</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-
-<div class="viewcode-block" id="MarginSamplingDropout.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.margin_sampling_dropout.MarginSamplingDropout.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Select next set of points</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        budget: int</span>
-<span class="sd">            Number of indexes to be returned for next set</span>
-<span class="sd">        </span>
-<span class="sd">        Returns</span>
-<span class="sd">        ----------</span>
-<span class="sd">        U_idx: list</span>
-<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_prob_dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_drop</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">acquire_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unlabeled_buffer</span><span class="p">):</span>
+        
+        <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_prob_dropout</span><span class="p">(</span><span class="n">unlabeled_buffer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_drop</span><span class="p">)</span>
         <span class="n">probs_sorted</span><span class="p">,</span> <span class="n">idxs</span> <span class="o">=</span> <span class="n">probs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">U</span> <span class="o">=</span> <span class="n">probs_sorted</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">probs_sorted</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">U_idx</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">sort</span><span class="p">()[</span><span class="mi">1</span><span class="p">][:</span><span class="n">budget</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">U_idx</span></div></div>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">probs_sorted</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">probs_sorted</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># Margin negated =&gt; Largest score corresponds to smallest margin</span>
+        <span class="k">return</span> <span class="n">U</span></div>
 </pre></div>
 
            </div>
            
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer.
+        &copy; Copyright 2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer.
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
@@ -290,16 +242,38 @@
   </div>
   
 
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

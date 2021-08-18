@@ -1,60 +1,58 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>distil.active_learning_strategies.badge &mdash; DISTIL v0.1 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
             <a href="../../../index.html" class="icon icon-home"> DISTIL
           
 
+          
+            
+            <img src="../../../_static/distil_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -75,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,7 +89,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -127,13 +123,11 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -156,50 +150,11 @@
 <span></span><span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cosine</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">gc</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">det</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">pinv</span> <span class="k">as</span> <span class="n">inv</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span> <span class="k">as</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span> <span class="k">as</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">math</span>
-
-<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">F</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
-<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClusterMixin</span><span class="p">,</span> <span class="n">TransformerMixin</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">euclidean_distances</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">pairwise_distances_argmin_min</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.extmath</span> <span class="kn">import</span> <span class="n">row_norms</span><span class="p">,</span> <span class="n">squared_norm</span><span class="p">,</span> <span class="n">stable_cumsum</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.sparsefuncs_fast</span> <span class="kn">import</span> <span class="n">assign_rows_csr</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.sparsefuncs</span> <span class="kn">import</span> <span class="n">mean_variance_axis</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">_num_samples</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_array</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">gen_batches</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_is_fitted</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">FLOAT_DTYPES</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">rbf_kernel</span> <span class="k">as</span> <span class="n">rbf</span>
-<span class="c1">#from sklearn.externals.six import string_types</span>
-<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">ConvergenceWarning</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
 
-
-<span class="k">def</span> <span class="nf">init_centers</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
-    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="k">def</span> <span class="nf">init_centers</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
     <span class="n">pdist</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">PairwiseDistance</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">X</span><span class="p">])</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
@@ -209,7 +164,6 @@
     <span class="c1">#print(&#39;#Samps\tTotal Distance&#39;)</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">K</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">D2</span> <span class="o">=</span> <span class="n">pdist</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
             <span class="n">D2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">D2</span><span class="p">)</span>
             <span class="n">D2</span> <span class="o">=</span> <span class="n">D2</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
@@ -237,131 +191,57 @@
     <span class="k">return</span> <span class="n">indsAll</span>
 
 <div class="viewcode-block" id="BADGE"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.badge.BADGE">[docs]</a><span class="k">class</span> <span class="nc">BADGE</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implementation of Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE) </span>
-<span class="sd">    :footcite:`DBLP:journals/corr/abs-1906-03671` Strategy. This class extends :</span>
-<span class="sd">    class:`active_learning_strategies.strategy.Strategy`.</span>
-
-<span class="sd">    This method is based on the paper `Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds &lt;https://arxiv.org/abs/1906.03671&gt;`_ </span>
-<span class="sd">    According to the paper, Batch Active learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate and high magnitude when represented in a hallucinated gradient space, a strategy designed to incorporate both predictive uncertainty and sample diversity into every selected batch.</span>
-<span class="sd">    Crucially, BADGE trades off between uncertainty and diversity without requiring any hand-tuned hyperparameters.</span>
-<span class="sd">    Here at each round of selection, loss gradients are computed using the hypothesised labels. Then to select the points to be labeled are selected by applying k-means++ on these loss gradients. </span>
+<span class="sd">    This method is based on the paper Deep Batch Active Learning by Diverse, Uncertain Gradient </span>
+<span class="sd">    Lower Bounds :footcite:`DBLP-Badge`. According to the paper, this strategy, Batch Active </span>
+<span class="sd">    learning by Diverse Gradient Embeddings (BADGE), samples groups of points that are disparate </span>
+<span class="sd">    and high magnitude when represented in a hallucinated gradient space, a strategy designed to </span>
+<span class="sd">    incorporate both predictive uncertainty and sample diversity into every selected batch. </span>
+<span class="sd">    Crucially, BADGE trades off between uncertainty and diversity without requiring any hand-tuned </span>
+<span class="sd">    hyperparameters. Here at each round of selection, loss gradients are computed using the </span>
+<span class="sd">    hypothesised labels. Then to select the points to be labeled are selected by applying </span>
+<span class="sd">    k-means++ on these loss gradients.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-
-<span class="sd">    X: Numpy array </span>
-<span class="sd">        Features of the labled set of points </span>
-<span class="sd">    Y: Numpy array</span>
-<span class="sd">        Lables of the labled set of points </span>
-<span class="sd">    unlabeled_x: Numpy array</span>
-<span class="sd">        Features of the unlabled set of points </span>
-<span class="sd">    net: class object</span>
-<span class="sd">        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.</span>
-<span class="sd">    handler: class object</span>
-<span class="sd">        It should be a subclasses of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.</span>
-<span class="sd">    nclasses: int </span>
-<span class="sd">        No. of classes in tha dataset</span>
-<span class="sd">    args: dictionary</span>
-<span class="sd">        This dictionary should have &#39;batch_size&#39; as a key. </span>
+<span class="sd">    labeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The labeled training dataset</span>
+<span class="sd">    unlabeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The unlabeled pool dataset</span>
+<span class="sd">    net: torch.nn.Module</span>
+<span class="sd">        The deep model to use</span>
+<span class="sd">    nclasses: int</span>
+<span class="sd">        Number of unique values for the target</span>
+<span class="sd">    args: dict</span>
+<span class="sd">        Specify additional parameters</span>
+<span class="sd">        </span>
+<span class="sd">        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)</span>
+<span class="sd">        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of &#39;cuda&#39; or &#39;cpu&#39;. (string, optional)</span>
+<span class="sd">        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span><span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">BADGE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span><span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-
-<div class="viewcode-block" id="BADGE.select_per_batch"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.badge.BADGE.select_per_batch">[docs]</a>    <span class="k">def</span> <span class="nf">select_per_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Select points to label by using per-batch BADGE strategy</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        budget : int</span>
-<span class="sd">            Number of indices to be selected from unlabeled set</span>
-<span class="sd">        batch_size : TYPE</span>
-<span class="sd">            Size of batches to form</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        chosen: list</span>
-<span class="sd">            List of selected data point indices with respect to unlabeled_x</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{}):</span> <span class="c1">#</span>
         
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BADGE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>        
         
-        <span class="c1"># Compute gradient embeddings of each unlabeled point</span>
-        <span class="n">grad_embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">,</span><span class="n">bias_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        
-        <span class="c1"># Calculate number of batches to choose from, embedding dimension, and adjusted budget</span>
-        <span class="n">num_batches</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">grad_embedding</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
-        <span class="n">embed_dim</span> <span class="o">=</span> <span class="n">grad_embedding</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">batch_budget</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">budget</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
-        
-        <span class="c1"># Instantiate list of lists of indices drawn from the possible range of the gradient embedding</span>
-        <span class="n">batch_indices_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">draw_without_replacement</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">grad_embedding</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-        
-        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">draw_without_replacement</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">draw_without_replacement</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">batch_size</span><span class="p">:</span>
-                <span class="n">batch_random_sample</span> <span class="o">=</span> <span class="n">draw_without_replacement</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">batch_random_sample</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">draw_without_replacement</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
-        
-            <span class="n">batch_indices_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_random_sample</span><span class="p">)</span>
-            
-            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">batch_random_sample</span><span class="p">:</span>
-                <span class="n">draw_without_replacement</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-        
-        <span class="c1"># Instantiate batch average tensor</span>
-        <span class="n">gradBatchEmbedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_batches</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        
-        <span class="c1"># Calculate the average vector embedding of each batch</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_batches</span><span class="p">):</span>
-            
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">batch_indices_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">vec_avg</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-                <span class="n">vec_avg</span> <span class="o">=</span> <span class="n">vec_avg</span> <span class="o">+</span> <span class="n">grad_embedding</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-            <span class="n">vec_avg</span> <span class="o">=</span> <span class="n">vec_avg</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-            
-            <span class="n">gradBatchEmbedding</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vec_avg</span>
-
-        <span class="c1"># Perform initial centers problem using new budget</span>
-        <span class="n">chosen_batch</span> <span class="o">=</span> <span class="n">init_centers</span><span class="p">(</span><span class="n">gradBatchEmbedding</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">batch_budget</span><span class="p">)</span>
-        
-        <span class="c1"># For each chosen batch, construct the list of indices to return.</span>
-        <span class="n">chosen</span> <span class="o">=</span> <span class="p">[]</span>
-        
-        <span class="k">for</span> <span class="n">batch_index</span> <span class="ow">in</span> <span class="n">chosen_batch</span><span class="p">:</span>
-            
-            <span class="n">indices_to_add</span> <span class="o">=</span> <span class="n">batch_indices_list</span><span class="p">[</span><span class="n">batch_index</span><span class="p">]</span>
-            <span class="n">chosen</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">indices_to_add</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">chosen</span></div>
-
 <div class="viewcode-block" id="BADGE.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.badge.BADGE.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Select next set of points</span>
+<span class="sd">        Selects next set of points</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        budget: int</span>
-<span class="sd">            Number of indexes to be returned for next set</span>
-<span class="sd">        </span>
+<span class="sd">            Number of data points to select for labeling</span>
+<span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
-<span class="sd">        chosen: list</span>
-<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+<span class="sd">        idxs: list</span>
+<span class="sd">            List of selected data point indices with respect to unlabeled_dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>	
 
-        <span class="n">gradEmbedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">,</span><span class="n">bias_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">chosen</span> <span class="o">=</span> <span class="n">init_centers</span><span class="p">(</span><span class="n">gradEmbedding</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">budget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="n">gradEmbedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="n">chosen</span> <span class="o">=</span> <span class="n">init_centers</span><span class="p">(</span><span class="n">gradEmbedding</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">budget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">chosen</span></div></div>
 </pre></div>
 
@@ -369,25 +249,20 @@
            
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer.
+        &copy; Copyright 2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer.
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
@@ -396,16 +271,38 @@
   </div>
   
 
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

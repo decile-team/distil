@@ -25,6 +25,30 @@ class AddIndexDataset(Dataset):
 #custom training
 class data_train:
 
+    """
+    Provides a configurable training loop for AL.
+    
+    Parameters
+    ----------
+    training_dataset: torch.utils.data.Dataset
+        The training dataset to use
+    net: torch.nn.Module
+        The model to train
+    args: dict
+        Additional arguments to control the training loop
+        
+        `batch_size` - The size of each training batch (int, optional)
+        `islogs`- Whether to return training metadata (bool, optional)
+        `optimizer`- The choice of optimizer. Must be one of 'sgd' or 'adam' (string, optional)
+        `isverbose`- Whether to print more messages about the training (bool, optional)
+        `isreset`- Whether to reset the model before training (bool, optional)
+        `max_accuracy`- The training accuracy cutoff by which to stop training (float, optional)
+        `min_diff_acc`- The minimum difference in accuracy to measure in the window of monitored accuracies. If all differences are less than the minimum, stop training (float, optional)
+        `window_size`- The size of the window for monitoring accuracies. If all differences are less than 'min_diff_acc', then stop training (int, optional)
+        `criterion`- The criterion to use for training (typing.Callable[], optional)
+        `device`- The device to use for training (string, optional)
+    """
+    
     def __init__(self, training_dataset, net, args):
 
         self.training_dataset = AddIndexDataset(training_dataset)
@@ -66,9 +90,30 @@ class data_train:
         self.idxs_lb = idxs_lb
 
     def update_data(self, new_training_dataset):
-    	self.training_dataset = new_training_dataset
+        """
+        Updates the training dataset with the provided new training dataset
+        
+        Parameters
+        ----------
+        new_training_dataset: torch.utils.data.Dataset
+            The new training dataset
+        """
+        self.training_dataset = new_training_dataset
 
     def get_acc_on_set(self, test_dataset):
+        
+        """
+        Calculates and returns the accuracy on the given dataset to test
+        
+        Parameters
+        ----------
+        test_dataset: torch.utils.data.Dataset
+            The dataset to test
+        Returns
+        -------
+        accFinal: float
+            The fraction of data points whose predictions by the current model match their targets
+        """	
         
         try:
             self.clf
@@ -161,6 +206,19 @@ class data_train:
         return saturate
 
     def train(self, gradient_weights=None):
+
+        """
+        Initiates the training loop.
+        
+        Parameters
+        ----------
+        gradient_weights: list, optional
+            The weight of each data point's effect on the loss gradient. If none, regular training will commence. If not, weighted training will commence.
+        Returns
+        -------
+        model: torch.nn.Module
+            The trained model. Alternatively, this will also return the training logs if 'islogs' is set to true.
+        """        
 
         print('Training..')
         def weight_reset(m):

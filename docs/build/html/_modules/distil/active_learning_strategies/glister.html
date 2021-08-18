@@ -1,60 +1,58 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>distil.active_learning_strategies.glister &mdash; DISTIL v0.1 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
             <a href="../../../index.html" class="icon icon-home"> DISTIL
           
 
+          
+            
+            <img src="../../../_static/distil_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -75,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,7 +89,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -127,13 +123,11 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -153,52 +147,58 @@
            <div itemprop="articleBody">
             
   <h1>Source code for distil.active_learning_strategies.glister</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
-<span class="kn">import</span> <span class="nn">copy</span>
+<span></span>  
+<span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.backends.cudnn</span> <span class="k">as</span> <span class="nn">cudnn</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
 
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">ConcatDataset</span><span class="p">,</span> <span class="n">Dataset</span>
 
 <span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">random</span>
 
 <div class="viewcode-block" id="GLISTER"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.glister.GLISTER">[docs]</a><span class="k">class</span> <span class="nc">GLISTER</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+    
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implementation of GLISTER-ACTIVE Strategy :footcite:`killamsetty2020glister`. </span>
-<span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`.</span>
+<span class="sd">    This is implementation of GLISTER-ACTIVE from the paper GLISTER: Generalization based Data </span>
+<span class="sd">    Subset Selection for Efficient and Robust Learning :footcite:`killamsetty2020glister`. GLISTER </span>
+<span class="sd">    methods tries to solve a bi-level optimisation problem.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\underset{\\theta}{\\operatorname{argmin\\hspace{0.7mm}}} L_T( \\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}</span>
+<span class="sd">        </span>
+<span class="sd">    In the above equation, :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x`, </span>
+<span class="sd">    :math:`\\mathcal{V}` denotes the validation set that guides the subset selection process, :math:`L_T` denotes the</span>
+<span class="sd">    training loss, :math:`L_V` denotes the validation loss, :math:`S` denotes the data subset selected at each round,  and :math:`k` is the `budget`.</span>
+<span class="sd">    Since, solving the complete inner-optimization is expensive, GLISTER-ONLINE adopts a online one-step meta approximation where we approximate the solution to inner problem</span>
+<span class="sd">    by taking a single gradient step.</span>
+<span class="sd">    The optimization problem after the approximation is as follows:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\theta - \\eta \\nabla_{\\theta}L_T(\\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}</span>
+<span class="sd">    </span>
+<span class="sd">    In the above equation, :math:`\\eta` denotes the step-size used for one-step gradient update.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    X: Numpy array </span>
-<span class="sd">        Features of the labled set of points </span>
-<span class="sd">    Y: Numpy array</span>
-<span class="sd">        Lables of the labled set of points </span>
-<span class="sd">    unlabeled_x: Numpy array</span>
-<span class="sd">        Features of the unlabled set of points </span>
-<span class="sd">    net: class object</span>
-<span class="sd">        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.</span>
-<span class="sd">    handler: class object</span>
-<span class="sd">        It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.</span>
-<span class="sd">    nclasses: int </span>
-<span class="sd">        No. of classes in tha dataset</span>
-<span class="sd">    args: dictionary</span>
-<span class="sd">        This dictionary should have keys &#39;batch_size&#39; and  &#39;lr&#39;. </span>
-<span class="sd">        &#39;lr&#39; should be the learning rate used for training. &#39;batch_size&#39;  &#39;batch_size&#39; should be such </span>
-<span class="sd">        that one can exploit the benefits of tensorization while honouring the resourse constraits.</span>
-<span class="sd">    valid: boolean</span>
-<span class="sd">        Whether validation set is passed or not</span>
-<span class="sd">    X_val: Numpy array, optional</span>
-<span class="sd">        Features of the points in the validation set. Mandatory if `valid=True`.</span>
-<span class="sd">    Y_val:Numpy array, optional</span>
-<span class="sd">        Lables of the points in the validation set. Mandatory if `valid=True`.</span>
-<span class="sd">    loss_criterion: class object, optional</span>
-<span class="sd">        The type of loss criterion. Default is **torch.nn.CrossEntropyLoss()**</span>
+<span class="sd">    labeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The labeled training dataset</span>
+<span class="sd">    unlabeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The unlabeled pool dataset</span>
+<span class="sd">    net: torch.nn.Module</span>
+<span class="sd">        The deep model to use</span>
+<span class="sd">    nclasses: int</span>
+<span class="sd">        Number of unique values for the target</span>
+<span class="sd">    args: dict</span>
+<span class="sd">        Specify additional parameters</span>
+<span class="sd">        </span>
+<span class="sd">        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)</span>
+<span class="sd">        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of &#39;cuda&#39; or &#39;cpu&#39;. (string, optional)</span>
+<span class="sd">        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)</span>
+<span class="sd">        - **lr**: The learning rate used for training (float)</span>
+<span class="sd">    validation_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The validation dataset to be used in GLISTER objective</span>
 <span class="sd">    typeOf: str, optional</span>
 <span class="sd">        Determines the type of regulariser to be used. Default is **&#39;none&#39;**.</span>
 <span class="sd">        For random regulariser use **&#39;Rand&#39;**.</span>
@@ -215,22 +215,17 @@
 <span class="sd">        tensorization while honouring the resourse constraits. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span><span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span><span class="n">valid</span><span class="p">,</span><span class="n">X_val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Y_val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
-        <span class="n">loss_criterion</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span><span class="n">typeOf</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span><span class="n">lam</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">kernel_batch_size</span> <span class="o">=</span> <span class="mi">200</span><span class="p">):</span> <span class="c1"># </span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GLISTER</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span><span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">valid</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X_Val</span> <span class="o">=</span> <span class="n">X_val</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Y_Val</span> <span class="o">=</span> <span class="n">Y_val</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss_criterion</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="n">valid</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{},</span> <span class="n">validation_dataset</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">typeOf</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">lam</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kernel_batch_size</span> <span class="o">=</span> <span class="mi">200</span><span class="p">):</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">GLISTER</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span> <span class="o">=</span> <span class="n">validation_dataset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">typeOf</span> <span class="o">=</span> <span class="n">typeOf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lam</span> <span class="o">=</span> <span class="n">lam</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_batch_size</span> <span class="o">=</span> <span class="n">kernel_batch_size</span>
-        <span class="c1">#self.device = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;</span>
 
-    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
 
       <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
       <span class="n">m</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -274,38 +269,52 @@
 
     <span class="k">def</span> <span class="nf">_compute_per_element_grads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">grads_per_elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prev_grads_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">),</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grads_per_elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_grads_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_grad_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labeled_dataset</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_grads_val</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">grads_currX</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first_init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="n">embDim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_embedding_dim</span><span class="p">()</span>
         
         <span class="k">if</span> <span class="n">first_init</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_Val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_Val</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_Val</span><span class="p">,</span><span class="n">select</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>\
-                        <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_Val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_Val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">embDim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Since Valid is set True, please pass a appropriate Validation set&quot;</span><span class="p">)</span>
-            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span><span class="p">),</span> <span class="n">embDim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">predicted_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">X_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">Y_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">predicted_y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">predicted_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_dataset</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span> <span class="c1"># Bring to CPU as the loaders used require it</span>
+                
+                <span class="k">class</span> <span class="nc">AddLabelDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+                    
+                    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped_unlabeled_dataset</span><span class="p">,</span> <span class="n">added_labels</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_unlabeled_dataset</span> <span class="o">=</span> <span class="n">wrapped_unlabeled_dataset</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">added_labels</span> <span class="o">=</span> <span class="n">added_labels</span>
+                        
+                    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+                        <span class="n">unlabeled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_unlabeled_dataset</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">added_labels</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                        
+                        <span class="k">return</span> <span class="n">unlabeled_data</span><span class="p">,</span> <span class="n">label</span>
+                    
+                    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped_unlabeled_dataset</span><span class="p">)</span>
+                
+                <span class="n">pseudolabeled_dataset</span> <span class="o">=</span> <span class="n">AddLabelDataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">predicted_y</span><span class="p">)</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">new_dataset</span> <span class="o">=</span> <span class="n">ConcatDataset</span><span class="p">([</span><span class="n">pseudolabeled_dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labeled_dataset</span><span class="p">])</span>
 
-                <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_new</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_new</span><span class="p">,</span><span class="n">select</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>\
-                    <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">embDim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dataset</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dataset</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dataset</span><span class="p">),</span> <span class="n">embDim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">grads_val_curr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">embDim</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
             
+            <span class="n">evaluated_points</span> <span class="o">=</span> <span class="mi">0</span>
+            
             <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
 
-                <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">idxs</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+                    <span class="n">idxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">iter_index</span> <span class="k">for</span> <span class="n">iter_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">evaluated_points</span><span class="p">,</span> <span class="n">evaluated_points</span> <span class="o">+</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
                     <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
                     <span class="n">init_out</span><span class="p">,</span> <span class="n">init_l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -315,7 +324,7 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">[</span><span class="n">idxs</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_out</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">init_l1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_grads_sum</span><span class="p">[</span><span class="mi">0</span><span class="p">][(</span><span class="n">j</span> <span class="o">*</span> <span class="n">embDim</span><span class="p">)</span> <span class="o">+</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">:((</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">embDim</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_grads_sum</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please pass learning rate used during the training&quot;</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please pass learning rate used during the training&quot;</span><span class="p">)</span>
                 
                     <span class="n">scores</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">[</span><span class="n">idxs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                     <span class="n">one_hot_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
@@ -325,9 +334,10 @@
                     <span class="n">l1_grads</span> <span class="o">=</span> <span class="n">l0_expand</span> <span class="o">*</span> <span class="n">init_l1</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">grads_val_curr</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">l0_grads</span><span class="p">,</span> <span class="n">l1_grads</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">evaluated_points</span> <span class="o">+=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">grads_val_curr</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y_Val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grads_val_curr</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">grads_val_curr</span> <span class="o">/=</span> <span class="n">predicted_y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -344,14 +354,16 @@
 
             
                 <span class="n">scores</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid</span><span class="p">:</span>
-                    <span class="n">Y_Val</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_Val</span><span class="p">,</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">Y_Val</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span><span class="p">,</span> <span class="n">shuffle</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_dataset</span><span class="p">))))</span>
+                    <span class="n">Y_Val</span> <span class="o">=</span> <span class="n">Y_Val</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
                     <span class="n">one_hot_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Y_Val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
                     <span class="n">one_hot_label</span><span class="o">.</span><span class="n">scatter_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">Y_Val</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>   
                 <span class="k">else</span><span class="p">:</span>
-                    
-                    <span class="n">one_hot_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-                    <span class="n">one_hot_label</span><span class="o">.</span><span class="n">scatter_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_new</span><span class="p">,</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">Y_new</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dataset</span><span class="p">,</span> <span class="n">shuffle</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dataset</span><span class="p">))))</span>
+                    <span class="n">Y_new</span> <span class="o">=</span> <span class="n">Y_new</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                    <span class="n">one_hot_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Y_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                    <span class="n">one_hot_label</span><span class="o">.</span><span class="n">scatter_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Y_new</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">l0_grads</span> <span class="o">=</span> <span class="n">scores</span> <span class="o">-</span> <span class="n">one_hot_label</span>
                 <span class="n">l0_expand</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">l0_grads</span><span class="p">,</span> <span class="n">embDim</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">l1_grads</span> <span class="o">=</span> <span class="n">l0_expand</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span><span class="p">)</span>
@@ -375,25 +387,27 @@
 <div class="viewcode-block" id="GLISTER.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.glister.GLISTER.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Select next set of points</span>
+<span class="sd">        Selects next set of points</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        budget: int</span>
-<span class="sd">            Number of indexes to be returned for next set</span>
-<span class="sd">        </span>
+<span class="sd">            Number of data points to select for labeling</span>
+<span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
-<span class="sd">        chosen: list</span>
-<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+<span class="sd">        idxs: list</span>
+<span class="sd">            List of selected data point indices with respect to unlabeled_dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>	
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_per_element_grads</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_grads_val</span><span class="p">(</span><span class="n">first_init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         
         <span class="n">numSelected</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">greedySet</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">remainSet</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">remainSet</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_dataset</span><span class="p">)))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeOf</span> <span class="o">==</span> <span class="s1">&#39;Rand&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lam</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -444,25 +458,20 @@
            
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer.
+        &copy; Copyright 2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer.
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
@@ -471,16 +480,38 @@
   </div>
   
 
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

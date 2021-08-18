@@ -8,6 +8,44 @@ from torch.utils.data import Subset
 
 class FASS(Strategy):
     
+    """
+    Implements FASS :footcite:`pmlr-v37-wei15` combines the uncertainty sampling 
+    method with a submodular data subset selection framework to label a subset of data points to 
+    train a classifier. Here the based on the ‘top_n’ parameter, ‘top_n*budget’ most uncertain 
+    parameters are filtered. On these filtered points one of the submodular functions viz. 
+    'facility_location' , 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', 'disparity_sum'
+    is applied to get the final set of points.
+    We select a subset :math:`F` of size :math:`\\beta` based on uncertainty sampling, such 
+    that :math:`\\beta \\ge k`.
+      
+    Then select a subset :math:`S` by solving 
+    
+    .. math::
+        \\max \\{f(S) \\text{ such that } |S| \\leq k, S \\subseteq F\\} 
+    
+    where :math:`k` is the is the `budget` and :math:`f` can be one of these functions - 
+    'facility_location' , 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', 'disparity_sum'. 
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **submod_args**: Parameters for the submodular selection as described in SubmodularSampling (dict, optional)
+        - **uncertainty_measure**: Describes which measure of uncertainty should be used. This should be one of 'entropy', 'least_confidence', or 'margin' (string, optional)
+    """
+    
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
         super(FASS, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
@@ -25,6 +63,22 @@ class FASS(Strategy):
             self.uncertainty_measure = 'entropy'
         
     def select(self, budget, top_n=5):
+        
+        """
+        Selects next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of data points to select for labeling
+        top_n: int, optional
+            Number of slices of size budget to include in filtered subset
+            
+        Returns
+        ----------
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         
         self.model.eval()
         

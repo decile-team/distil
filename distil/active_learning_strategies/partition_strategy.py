@@ -6,6 +6,36 @@ from .strategy import Strategy
 
 class PartitionStrategy(Strategy):
     
+    """
+    Provides a wrapper around most of the strategies implemented in DISTIL that allows one to select portions of the budget from 
+    specific partitions of the unlabeled dataset. This allows the use of some strategies that would otherwise fail due to time or memory 
+    constraints. For example, if one specifies a number of partitions to be 5 and wants to select 50 new points, 10 points would 
+    be selected from the first fifth of the dataset, 10 points would be selected from the second fifth of the dataset, and so on.
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **num_partitions**: Number of partitons to use (int, optional)
+        - **wrapped_strategy_class**: The class of the strategy to use (class, optional)
+    query_dataset: torch.utils.data.Dataset
+        The query dataset to use if the wrapped_strategy_class argument points to SMI or SCMI.
+    private_dataset: torch.utils.data.Dataset
+        The private dataset to use if the wrapped_strategy_class argument points to SCG or SCMI.
+    """
+    
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}, query_dataset=None, private_dataset=None): #
         
         super(PartitionStrategy, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
@@ -23,6 +53,19 @@ class PartitionStrategy(Strategy):
         self.private_dataset = private_dataset
 
     def select(self, budget):
+        """
+        Selects next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of data points to select for labeling
+            
+        Returns
+        ----------
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         
         # The number of partitions should be less than or equal to the budget.
         # This is because the budget is evenly divided among the partitions (roughly),

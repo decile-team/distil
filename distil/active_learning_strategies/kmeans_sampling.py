@@ -17,6 +17,38 @@ class CustomTensorDataset(Dataset):
 
 class KMeansSampling(Strategy):
     
+    """
+    Implements KMeans Sampling selection strategy, the last layer embeddings are calculated for all the unlabeled data points. 
+    Then the KMeans clustering algorithm is run over these embeddings with the number of clusters equal to the budget. 
+    Then the distance is calculated for all the points from their respective centers. From each cluster, the point closest to 
+    the center is selected to be labeled for the next iteration. Since the number of centers are equal to the budget, selecting 
+    one point from each cluster satisfies the total number of data points to be selected in one iteration.
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: Batch size to be used inside strategy class (int, optional)
+        - **device**: The device that this strategy class should use for computation (string, optional)
+        - **loss**: The loss that should be used for relevant computations (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **rand_seed**: Specifies a seed for the random seed generator used in initialization (int, optional)
+        - **representation**: Specifies whether to use the last linear layer embeddings or the raw data. Must be one of 'linear' or 'raw' (string, optional)
+        - **kmeans_args**: Specifies additional kmeans-related parameters
+        
+            - **tol**: Specifies the value of the Frobenius norm of the inertia tensor by which kmeans should cease (float, optional)
+            - **max_iter**: Specifies the maximum number of iterations that kmeans should use before terminating (int, optional)
+            - **n_init**: Specifies the number of kmeans run-throughs to use, wherein the one with the smallest inertia is selected for the selection phase (int, optional)
+    """
+    
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}): 
         
         super(KMeansSampling, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
@@ -209,6 +241,20 @@ class KMeansSampling(Strategy):
         return best_centers
 
     def select(self, budget):
+        
+        """
+        Selects next set of points
+        
+        Parameters
+        ----------
+        budget: int
+            Number of data points to select for labeling
+            
+        Returns
+        ----------
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         
         self.model.eval()
         

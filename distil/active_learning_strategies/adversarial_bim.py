@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-import torch.nn.functional as F
 from .strategy import Strategy
 
 class AdversarialBIM(Strategy):
@@ -17,37 +16,34 @@ class AdversarialBIM(Strategy):
     :math:`\\nabla J(\\theta, x, y)`, where :math:`\\theta` represents the model parameters,
     x is the model input, and y is the label of x, the adversarial sample is generated
     iteratively as,
+    
     .. math::
         \\begin{eqnarray}
             x^*_0 & = &x,
-    
             x^*_i & = & clip_{x,e} (x^*_{i-1} + sign(\\nabla_{x^*_{i-1}} J(\\theta, x^*_{i-1} , y)))
         \\end{eqnarray}
+        
     Parameters
     ----------
-    X: numpy array
-        Present training/labeled data   
-    y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
     nclasses: int
-        Number of unique target variables
+        Number of unique values for the target
     args: dict
-        Specify optional parameters
+        Specify additional parameters
         
-        `batch_size`- Batch size to be used inside strategy class (int, optional)
-        `eps`-epsilon value for gradients
+        - **batch_size**: Batch size to be used inside strategy class (int, optional)
+        - **device**: The device that this strategy class should use for computation (string, optional)
+        - **loss**: The loss that should be used for relevant computations (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **eps**: Epsilon value for gradients (float, optional)
+        - **verbose**: Whether to print more output (bool, optional)
     """
     
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
-        """
-        Constructor method
-        """
         if 'eps' in args:
             self.eps = args['eps']
         else:
@@ -97,14 +93,16 @@ class AdversarialBIM(Strategy):
     def select(self, budget):
         """
         Selects next set of points
+        
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
+            Number of data points to select for labeling
+            
         Returns
         ----------
         idxs: list
-            List of selected data point indexes with respect to unlabeled_x
+            List of selected data point indices with respect to unlabeled_dataset
         """	
 
         self.model.eval()

@@ -7,33 +7,29 @@ from ..utils.batch_bald.batchbald import get_batchbald_batch
 
 class BatchBALDDropout(Strategy):
     """
-    Implementation of BatchBALD Strategy.
+    Implementation of BatchBALD Strategy :footcite:`kirsch2019batchbald`, which refines 
+    the original BALD acquisition to the batch setting using a new acquisition function.
     This class extends :class:`active_learning_strategies.strategy.Strategy`
-    to include the MC sampling technique used to select data points for active learning.
+    to include a MC sampling technique based on the sampling techniques used in their paper.
+    
     Parameters
     ----------
-    X: numpy array
-        Present training/labeled data   
-    y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
     nclasses: int
-        Number of unique target variables
+        Number of unique values for the target
     args: dict
-        Specify optional parameters
+        Specify additional parameters
         
-        batch_size 
-        Batch size to be used inside strategy class (int, optional)
-        n_drop
-        Number of dropout runs to use to generate MC samples (int, optional)
-        
-        n_samples
-        Number of samples to use in computing joint entropy (int, optional)
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **n_drop**: Number of dropout runs to use to generate MC samples (int, optional)
+        - **n_samples**: Number of samples to use in computing joint entropy (int, optional)
     """
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
@@ -115,15 +111,17 @@ class BatchBALDDropout(Strategy):
     def select(self, budget):
 
         """
-        Select next set of points
+        Selects next set of points
+        
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
+            Number of data points to select for labeling
+            
         Returns
         ----------
         idxs: list
-            List of selected data point indexes with respect to unlabeled_x
+            List of selected data point indices with respect to unlabeled_dataset
         """	
 		
         # Move the model to the correct device

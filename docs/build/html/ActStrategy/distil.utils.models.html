@@ -1,60 +1,60 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Models &mdash; DISTIL v0.1 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="utils" href="distil.utils.html" /> 
+    <link rel="next" title="Configuration Files for Training" href="../configuration.html" />
+    <link rel="prev" title="Utilities" href="distil.utils.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
             <a href="../index.html" class="icon icon-home"> DISTIL
           
 
+          
+            
+            <img src="../_static/distil_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -75,7 +75,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -87,27 +86,16 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">DISTIL</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="distil.active_learning_strategies.html">Active Learning Strategies</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="distil.utils.html">utils</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-distil.utils.models.logreg_net">Logisitic Regression</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-distil.utils.models.simpleNN_net">Simple Neural Network</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-distil.utils.models.mnist_net">MNIST_NET</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-distil.utils.models.cifar10net">CIFAR10Net module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-distil.utils.models.resnet">ResNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distil.utils.html">Utilities</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="distil.utils.html#module-distil.utils.DataHandler">DataHandler</a></li>
-<li class="toctree-l3"><a class="reference internal" href="distil.utils.html#module-distil.utils.dataset">Dataset</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Files for Training</a></li>
 </ul>
 
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -142,24 +130,20 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="modules.html">DISTIL</a> &raquo;</li>
-        
-          <li><a href="distil.utils.html">utils</a> &raquo;</li>
         
       <li>Models</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="../_sources/ActStrategy/distil.utils.models.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -175,255 +159,46 @@
             
   <div class="section" id="models">
 <h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-distil.utils.models.logreg_net">
-<span id="logisitic-regression"></span><h2>Logisitic Regression<a class="headerlink" href="#module-distil.utils.models.logreg_net" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="distil.utils.models.logreg_net.LogisticRegNet">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.logreg_net.</code><code class="sig-name descname">LogisticRegNet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_dim</span></em>, <em class="sig-param"><span class="n">num_classes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/logreg_net.html#LogisticRegNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.logreg_net.LogisticRegNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py method">
-<dt id="distil.utils.models.logreg_net.LogisticRegNet.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">last</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/logreg_net.html#LogisticRegNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.logreg_net.LogisticRegNet.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.logreg_net.LogisticRegNet.get_embedding_dim">
-<code class="sig-name descname">get_embedding_dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/logreg_net.html#LogisticRegNet.get_embedding_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.logreg_net.LogisticRegNet.get_embedding_dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-distil.utils.models.simpleNN_net">
-<span id="simple-neural-network"></span><h2>Simple Neural Network<a class="headerlink" href="#module-distil.utils.models.simpleNN_net" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="distil.utils.models.simpleNN_net.ThreeLayerNet">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.simpleNN_net.</code><code class="sig-name descname">ThreeLayerNet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_dim</span></em>, <em class="sig-param"><span class="n">num_classes</span></em>, <em class="sig-param"><span class="n">h1</span></em>, <em class="sig-param"><span class="n">h2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/simpleNN_net.html#ThreeLayerNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.simpleNN_net.ThreeLayerNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py method">
-<dt id="distil.utils.models.simpleNN_net.ThreeLayerNet.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">last</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/simpleNN_net.html#ThreeLayerNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.simpleNN_net.ThreeLayerNet.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.simpleNN_net.ThreeLayerNet.get_embedding_dim">
-<code class="sig-name descname">get_embedding_dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/simpleNN_net.html#ThreeLayerNet.get_embedding_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.simpleNN_net.ThreeLayerNet.get_embedding_dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="distil.utils.models.simpleNN_net.TwoLayerNet">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.simpleNN_net.</code><code class="sig-name descname">TwoLayerNet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_dim</span></em>, <em class="sig-param"><span class="n">num_classes</span></em>, <em class="sig-param"><span class="n">hidden_units</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/simpleNN_net.html#TwoLayerNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.simpleNN_net.TwoLayerNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py method">
-<dt id="distil.utils.models.simpleNN_net.TwoLayerNet.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">last</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/simpleNN_net.html#TwoLayerNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.simpleNN_net.TwoLayerNet.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.simpleNN_net.TwoLayerNet.get_embedding_dim">
-<code class="sig-name descname">get_embedding_dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/simpleNN_net.html#TwoLayerNet.get_embedding_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.simpleNN_net.TwoLayerNet.get_embedding_dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-distil.utils.models.mnist_net">
-<span id="mnist-net"></span><h2>MNIST_NET<a class="headerlink" href="#module-distil.utils.models.mnist_net" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="distil.utils.models.mnist_net.MnistNet">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.mnist_net.</code><code class="sig-name descname">MnistNet</code><a class="reference internal" href="../_modules/distil/utils/models/mnist_net.html#MnistNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.mnist_net.MnistNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py method">
-<dt id="distil.utils.models.mnist_net.MnistNet.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">last</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/mnist_net.html#MnistNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.mnist_net.MnistNet.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.mnist_net.MnistNet.get_embedding_dim">
-<code class="sig-name descname">get_embedding_dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/mnist_net.html#MnistNet.get_embedding_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.mnist_net.MnistNet.get_embedding_dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-distil.utils.models.cifar10net">
-<span id="cifar10net-module"></span><h2>CIFAR10Net module<a class="headerlink" href="#module-distil.utils.models.cifar10net" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="distil.utils.models.cifar10net.CifarNet">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.cifar10net.</code><code class="sig-name descname">CifarNet</code><a class="reference internal" href="../_modules/distil/utils/models/cifar10net.html#CifarNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.cifar10net.CifarNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py method">
-<dt id="distil.utils.models.cifar10net.CifarNet.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">last</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/cifar10net.html#CifarNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.cifar10net.CifarNet.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.cifar10net.CifarNet.get_embedding_dim">
-<code class="sig-name descname">get_embedding_dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/cifar10net.html#CifarNet.get_embedding_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.cifar10net.CifarNet.get_embedding_dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-distil.utils.models.resnet">
-<span id="resnet"></span><h2>ResNet<a class="headerlink" href="#module-distil.utils.models.resnet" title="Permalink to this headline">¶</a></h2>
-<p>ResNet in PyTorch.</p>
-<p>For Pre-activation ResNet, see ‘preact_resnet.py’.</p>
-<p>Reference:
-[1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun</p>
+<dl class="simple">
+<dt>We have incorporated several neural network architectures in the DISTIL repository. Below given is a list of Neural network architectures:</dt><dd><ul class="simple">
+<li><p>densenet</p></li>
+<li><p>dla</p></li>
+<li><p>dla_simple</p></li>
+<li><p>dpn</p></li>
+<li><p>efficientnet</p></li>
+<li><p>googlenet</p></li>
+<li><p>lenet</p></li>
+<li><p>mobilenet</p></li>
+<li><p>mobilenetv2</p></li>
+<li><p>pnasnet</p></li>
+<li><p>preact_resnet</p></li>
+<li><p>regnet</p></li>
+<li><p>resnet</p></li>
+<li><p>resnext</p></li>
+<li><p>senet</p></li>
+<li><p>shufflenet</p></li>
+<li><p>shufflenetv2</p></li>
+<li><p>vgg</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>To use custom model architecture, modify the model architecture in the following way:</strong></p>
+<p>The forward method should have two more variables:</p>
+<ol class="arabic">
+<li><p>A boolean variable <em>last</em> which -</p>
 <blockquote>
-<div><p>Deep Residual Learning for Image Recognition. arXiv:1512.03385</p>
+<div><p><em>If *true</em>: returns the model output and the output of the second last layer</p>
+<p><em>If *false</em>: Returns the model output.</p>
 </div></blockquote>
-<dl class="py class">
-<dt id="distil.utils.models.resnet.BasicBlock">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">BasicBlock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_planes</span></em>, <em class="sig-param"><span class="n">planes</span></em>, <em class="sig-param"><span class="n">stride</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#BasicBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.BasicBlock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py attribute">
-<dt id="distil.utils.models.resnet.BasicBlock.expansion">
-<code class="sig-name descname">expansion</code><em class="property"> = 1</em><a class="headerlink" href="#distil.utils.models.resnet.BasicBlock.expansion" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.resnet.BasicBlock.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#BasicBlock.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.BasicBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="distil.utils.models.resnet.Bottleneck">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">Bottleneck</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_planes</span></em>, <em class="sig-param"><span class="n">planes</span></em>, <em class="sig-param"><span class="n">stride</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#Bottleneck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.Bottleneck" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py attribute">
-<dt id="distil.utils.models.resnet.Bottleneck.expansion">
-<code class="sig-name descname">expansion</code><em class="property"> = 4</em><a class="headerlink" href="#distil.utils.models.resnet.Bottleneck.expansion" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.resnet.Bottleneck.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#Bottleneck.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.Bottleneck.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="distil.utils.models.resnet.ResNet">
-<em class="property">class </em><code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">ResNet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">block</span></em>, <em class="sig-param"><span class="n">num_blocks</span></em>, <em class="sig-param"><span class="n">num_classes</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<dl class="py method">
-<dt id="distil.utils.models.resnet.ResNet.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">last</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="distil.utils.models.resnet.ResNet.get_embedding_dim">
-<code class="sig-name descname">get_embedding_dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet.get_embedding_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet.get_embedding_dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="distil.utils.models.resnet.ResNet101">
-<code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">ResNet101</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_classes</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet101"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet101" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="distil.utils.models.resnet.ResNet152">
-<code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">ResNet152</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_classes</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet152"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet152" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="distil.utils.models.resnet.ResNet18">
-<code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">ResNet18</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_classes</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet18"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet18" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="distil.utils.models.resnet.ResNet34">
-<code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">ResNet34</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_classes</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet34"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet34" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="distil.utils.models.resnet.ResNet50">
-<code class="sig-prename descclassname">distil.utils.models.resnet.</code><code class="sig-name descname">ResNet50</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_classes</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/distil/utils/models/resnet.html#ResNet50"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distil.utils.models.resnet.ResNet50" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+</li>
+<li><p>A boolean variable ‘freeze’ which -</p>
 <blockquote>
-<div></div></blockquote>
-</div>
+<div><p><em>If *true</em>: disables the tracking of any calculations required to later calculate a gradient i.e skips gradient calculation over the weights</p>
+<p><em>If *false</em>: otherwise</p>
+</div></blockquote>
+</li>
+<li><p>get_embedding_dim() method which returns the number of hidden units in the last layer.</p></li>
+</ol>
 </div>
 
 
@@ -431,28 +206,29 @@ registered hooks while the latter silently ignores them.</p>
            
           </div>
           <footer>
+  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="distil.utils.html" class="btn btn-neutral float-left" title="utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
+        <a href="../configuration.html" class="btn btn-neutral float-right" title="Configuration Files for Training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="distil.utils.html" class="btn btn-neutral" title="Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer.
+        &copy; Copyright 2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer.
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
@@ -461,16 +237,38 @@ registered hooks while the latter silently ignores them.</p>
   </div>
   
 
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

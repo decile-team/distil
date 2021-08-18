@@ -1,12 +1,73 @@
 from .strategy import Strategy
-import numpy as np
 
-import torch
-from torch import nn
-from scipy import stats
 import submodlib
 
 class SCMI(Strategy):
+    
+    """
+    This strategy implements the Submodular Conditional Mutual Information (SCMI) selection paradigm discuss in the paper 
+    SIMILAR: Submodular Information Measures Based Active Learning In Realistic Scenarios :footcite:`kothawade2021similar`. In this selection 
+    paradigm, points from the unlabeled dataset are chosen in such a way that the submodular conditional mutual information 
+    between this set of points and a provided query set is maximized, conditioned on a private dataset. 
+    Doing so allows a practitioner to select points from an unlabeled set that are SIMILAR to points that they have 
+    provided in the query set while being dissimilar to points provided in the private set.
+    
+    These submodular conditional mutual information functions rely on formulating embeddings for the points in the query set, 
+    the unlabeled set, and the private set. Once these embeddings are formed, similarity kernels are formed from these 
+    embeddings based on a similarity metric. Once these similarity kernels are formed, they are used in computing the value 
+    of each submodular conditional mutual information function. Hence, common techniques for submodular maximization 
+    subject to a cardinality constraint can be used, such as the naive greedy algorithm, the lazy greedy algorithm, and so forth.
+    
+    In this framework, we set the cardinality constraint to be the active learning selection budget; hence, a list of 
+    indices with a total length less than or equal to this cardinality constraint will be returned. Depending on the 
+    maximization configuration, one can ensure that the length of this list will be equal to the cardinality constraint.
+    
+    Currently, two submodular conditional mutual information functions are implemented: 'flcmi' and 'logdetcmi'. Each
+    function is obtained by applying the definition of a submodular conditional mutual information function using common 
+    submodular functions. For more information-theoretic discussion, consider referring to the paper Submodular Combinatorial 
+    Information Measures with Applications in Machine Learning :footcite:`iyer2021submodular`.
+    
+    Parameters
+    ----------
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled dataset to be used in this strategy. For the purposes of selection, the labeled dataset is not used, 
+        but it is provided to fit the common framework of the Strategy superclass.
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled dataset to be used in this strategy. It is used in the selection process as described above.
+        Importantly, the unlabeled dataset must return only a data Tensor; if indexing the unlabeled dataset returns a tuple of 
+        more than one component, unexpected behavior will most likely occur.
+    query_dataset: torch.utils.data.Dataset
+        The query dataset to be used in this strategy. It is used in the selection process as described above. Notably, 
+        the query dataset should be labeled; hence, indexing the query dataset should return a data/label pair. This is 
+        done in this fashion to allow for gradient embeddings.
+    private_dataset: torch.utils.data.Dataset
+        The private dataset to be used in this strategy. It is used in the selection process as described above. Notably, 
+        the private dataset should be labeled; hence, indexing the query dataset should return a data/label pair. This is 
+        done in this fashion to allow for gradient embeddings.
+    net: torch.nn.Module
+        The neural network model to use for embeddings and predictions. Notably, all embeddings typically come from extracted 
+        features from this network or from gradient embeddings based on the loss, which can be based on hypothesized gradients 
+        or on true gradients (depending on the availability of the label).
+    nclasses: int
+        The number of classes being predicted by the neural network.
+    args: dict
+        A dictionary containing many configurable settings for this strategy. Each key-value pair is described below:
+            
+            - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+            - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+            - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+            - **scmi_function**: The submodular conditional mutual information function to use in optimization. Must be one of 'flcmi' or 'logdetcmi'.  (string)
+            - **optimizer**: The optimizer to use for submodular maximization. Can be one of 'NaiveGreedy', 'StochasticGreedy', 'LazyGreedy' and 'LazierThanLazyGreedy'. (string, optional)
+            - **metric**: The similarity metric to use for similarity kernel computation. This can be either 'cosine' or 'euclidean'. (string)
+            - **eta**: A magnification constant that is used in all but gcmi. It is used as a value of query-relevance vs diversity trade-off. Increasing eta tends to increase query-relevance while reducing query-coverage and diversity. (float)
+            - **nu**: A parameter that governs the hardness of the privacy constraint. (float)
+            - **embedding_type**: The type of embedding to compute for similarity kernel computation. This can be either 'gradients' or 'features'. (string)
+            - **gradType**: When 'embedding_type' is 'gradients', this defines the type of gradient to use. 'bias' creates gradients from the loss function with respect to the biases outputted by the model. 'linear' creates gradients from the loss function with respect to the last linear layer features. 'bias_linear' creates gradients from the loss function using both. (string)
+            - **layer_name**: When 'embedding_type' is 'features', this defines the layer within the neural network that is used to extract feature embeddings. Namely, this argument must be the name of a module used in the forward() computation of the model. (string)
+            - **stopIfZeroGain**: Controls if the optimizer should cease maximization if there is zero gain in the submodular objective. (bool)
+            - **stopIfNegativeGain**: Controls if the optimizer should cease maximization if there is negative gain in the submodular objective. (bool)
+            - **verbose**: Gives a more verbose output when calling select() when True. (bool)
+    """
     
     def __init__(self, labeled_dataset, unlabeled_dataset, query_dataset, private_dataset, net, nclasses, args={}): #
         
@@ -16,18 +77,18 @@ class SCMI(Strategy):
 
     def select(self, budget):
         """
-        Select next set of points
+        Selects next set of points
         
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
-        
+            Number of data points to select for labeling
+            
         Returns
         ----------
-        chosen: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	 
 
         self.model.eval()
 
