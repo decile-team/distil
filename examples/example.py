@@ -6,10 +6,12 @@ import sys
 from sklearn.preprocessing import StandardScaler
 
 sys.path.append('../')
-from distil.utils.data_handler import DataHandler_Points
+from distil.utils.utils import LabeledToUnlabeledDataset
 from distil.active_learning_strategies.glister import GLISTER
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.utils.train_helper import data_train
+
+from torch.utils.data import TensorDataset
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -99,24 +101,22 @@ y_unlabeled = np.delete(y_trn, start_idxs, axis = 0)
 net = TwoLayerNet(dim, num_cls,100)
 net.apply(init_weights)
 
+training_dataset = TensorDataset(torch.tensor(X_tr), torch.tensor(y_tr, dtype=torch.long))
+unlabeled_dataset = TensorDataset(torch.tensor(X_unlabeled), torch.tensor(y_unlabeled, dtype=torch.long))
+test_dataset = TensorDataset(torch.tensor(x_tst), torch.tensor(y_tst, dtype=torch.long))
+
 strategy_args = {'batch_size' : 100, 'lr':float(0.001)} 
-strategy = GLISTER(X_tr, y_tr, X_unlabeled, net, DataHandler_Points,num_cls, strategy_args,valid=False,
-typeOf='Diversity',lam=10)
-
-#,X_val=x_val,Y_val=y_val)
-
-#valid,X_val=None,Y_val=None,loss_criterion=nn.CrossEntropyLoss(),typeOf='none',lam=None,\
-#    kernel_batch_size = 200
+strategy = GLISTER(training_dataset, LabeledToUnlabeledDataset(unlabeled_dataset), net, num_cls, strategy_args, validation_dataset = None, typeOf='Diversity', lam=10)
 
 train_args = {'n_epoch':150, 'lr':float(0.001)}  #Different args than strategy_args
 n_rounds = 10    ##Number of rounds to run ac
 budget = 32    ##Number of new data points after every iteration
 
 #Training first set of points
-dt = data_train(X_tr, y_tr, net, DataHandler_Points, train_args)
+dt = data_train(training_dataset, net, train_args)
 clf = dt.train()
 strategy.update_model(clf)
-y_pred = strategy.predict(x_tst).numpy()
+y_pred = strategy.predict(LabeledToUnlabeledDataset(test_dataset)).cpu().numpy()
 
 acc = np.zeros(n_rounds)
 acc[0] = (1.0*(y_tst == y_pred)).sum().item() / len(y_tst)
@@ -129,7 +129,6 @@ for rd in range(1, n_rounds):
     print('-------------------------------------------------')
     idx = strategy.select(budget)
     print('New data points added -', len(idx))
-    strategy.save_state('./state.pkl')
 
     #Adding new points to training set
     X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
@@ -142,14 +141,16 @@ for rd in range(1, n_rounds):
     print('Number of labels -', y_tr.shape[0])
     print('Number of unlabeled points -', X_unlabeled.shape[0])
 
+    training_dataset = TensorDataset(torch.tensor(X_tr), torch.tensor(y_tr, dtype=torch.long))
+    unlabeled_dataset = TensorDataset(torch.tensor(X_unlabeled), torch.tensor(y_unlabeled, dtype=torch.long))
+
     #Reload state and start training
-    strategy.load_state('./state.pkl')
-    strategy.update_data(X_tr, y_tr, X_unlabeled)
-    dt.update_data(X_tr, y_tr)
+    strategy.update_data(training_dataset, LabeledToUnlabeledDataset(unlabeled_dataset))
+    dt.update_data(training_dataset)
 
     clf = dt.train()
     strategy.update_model(clf)
-    y_pred = strategy.predict(x_tst).numpy()
+    y_pred = strategy.predict(LabeledToUnlabeledDataset(test_dataset)).cpu().numpy()
     acc[rd] = round(1.0 * (y_tst == y_pred).sum().item() / len(y_tst), 3)
     print('Testing accuracy:', acc[rd], flush=True)
     if acc[rd] > 0.98:

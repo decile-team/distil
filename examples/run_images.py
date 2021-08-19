@@ -1,69 +1,50 @@
 import numpy as np
 import sys
 sys.path.append('../')
-from distil.active_learning_strategies.glister import GLISTER
 from distil.active_learning_strategies.badge import BADGE
-from distil.active_learning_strategies.entropy_sampling import EntropySampling
-from distil.active_learning_strategies.random_sampling import RandomSampling
-from distil.active_learning_strategies.least_confidence import LeastConfidence
-from distil.active_learning_strategies.margin_sampling import MarginSampling
-from distil.active_learning_strategies.core_set import CoreSet
-from distil.active_learning_strategies.fass import FASS
 
 from distil.utils.models.cifar10net import CifarNet
-from distil.utils.data_handler import DataHandler_CIFAR10
-from distil.utils.dataset import get_dataset
 from distil.utils.train_helper import data_train
+from distil.utils.utils import LabeledToUnlabeledDataset
 
+from torch.utils.data import Subset, ConcatDataset
+
+from torchvision import transforms
+from torchvision.datasets import cifar
 
 data_set_name = 'CIFAR10'
-download_path = '../downloaded_data/'
-X, y, X_test, y_test = get_dataset(data_set_name, download_path)
-dim = np.shape(X)[1:]
-handler = DataHandler_CIFAR10
+download_path = '../../datasets/downloaded_data/'
 
-X_tr = X[:2000]
-y_tr = y[:2000]
-X_unlabeled = X[2000:]
-y_unlabeled = y[2000:]
+cifar_training_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+cifar_test_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
 
-X_test = X_test
-y_test = y_test.numpy()
+cifar10_full_train = cifar.CIFAR10(download_path, train=True, transform=cifar_training_transform, download=True)
+cifar10_test = cifar.CIFAR10(download_path, train=False, transform=cifar_test_transform, download=True)
+
+y_test = cifar10_test.targets
+
+dim = np.shape(cifar10_full_train[0][0])
+
+train_set_size = 2000
+
+cifar10_train = Subset(cifar10_full_train, list(range(train_set_size)))
+cifar10_unlabeled = Subset(cifar10_full_train, list(range(train_set_size, len(cifar10_full_train))))
 
 nclasses = 10
 n_rounds = 11    ##Number of rounds to run active learning
 budget = 1000 
 print('Nclasses ', nclasses)
 
-# net = ResNet18(channel=1)
-# net = mlpMod(dim, nclasses, embSize=24)
 net = CifarNet()
 train_args = {'n_epoch':250, 'lr':float(0.01), 'batch_size':20} 
 strategy_args = {'batch_size' : 20}
-strategy = BADGE(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
-
-# strategy_args = {'batch_size' : 1, 'submod' : 'facility_location', 'selection_type' : 'PerClass'} 
-# strategy = FASS(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
-
-# strategy_args = {'batch_size' : 20}
-# strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses)
-# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
-# strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-
-# strategy_args = {'batch_size' : 20, 'n_drop' : 2}
-# strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
-# strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-
-# strategy_args = {'batch_size' : 20, 'tor':1e-4}
-# strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, handler, nclasses, strategy_args)
+strategy = BADGE(cifar10_train, LabeledToUnlabeledDataset(cifar10_unlabeled), net, nclasses, strategy_args)
 
 #Training first set of points
-dt = data_train(X_tr, y_tr, net, handler, train_args)
+dt = data_train(cifar10_train, net, train_args)
 clf = dt.train()
 strategy.update_model(clf)
-y_pred = strategy.predict(X_test).numpy()
+y_pred = strategy.predict(LabeledToUnlabeledDataset(cifar10_test)).cpu().numpy()
 
 acc = np.zeros(n_rounds)
 acc[0] = (1.0*(y_test == y_pred)).sum().item() / len(y_test)
@@ -74,29 +55,27 @@ for rd in range(1, n_rounds):
     print('-------------------------------------------------')
     print('Round', rd) 
     print('-------------------------------------------------')
+    cifar10_full_train.transform = cifar_test_transform # Disable augmentation
     idx = strategy.select(budget)
+    cifar10_full_train.transform = cifar_training_transform # Re-enable augmentation
     print('New data points added -', len(idx))
-    strategy.save_state('./state.pkl')
 
     #Adding new points to training set
-    X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
-    X_unlabeled = np.delete(X_unlabeled, idx, axis = 0)
-
-    #Human In Loop, Assuming user adds new labels here
-    y_tr = np.concatenate((y_tr, y_unlabeled[idx]), axis = 0)
-    y_unlabeled = np.delete(y_unlabeled, idx, axis = 0)
-    print('Number of training points -',X_tr.shape[0])
-    print('Number of labels -', y_tr.shape[0])
-    print('Number of unlabeled points -', X_unlabeled.shape[0])
+    cifar10_train = ConcatDataset([cifar10_train, Subset(cifar10_unlabeled, idx)])
+    remaining_unlabeled_idx = list(set(range(len(cifar10_unlabeled))) - set(idx))
+    cifar10_unlabeled = Subset(cifar10_unlabeled, remaining_unlabeled_idx)
+    
+    print('Number of training points -', len(cifar10_train))
+    print('Number of labels -', len(cifar10_train))
+    print('Number of unlabeled points -', len(cifar10_unlabeled))
 
     #Reload state and start training
-    strategy.load_state('./state.pkl')
-    strategy.update_data(X_tr, y_tr, X_unlabeled)
-    dt.update_data(X_tr, y_tr)
+    strategy.update_data(cifar10_train, LabeledToUnlabeledDataset(cifar10_unlabeled))
+    dt.update_data(cifar10_train)
 
     clf = dt.train()
     strategy.update_model(clf)
-    y_pred = strategy.predict(X_test).numpy()
+    y_pred = strategy.predict(LabeledToUnlabeledDataset(cifar10_test)).cpu().numpy()
     acc[rd] = round((1.0*(y_test == y_pred)).sum().item() / len(y_test), 3)
     print('Testing accuracy:', acc[rd], flush=True)
     # if acc[rd] > 0.98:

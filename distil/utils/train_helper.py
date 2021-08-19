@@ -98,7 +98,7 @@ class data_train:
         new_training_dataset: torch.utils.data.Dataset
             The new training dataset
         """
-        self.training_dataset = new_training_dataset
+        self.training_dataset = AddIndexDataset(new_training_dataset)
 
     def get_acc_on_set(self, test_dataset):
         
