@@ -166,7 +166,7 @@ class SubmodularSampling(Strategy):
             raise ValueError(F"{self.submod_args['submod']} is not currently supported. Choose one of 'facility_location', 'feature_based', 'graph_cut', 'log_determinant', 'disparity_min', or 'disparity_sum'")
             
         # Get solver arguments
-        optimizer = self.submod_args['optimizer'] if 'optimizer' in self.submod_args else 'NaiveGreedy'
+        optimizer = self.submod_args['optimizer'] if 'optimizer' in self.submod_args else 'LazyGreedy'
         stopIfZeroGain = self.submod_args['stopIfZeroGain'] if 'stopIfZeroGain' in self.submod_args else False
         stopIfNegativeGain = self.submod_args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.submod_args else False
         verbose = self.submod_args['verbose'] if 'verbose' in self.submod_args else False
