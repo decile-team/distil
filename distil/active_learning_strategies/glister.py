@@ -189,8 +189,12 @@ class GLISTER(Strategy):
             
             if self.validation_dataset is not None:
                 self.grads_val_curr /= len(self.validation_dataset)
+                _, self.Y_Val = next(iter(DataLoader(self.validation_dataset, shuffle = False, batch_size = len(self.validation_dataset))))
+                self.Y_Val = self.Y_Val.to(self.device)
             else:
                 self.grads_val_curr /= predicted_y.shape[0]
+                _, self.Y_new = next(iter(DataLoader(self.new_dataset, shuffle = False, batch_size = len(self.new_dataset))))
+                self.Y_new = self.Y_new.to(self.device)
 
         elif grads_currX is not None:
             # update params:
@@ -206,15 +210,11 @@ class GLISTER(Strategy):
             
                 scores = F.softmax(self.out, dim=1)
                 if self.validation_dataset is not None:
-                    _, Y_Val = next(iter(DataLoader(self.validation_dataset, shuffle = False, batch_size = len(self.validation_dataset))))
-                    Y_Val = Y_Val.to(self.device)
-                    one_hot_label = torch.zeros(Y_Val.shape[0], self.target_classes).to(self.device)
-                    one_hot_label.scatter_(1,Y_Val.view(-1, 1), 1)   
+                    one_hot_label = torch.zeros(self.Y_Val.shape[0], self.target_classes).to(self.device)
+                    one_hot_label.scatter_(1,self.Y_Val.view(-1, 1), 1)   
                 else:
-                    _, Y_new = next(iter(DataLoader(self.new_dataset, shuffle = False, batch_size = len(self.new_dataset))))
-                    Y_new = Y_new.to(self.device)
-                    one_hot_label = torch.zeros(Y_new.shape[0], self.target_classes).to(self.device)
-                    one_hot_label.scatter_(1, Y_new.view(-1, 1), 1)
+                    one_hot_label = torch.zeros(self.Y_new.shape[0], self.target_classes).to(self.device)
+                    one_hot_label.scatter_(1, self.Y_new.view(-1, 1), 1)
                 l0_grads = scores - one_hot_label
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
                 l1_grads = l0_expand * self.emb.repeat(1, self.target_classes)
