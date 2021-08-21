@@ -44,15 +44,14 @@ class CoreSet(Strategy):
         else:
             dist_ctr = torch.cdist(unlabeled_embeddings, labeled_embeddings, p=2)
             min_dist = torch.min(dist_ctr, dim=1)[0]
-  
+                
         idxs = []
         
         for i in range(n):
             idx = torch.argmax(min_dist)
             idxs.append(idx.item())
             dist_new_ctr = torch.cdist(unlabeled_embeddings, unlabeled_embeddings[[idx],:])
-            for j in range(m):
-                min_dist[j] = min(min_dist[j], dist_new_ctr[j,0])
+            min_dist = torch.minimum(min_dist, dist_new_ctr[:,0])
                 
         return idxs
   
