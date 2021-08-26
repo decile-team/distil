@@ -96,8 +96,8 @@ class TrainClassifier:
             train_transform = transforms.Compose([transforms.RandomCrop(28, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
             test_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]) # Use mean/std of MNIST
 
-            train_dataset = datasets.FMNIST(download_path, download=True, train=True, transform=train_transform, target_transform=torch.tensor)
-            test_dataset = datasets.FMNIST(download_path, download=True, train=False, transform=test_transform, target_transform=torch.tensor)
+            train_dataset = datasets.FashionMNIST(download_path, download=True, train=True, transform=train_transform, target_transform=torch.tensor)
+            test_dataset = datasets.FashionMNIST(download_path, download=True, train=False, transform=test_transform, target_transform=torch.tensor)
 
         elif data_config['name'] == 'svhn':
 			
@@ -106,8 +106,8 @@ class TrainClassifier:
             train_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor(), transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
             test_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))]) # ImageNet mean/std
 
-            train_dataset = datasets.SVHN(download_path, download=True, train=True, transform=train_transform, target_transform=torch.tensor)
-            test_dataset = datasets.SVHN(download_path, download=True, train=False, transform=test_transform, target_transform=torch.tensor) 
+            train_dataset = datasets.SVHN(download_path, download=True, split='train', transform=train_transform, target_transform=torch.tensor)
+            test_dataset = datasets.SVHN(download_path, download=True, split='test', transform=test_transform, target_transform=torch.tensor) 
 
         elif data_config['name'] == 'cifar100':
 			
@@ -221,7 +221,7 @@ class TrainClassifier:
             strategy = MarginSampling(train_dataset, LabeledToUnlabeledDataset(unlabeled_dataset), net, nclasses, strategy_args)
         elif selected_strat == 'least_confidence':
             strategy = LeastConfidenceSampling(train_dataset, LabeledToUnlabeledDataset(unlabeled_dataset), net, nclasses, strategy_args)
-        elif selected_strat == 'core_set':
+        elif selected_strat == 'coreset':
             strategy = CoreSet(train_dataset, LabeledToUnlabeledDataset(unlabeled_dataset), net, nclasses, strategy_args)
         elif selected_strat == 'fass':
             strategy = FASS(train_dataset, LabeledToUnlabeledDataset(unlabeled_dataset), net, nclasses, strategy_args)
