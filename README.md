@@ -206,6 +206,10 @@ For more information about the arguments that --strategy accepts:
 ```
 python test_strategy.py -h
 ```
+Lastly, to run all unit tests:
+```
+python -m unittest discover test
+```
 
 ## Mailing List
 To receive updates about DISTIL and to be a part of the community, join the Decile_DISTIL_Dev group.
