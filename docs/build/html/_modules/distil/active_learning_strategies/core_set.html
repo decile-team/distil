@@ -1,60 +1,58 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>distil.active_learning_strategies.core_set &mdash; DISTIL v0.1 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
             <a href="../../../index.html" class="icon icon-home"> DISTIL
           
 
+          
+            
+            <img src="../../../_static/distil_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -75,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,7 +89,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -127,13 +123,11 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -153,136 +147,118 @@
            <div itemprop="articleBody">
             
   <h1>Source code for distil.active_learning_strategies.core_set</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pdb</span>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
-<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">NearestNeighbors</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">import</span> <span class="nn">torch</span>
 
 <div class="viewcode-block" id="CoreSet"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.core_set.CoreSet">[docs]</a><span class="k">class</span> <span class="nc">CoreSet</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+    
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implementation of CoreSet :footcite:`sener2018active` Strategy.</span>
-<span class="sd">    This class extends :class:`active_learning_strategies.strategy.Strategy`</span>
-<span class="sd">    to include coreset sampling technique to select data points for active learning.</span>
+<span class="sd">    Implementation of CoreSet :footcite:`sener2018active` Strategy. A diversity-based </span>
+<span class="sd">    approach using coreset selection. The embedding of each example is computed by the network’s </span>
+<span class="sd">    penultimate layer and the samples at each round are selected using a greedy furthest-first </span>
+<span class="sd">    traversal conditioned on all labeled examples.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    X: numpy array</span>
-<span class="sd">        Present training/labeled data   </span>
-<span class="sd">    y: numpy array</span>
-<span class="sd">        Labels of present training data</span>
-<span class="sd">    unlabeled_x: numpy array</span>
-<span class="sd">        Data without labels</span>
-<span class="sd">    net: class</span>
-<span class="sd">        Pytorch Model class</span>
-<span class="sd">    handler: class</span>
-<span class="sd">        Data Handler, which can load data even without labels.</span>
+<span class="sd">    labeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The labeled training dataset</span>
+<span class="sd">    unlabeled_dataset: torch.utils.data.Dataset</span>
+<span class="sd">        The unlabeled pool dataset</span>
+<span class="sd">    net: torch.nn.Module</span>
+<span class="sd">        The deep model to use</span>
 <span class="sd">    nclasses: int</span>
-<span class="sd">        Number of unique target variables</span>
+<span class="sd">        Number of unique values for the target</span>
 <span class="sd">    args: dict</span>
-<span class="sd">        Specify optional parameters</span>
+<span class="sd">        Specify additional parameters</span>
 <span class="sd">        </span>
-<span class="sd">        batch_size </span>
-<span class="sd">        Batch size to be used inside strategy class (int, optional)</span>
+<span class="sd">        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)</span>
+<span class="sd">        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of &#39;cuda&#39; or &#39;cpu&#39;. (string, optional)</span>
+<span class="sd">        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructor method</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="s1">&#39;tor&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tor</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;tor&#39;</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{}):</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">CoreSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">labeled_dataset</span><span class="p">,</span> <span class="n">unlabeled_dataset</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+  
+    <span class="k">def</span> <span class="nf">furthest_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unlabeled_embeddings</span><span class="p">,</span> <span class="n">labeled_embeddings</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        
+        <span class="n">unlabeled_embeddings</span> <span class="o">=</span> <span class="n">unlabeled_embeddings</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">labeled_embeddings</span> <span class="o">=</span> <span class="n">labeled_embeddings</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="n">m</span> <span class="o">=</span> <span class="n">unlabeled_embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">labeled_embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">min_dist</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="n">m</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tor</span> <span class="o">=</span> <span class="mf">1e-4</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">CoreSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">unlabeled_x</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-
-<div class="viewcode-block" id="CoreSet.furthest_first"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.core_set.CoreSet.furthest_first">[docs]</a>    <span class="k">def</span> <span class="nf">furthest_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">X_set</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Selects points with maximum distance</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X: numpy array</span>
-<span class="sd">            Embeddings of unlabeled set</span>
-<span class="sd">        X_set: numpy array</span>
-<span class="sd">            Embeddings of labeled set</span>
-<span class="sd">        n: int</span>
-<span class="sd">            Number of points to return</span>
-<span class="sd">        Returns</span>
-<span class="sd">        ----------</span>
-<span class="sd">        idxs: list</span>
-<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
-        <span class="n">pdist</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">PairwiseDistance</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">X</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">X_set</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">min_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="n">m</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dist_ctr</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_set</span><span class="p">)</span>
-            <span class="n">min_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">dist_ctr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
+            <span class="n">dist_ctr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">unlabeled_embeddings</span><span class="p">,</span> <span class="n">labeled_embeddings</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">min_dist</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dist_ctr</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+  
         <span class="n">idxs</span> <span class="o">=</span> <span class="p">[]</span>
-
+        
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">min_dist</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">min_dist</span><span class="p">)</span>
             <span class="n">idxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-            <span class="n">dist_new_ctr</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">[[</span><span class="n">idx</span><span class="p">],</span> <span class="p">:])</span>
+            <span class="n">dist_new_ctr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">unlabeled_embeddings</span><span class="p">,</span> <span class="n">unlabeled_embeddings</span><span class="p">[[</span><span class="n">idx</span><span class="p">],:])</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
-                <span class="n">min_dist</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_dist</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">dist_new_ctr</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="n">idxs</span></div>
-
+                <span class="n">min_dist</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_dist</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">dist_new_ctr</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+                
+        <span class="k">return</span> <span class="n">idxs</span>
+  
 <div class="viewcode-block" id="CoreSet.select"><a class="viewcode-back" href="../../../ActStrategy/distil.active_learning_strategies.html#distil.active_learning_strategies.core_set.CoreSet.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
+        
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Select next set of points</span>
+<span class="sd">        Selects next set of points</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        budget: int</span>
-<span class="sd">            Number of indexes to be returned for next set</span>
-<span class="sd">        </span>
+<span class="sd">            Number of data points to select for labeling</span>
+<span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
-<span class="sd">        chosen: list</span>
-<span class="sd">            List of selected data point indexes with respect to unlabeled_x</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
-        <span class="n">embedding_unlabeled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_x</span><span class="p">)</span>
-        <span class="n">embedding_unlabeled</span> <span class="o">=</span> <span class="n">embedding_unlabeled</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-        <span class="n">embedding_labeled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
-        <span class="n">embedding_labeled</span> <span class="o">=</span> <span class="n">embedding_labeled</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-
+<span class="sd">        idxs: list</span>
+<span class="sd">            List of selected data point indices with respect to unlabeled_dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>	
+        
+        <span class="k">class</span> <span class="nc">NoLabelDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+            
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped_dataset</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_dataset</span> <span class="o">=</span> <span class="n">wrapped_dataset</span>
+                
+            <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+                <span class="n">features</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">features</span>
+            
+            <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="n">embedding_unlabeled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlabeled_dataset</span><span class="p">)</span>
+        <span class="n">embedding_labeled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_embedding</span><span class="p">(</span><span class="n">NoLabelDataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labeled_dataset</span><span class="p">))</span>
         <span class="n">chosen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">furthest_first</span><span class="p">(</span><span class="n">embedding_unlabeled</span><span class="p">,</span> <span class="n">embedding_labeled</span><span class="p">,</span> <span class="n">budget</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">chosen</span></div></div>
+
+        <span class="k">return</span> <span class="n">chosen</span>        </div></div>
 </pre></div>
 
            </div>
            
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Durga Sivasubramanian, Apurva Dani, Rishabh Iyer.
+        &copy; Copyright 2021, Durga Sivasubramanian, Nathan Beck, Apurva Dani, Rishabh Iyer.
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
@@ -291,16 +267,38 @@
   </div>
   
 
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

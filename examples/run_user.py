@@ -4,20 +4,13 @@ from torch import nn
 import torch
 import sys
 sys.path.append('../')
-from distil.utils.data_handler import DataHandler_Points
-from distil.active_learning_strategies.badge import BADGE
-from distil.active_learning_strategies.entropy_sampling import EntropySampling
-from distil.active_learning_strategies.random_sampling import RandomSampling
-from distil.active_learning_strategies.least_confidence import LeastConfidence
-from distil.active_learning_strategies.margin_sampling import MarginSampling
-from distil.active_learning_strategies.core_set import CoreSet
-from distil.active_learning_strategies.adversarial_bim import AdversarialBIM
-from distil.active_learning_strategies.adversarial_deepfool import AdversarialDeepFool
-from distil.active_learning_strategies.kmeans_sampling import KMeansSampling
-from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout     
+from distil.active_learning_strategies.core_set import CoreSet   
 
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.utils.train_helper import data_train
+from distil.utils.utils import LabeledToUnlabeledDataset
+
+from torch.utils.data import TensorDataset
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -30,7 +23,7 @@ test_path = '../../datasets/iris_test.csv'
 train_args = {'n_epoch':150, 'lr':float(0.001), 'batch_size':5, 'optimizer':'sgd'}  #Training args, Different args than strategy_args
 nclasses = 3    ##Number of unique classes
 n_rounds = 11    ##Number of rounds to run active learning
-budget = 10 		##Number of new data points after every iteration
+budget = 2 		##Number of new data points after every iteration
 strategy_args = {'batch_size' : 2, 'lr' : 0.1} 
 
 df = pd.read_csv(data_path)
@@ -40,11 +33,11 @@ df = df.sample(frac=1).reset_index(drop=True)
 X = df.iloc[:,:-1].to_numpy()
 y = df.iloc[:, -1].to_numpy()
 
-X_tr = X[:20]    #First set of labeled examples
-y_tr = y[:20]
+X_tr = X[:10]    #First set of labeled examples
+y_tr = y[:10]
 
-X_unlabeled = X[20:]		#Unlabeled data
-y_unlabeled = y[20:]			
+X_unlabeled = X[10:]		#Unlabeled data
+y_unlabeled = y[10:]			
 
 df_test = pd.read_csv(test_path)
 X_test = df_test.iloc[:,:-1].to_numpy()
@@ -55,39 +48,18 @@ nSamps, dim = np.shape(X)
 net = TwoLayerNet(dim, nclasses, dim*2)
 net.apply(init_weights)
 
-# strategy_args = {'batch_size' : 2, 'submod' : 'feature_based', 'selection_type' : 'Full'} 
-# strategy = FASS(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
+training_dataset = TensorDataset(torch.tensor(X_tr, dtype=torch.float), torch.tensor(y_tr, dtype=torch.long))
+unlabeled_dataset = TensorDataset(torch.tensor(X_unlabeled, dtype=torch.float), torch.tensor(y_unlabeled, dtype=torch.long))
+test_dataset = TensorDataset(torch.tensor(X_test, dtype=torch.float), torch.tensor(y_test, dtype=torch.long))
 
-# strategy = BADGE(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-
-# strategy_args = {'batch_size' : 2}
-# strategy = EntropySampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-# strategy = RandomSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = LeastConfidence(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = MarginSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses)
-
-# strategy_args = {'batch_size' : 2, 'n_drop' : 2}
-# strategy = EntropySamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = LeastConfidenceDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = MarginSamplingDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = BALDDropout(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-
-strategy_args = {'batch_size' : 1, 'tor':1e-4}
-strategy = CoreSet(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-
-# strategy_args = {'batch_size' : 5}
-# strategy = AdversarialBIM(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = KMeansSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy = BaselineSampling(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-# strategy_args = {'batch_size' : 5, 'maxiter': 25}
-# strategy = AdversarialDeepFool(X_tr, y_tr, X_unlabeled, net, DataHandler_Points, nclasses, strategy_args)
-
+strategy_args = {'batch_size' : 10, 'tor':1e-4}
+strategy = CoreSet(training_dataset, LabeledToUnlabeledDataset(unlabeled_dataset), net, nclasses, strategy_args)
 
 #Training first set of points
-dt = data_train(X_tr, y_tr, net, DataHandler_Points, train_args)
+dt = data_train(training_dataset, net, train_args)
 clf = dt.train()
 strategy.update_model(clf)
-y_pred = strategy.predict(X_test).numpy()
+y_pred = strategy.predict(LabeledToUnlabeledDataset(test_dataset)).cpu().numpy()
 
 acc = np.zeros(n_rounds)
 acc[0] = (1.0*(y_test == y_pred)).sum().item() / len(y_test)
@@ -100,8 +72,7 @@ for rd in range(1, n_rounds):
     print('-------------------------------------------------')
     idx = strategy.select(budget)
     print('New data points added -', len(idx))
-    strategy.save_state('./state.pkl')
-
+    
     #Adding new points to training set
     X_tr = np.concatenate((X_tr, X_unlabeled[idx]), axis=0)
     X_unlabeled = np.delete(X_unlabeled, idx, axis = 0)
@@ -113,14 +84,15 @@ for rd in range(1, n_rounds):
     print('Number of labels -', y_tr.shape[0])
     print('Number of unlabeled points -', X_unlabeled.shape[0])
 
-    #Reload state and start training
-    strategy.load_state('./state.pkl')
-    strategy.update_data(X_tr, y_tr, X_unlabeled)
-    dt.update_data(X_tr, y_tr)
+    training_dataset = TensorDataset(torch.tensor(X_tr, dtype=torch.float), torch.tensor(y_tr, dtype=torch.long))
+    unlabeled_dataset = TensorDataset(torch.tensor(X_unlabeled, dtype=torch.float), torch.tensor(y_unlabeled, dtype=torch.long))
+
+    strategy.update_data(training_dataset, LabeledToUnlabeledDataset(unlabeled_dataset))
+    dt.update_data(training_dataset)
 
     clf = dt.train()
     strategy.update_model(clf)
-    y_pred = strategy.predict(X_test).numpy()
+    y_pred = strategy.predict(LabeledToUnlabeledDataset(test_dataset)).cpu().numpy()
     acc[rd] = round(1.0 * (y_test == y_pred).sum().item() / len(y_test), 3)
     print('Testing accuracy:', acc[rd], flush=True)
     # if acc[rd] > 0.98:

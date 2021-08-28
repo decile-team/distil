@@ -1,4 +1,4 @@
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from torch import nn
 import torch
 import torch.optim as optim
@@ -10,19 +10,52 @@ def init_weights(m):
         torch.nn.init.xavier_uniform_(m.weight)
         m.bias.data.fill_(0.01)
 
+class AddIndexDataset(Dataset):
+    
+    def __init__(self, wrapped_dataset):
+        self.wrapped_dataset = wrapped_dataset
+        
+    def __getitem__(self, index):
+        data, label = self.wrapped_dataset[index]
+        return data, label, index
+    
+    def __len__(self):
+        return len(self.wrapped_dataset)
+
 #custom training
 class data_train:
 
-    def __init__(self, X, Y, net, handler, args):
+    """
+    Provides a configurable training loop for AL.
+    
+    Parameters
+    ----------
+    training_dataset: torch.utils.data.Dataset
+        The training dataset to use
+    net: torch.nn.Module
+        The model to train
+    args: dict
+        Additional arguments to control the training loop
+        
+        `batch_size` - The size of each training batch (int, optional)
+        `islogs`- Whether to return training metadata (bool, optional)
+        `optimizer`- The choice of optimizer. Must be one of 'sgd' or 'adam' (string, optional)
+        `isverbose`- Whether to print more messages about the training (bool, optional)
+        `isreset`- Whether to reset the model before training (bool, optional)
+        `max_accuracy`- The training accuracy cutoff by which to stop training (float, optional)
+        `min_diff_acc`- The minimum difference in accuracy to measure in the window of monitored accuracies. If all differences are less than the minimum, stop training (float, optional)
+        `window_size`- The size of the window for monitoring accuracies. If all differences are less than 'min_diff_acc', then stop training (int, optional)
+        `criterion`- The criterion to use for training (typing.Callable[], optional)
+        `device`- The device to use for training (string, optional)
+    """
+    
+    def __init__(self, training_dataset, net, args):
 
-        self.X = X
-        self.Y = Y
+        self.training_dataset = AddIndexDataset(training_dataset)
         self.net = net
-        self.handler = handler
         self.args = args
         
-        if Y is not None: #For initialization without data
-            self.n_pool = len(Y)
+        self.n_pool = len(training_dataset)
         
         if 'islogs' not in args:
             self.args['islogs'] = False
@@ -56,43 +89,57 @@ class data_train:
     def update_index(self, idxs_lb):
         self.idxs_lb = idxs_lb
 
-    def update_data(self, X, Y):
-    	self.X = X
-    	self.Y = Y
+    def update_data(self, new_training_dataset):
+        """
+        Updates the training dataset with the provided new training dataset
+        
+        Parameters
+        ----------
+        new_training_dataset: torch.utils.data.Dataset
+            The new training dataset
+        """
+        self.training_dataset = AddIndexDataset(new_training_dataset)
 
-    def get_acc_on_set(self, X_test, Y_test):
+    def get_acc_on_set(self, test_dataset):
+        
+        """
+        Calculates and returns the accuracy on the given dataset to test
+        
+        Parameters
+        ----------
+        test_dataset: torch.utils.data.Dataset
+            The dataset to test
+        Returns
+        -------
+        accFinal: float
+            The fraction of data points whose predictions by the current model match their targets
+        """	
         
         try:
             self.clf
         except:
             self.clf = self.net
 
-        if X_test is None:
+        if test_dataset is None:
             raise ValueError("Test data not present")
-        
-        if Y_test is None:
-            raise ValueError("Test labels not present")
-            
-        if X_test.shape[0] != Y_test.shape[0]:
-            raise ValueError("X_test has {self.X_test.shape[0]} values but {self.Y_test.shape[0]} labels")
         
         if 'batch_size' in self.args:
             batch_size = self.args['batch_size']
         else:
             batch_size = 1 
         
-        loader_te = DataLoader(self.handler(X_test, Y_test, False, use_test_transform=True), shuffle=False, pin_memory=True, batch_size=batch_size)
+        loader_te = DataLoader(test_dataset, shuffle=False, pin_memory=True, batch_size=batch_size)
         self.clf.eval()
         accFinal = 0.
 
         with torch.no_grad():        
             self.clf = self.clf.to(device=self.device)
-            for batch_id, (x,y,idxs) in enumerate(loader_te):     
+            for batch_id, (x,y) in enumerate(loader_te):     
                 x, y = x.to(device=self.device), y.to(device=self.device)
                 out = self.clf(x)
                 accFinal += torch.sum(1.0*(torch.max(out,1)[1] == y)).item() #.data.item()
 
-        return accFinal / len(loader_te.dataset.X)
+        return accFinal / len(test_dataset)
 
     def _train_weighted(self, epoch, loader_tr, optimizer, gradient_weights):
         self.clf.train()
@@ -123,7 +170,7 @@ class data_train:
             # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
 
             optimizer.step()
-        return accFinal / len(loader_tr.dataset.X), weighted_loss
+        return accFinal / len(loader_tr.dataset), weighted_loss
 
     def _train(self, epoch, loader_tr, optimizer):
         self.clf.train()
@@ -144,7 +191,7 @@ class data_train:
             # for p in filter(lambda p: p.grad is not None, self.clf.parameters()): p.grad.data.clamp_(min=-.1, max=.1)
 
             optimizer.step()
-        return accFinal / len(loader_tr.dataset.X), loss
+        return accFinal / len(loader_tr.dataset), loss
 
     def check_saturation(self, acc_monitor):
         
@@ -159,6 +206,19 @@ class data_train:
         return saturate
 
     def train(self, gradient_weights=None):
+
+        """
+        Initiates the training loop.
+        
+        Parameters
+        ----------
+        gradient_weights: list, optional
+            The weight of each data point's effect on the loss gradient. If none, regular training will commence. If not, weighted training will commence.
+        Returns
+        -------
+        model: torch.nn.Module
+            The trained model. Alternatively, this will also return the training logs if 'islogs' is set to true.
+        """        
 
         print('Training..')
         def weight_reset(m):
@@ -190,7 +250,7 @@ class data_train:
             batch_size = 1
 
         # Set shuffle to true to encourage stochastic behavior for SGD
-        loader_tr = DataLoader(self.handler(self.X, self.Y, False), batch_size=batch_size, shuffle=True, pin_memory=True)
+        loader_tr = DataLoader(self.training_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
         epoch = 1
         accCurrent = 0
         is_saturated = False

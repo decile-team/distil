@@ -1,99 +1,91 @@
-import numpy as np
+import torch
+
+from torch.utils.data import Dataset
 from .strategy import Strategy
-from sklearn.metrics import pairwise_distances
 
 class CoreSet(Strategy):
+    
     """
     Implementation of CoreSet :footcite:`sener2018active` Strategy. A diversity-based 
     approach using coreset selection. The embedding of each example is computed by the network’s 
     penultimate layer and the samples at each round are selected using a greedy furthest-first 
     traversal conditioned on all labeled examples.
-
+    
     Parameters
     ----------
-    X: numpy array
-        Present training/labeled data   
-    Y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
     nclasses: int
-        Number of unique target variables
+        Number of unique values for the target
     args: dict
-        Specify optional parameters
+        Specify additional parameters
         
-        batch_size 
-        Batch size to be used inside strategy class (int, optional)
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
     """
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-        """
-        Constructor method
-        """
-
-        if 'tor' in args:
-            self.tor = args['tor']
-        else:
-            self.tor = 1e-4
-
-        super(CoreSet, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
-
-    def furthest_first(self, X, X_set, n):
-        """
-        Selects points with maximum distance
+    
+    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         
-        Parameters
-        ----------
-        X: numpy array
-            Embeddings of unlabeled set
-        X_set: numpy array
-            Embeddings of labeled set
-        n: int
-            Number of points to return
-        Returns
-        ----------
-        idxs: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
-        m = np.shape(X)[0]
-        if np.shape(X_set)[0] == 0:
-            min_dist = np.tile(float("inf"), m)
+        super(CoreSet, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
+  
+    def furthest_first(self, unlabeled_embeddings, labeled_embeddings, n):
+        
+        unlabeled_embeddings = unlabeled_embeddings.to(self.device)
+        labeled_embeddings = labeled_embeddings.to(self.device)
+        
+        m = unlabeled_embeddings.shape[0]
+        if labeled_embeddings.shape[0] == 0:
+            min_dist = torch.tile(float("inf"), m)
         else:
-            dist_ctr = pairwise_distances(X, X_set)
-            min_dist = np.amin(dist_ctr, axis=1)
-
+            dist_ctr = torch.cdist(unlabeled_embeddings, labeled_embeddings, p=2)
+            min_dist = torch.min(dist_ctr, dim=1)[0]
+                
         idxs = []
-
+        
         for i in range(n):
-            idx = min_dist.argmax()
-            idxs.append(idx)
-            dist_new_ctr = pairwise_distances(X, X[[idx], :])
-            for j in range(m):
-                min_dist[j] = min(min_dist[j], dist_new_ctr[j, 0])
-
+            idx = torch.argmax(min_dist)
+            idxs.append(idx.item())
+            dist_new_ctr = torch.cdist(unlabeled_embeddings, unlabeled_embeddings[[idx],:])
+            min_dist = torch.minimum(min_dist, dist_new_ctr[:,0])
+                
         return idxs
-
+  
     def select(self, budget):
+        
         """
-        Select next set of points
+        Selects next set of points
         
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
-        
+            Number of data points to select for labeling
+            
         Returns
         ----------
-        chosen: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
-        embedding_unlabeled = self.get_embedding(self.unlabeled_x)
-        embedding_unlabeled = embedding_unlabeled.numpy()
-        embedding_labeled = self.get_embedding(self.X)
-        embedding_labeled = embedding_labeled.numpy()
-
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
+        
+        class NoLabelDataset(Dataset):
+            
+            def __init__(self, wrapped_dataset):
+                self.wrapped_dataset = wrapped_dataset
+                
+            def __getitem__(self, index):
+                features, label = self.wrapped_dataset[index]
+                return features
+            
+            def __len__(self):
+                return len(self.wrapped_dataset)
+        
+        self.model.eval()
+        embedding_unlabeled = self.get_embedding(self.unlabeled_dataset)
+        embedding_labeled = self.get_embedding(NoLabelDataset(self.labeled_dataset))
         chosen = self.furthest_first(embedding_unlabeled, embedding_labeled, budget)
-        return chosen
+
+        return chosen        

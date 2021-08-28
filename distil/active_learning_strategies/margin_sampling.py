@@ -1,7 +1,7 @@
-from .strategy import Strategy
+from .score_streaming_strategy import ScoreStreamingStrategy
 
-class MarginSampling(Strategy):
-
+class MarginSampling(ScoreStreamingStrategy):
+    
     """
     Implements the Margin Sampling Strategy a active learning strategy similar to Least Confidence 
     Sampling Strategy. While least confidence only takes into consideration the maximum probability, 
@@ -11,12 +11,12 @@ class MarginSampling(Strategy):
     Suppose the model has `nclasses` output nodes denoted by :math:`\\overrightarrow{\\boldsymbol{z}}` 
     and each output node is denoted by :math:`z_j`. Thus, :math:`j \\in [1, nclasses]`. 
     Then for a output node :math:`z_i` from the model, the corresponding softmax would be 
-
+    
     .. math::
         \\sigma(z_i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}} 
-
+        
     Let,
-
+    
     .. math::
         m = \\mbox{argmax}_j{(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}
         
@@ -25,52 +25,33 @@ class MarginSampling(Strategy):
     .. math::
         \\mbox{argmin}_{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\sum_S(\\mbox{argmax}_j {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))}) - (\\mbox{argmax}_{j \\ne m} {(\\sigma(\\overrightarrow{\\boldsymbol{z}}))})}  
     
-
     where :math:`\\mathcal{U}` denotes the Data without lables i.e. `unlabeled_x` and :math:`k` is the `budget`.
     
-
     Parameters
     ----------
-    X: numpy array
-        Present training/labeled data   
-    y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
     nclasses: int
-        Number of unique target variables
+        Number of unique values for the target
     args: dict
-        Specify optional parameters
-            
-        batch_size 
-        Batch size to be used inside strategy class (int, optional)
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
     """
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
-        """
-        Constructor method
-        """
-        super(MarginSampling, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args)
-
-    def select(self, budget):
-        """
-        Select next set of points
-
-        Parameters
-        ----------
-        budget: int
-            Number of indexes to be returned for next set
-
-        Returns
-        ----------
-        U_idx: list
-            List of selected data point indexes with respect to unlabeled_x
-        """
-        probs = self.predict_prob(self.unlabeled_x)
+    
+    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
+        
+        super(MarginSampling, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
+    
+    def acquire_scores(self, unlabeled_buffer):
+        
+        probs = self.predict_prob(unlabeled_buffer)
         probs_sorted, idxs = probs.sort(descending=True)
-        U = probs_sorted[:, 0] - probs_sorted[:,1]
-        U_idx = U.sort()[1].numpy()[:budget] 
-        return U_idx
+        U = probs_sorted[:,1] - probs_sorted[:, 0] # Margin negated => Largest score corresponds to smallest margin
+        return U

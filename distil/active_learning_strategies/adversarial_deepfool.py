@@ -25,51 +25,38 @@ class AdversarialDeepFool(Strategy):
     technique avoids estimating distance by using Deep-Fool :footcite:`Moosavi-Dezfooli_2016_CVPR` 
     like techniques to estimate how much adversarial perturbation is required to cross the boundary. 
     The smaller the required perturbation, the closer the point is to the boundary.
-
+    
     Parameters
     ----------
-    X: numpy array
-        Present training/labeled data   
-    y: numpy array
-        Labels of present training data
-    unlabeled_x: numpy array
-        Data without labels
-    net: class
-        Pytorch Model class
-    handler: class
-        Data Handler, which can load data even without labels.
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
     nclasses: int
-        Number of unique target variables
+        Number of unique values for the target
     args: dict
-        Specify optional parameters
+        Specify additional parameters
         
-        batch_size 
-        Batch size to be used inside strategy class (int, optional)
-
-        max_iter
-        Maximum Number of Iterations (int, optional)
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **max_iter**: Maximum Number of Iterations (int, optional)
     """
-    def __init__(self, X, Y, unlabeled_x, net, handler, nclasses, args={}):
+    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
         """
         Constructor method
         """
         if 'max_iter' in args:
             self.max_iter = args['max_iter']
         else:
-            self.max_iter = 50        
-        super(AdversarialDeepFool, self).__init__(X, Y, unlabeled_x, net, handler, nclasses, args={})
+            self.max_iter = 50
+            
+        super(AdversarialDeepFool, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args={})
 
 
-    def deepfool(self, image, net, num_classes=10, overshoot=0.02, max_iter=50):
-
-        """
-        :param image: Image of size HxWx3
-        :param net: network (input: images, output: values of activation **BEFORE** softmax).
-        :param num_classes: num_classes (limits the number of classes to test against, by default = 10)
-        :param overshoot: used as a termination criterion to prevent vanishing updates (default = 0.02).
-        :param max_iter: maximum number of iterations for deepfool (default = 50)
-        :return: minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
-        """
+    def deepfool(self, image, net, num_classes=10, overshoot=0.02):
 
         image = image.to(self.device)
         net = net.to(self.device)
@@ -81,7 +68,7 @@ class AdversarialDeepFool(Strategy):
         label = I[0]
 
         input_shape = image.shape
-        pert_image = copy.deepcopy(image)
+        pert_image = image.clone()
         w = torch.zeros(input_shape).to(self.device)
         r_tot = torch.zeros(input_shape).to(self.device)
 
@@ -92,7 +79,7 @@ class AdversarialDeepFool(Strategy):
         fs_list = [fs[0,I[k]] for k in range(num_classes)]
         k_i = label
 
-        while k_i == label and loop_i < max_iter:
+        while k_i == label and loop_i < self.max_iter:
 
             pert = np.inf
             fs[0, I[0]].backward(retain_graph=True)
@@ -134,28 +121,27 @@ class AdversarialDeepFool(Strategy):
 
     def select(self, budget):
         """
-        Select next set of points
-
+        Selects next set of points
+        
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
-
+            Number of data points to select for labeling
+            
         Returns
         ----------
         idxs: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
         self.model.eval()
-        dis = np.zeros(self.unlabeled_x.shape[0])
-        data_pool = self.handler(self.unlabeled_x)
-        for i in range(self.unlabeled_x.shape[0]):
-            x, idx = data_pool[i]
+        self.model = self.model.to(self.device)
+        
+        dis = np.zeros(len(self.unlabeled_dataset))
+        data_pool = self.unlabeled_dataset
+        for i in range(len(self.unlabeled_dataset)):
+            x = data_pool[i]
             dist = self.deepfool(x, self.model, self.target_classes)
             dis[i] = dist
-
-        self.model.to(self.device)
+        
         idxs = dis.argsort()[:budget]
         return idxs
-
-

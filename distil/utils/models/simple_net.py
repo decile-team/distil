@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -9,9 +10,15 @@ class TwoLayerNet(nn.Module):
         self.linear2 = nn.Linear(hidden_units, num_classes)
         self.embd_dim = hidden_units
     
-    def forward(self, x, last=False):
-        l1scores = F.relu(self.linear1(x))
+    def forward(self, x, last=False, freeze=False):
+        
+        if freeze:
+            with torch.no_grad():
+                l1scores = F.relu(self.linear1(x))
+        else:
+            l1scores = F.relu(self.linear1(x))
         scores = self.linear2(l1scores)
+            
         if last:
             return scores, l1scores
         else:

@@ -97,7 +97,6 @@ Some of the algorithms currently implemented in DISTIL include the following:
 - [BALD [10]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout)
 - [Kmeans Sampling [5]](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.kmeans_sampling)
 - [Adversarial Bim](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.adversarial_bim)
-- [Baseline Sampling](https://decile-team-distil.readthedocs.io/en/latest/ActStrategy/distil.active_learning_strategies.html#module-distil.active_learning_strategies.baseline_sampling)
 
 To learn more on different active learning algorithms, check out the [Active Learning Strategies Survey Blog](https://decile-research.medium.com/active-learning-strategies-distil-62ee9fc166f9)
 
@@ -110,7 +109,7 @@ DISTIL is a toolkit which provides support for various active learning algorithm
 3) "numba >= 0.43.0",
 4) "tqdm >= 4.24.0",
 5) "torch >= 1.4.0",
-6) "apricot-select >= 0.6.0"
+6) "submodlib >= 1.1.2"
 
 ## Documentation
 Learn more about DISTIL by reading our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
@@ -126,74 +125,64 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
         * If False: It should return only the model output.
     * Check the models included in DISTIL for examples!
 
-* Data Handler
-    * Your DataHandler class should have a boolean attribute “select=True” with default value True:
-        * If True: Your __getitem__(self, index) method should return (input, index)
-        * If False: Your __getitem__(self, index) method should return (input, label, index)
-    * Your DataHandler class should have a boolean attribute “use_test_transform=False” with default value False.
-    
-    * Check the DataHandler classes included in DISTIL for examples!
-
 To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
 
 ## Demo Notebooks
-1. [CIFAR10 Tutorial](https://colab.research.google.com/drive/1K5eFLtJYbNEpDRI6YsYFCEQyi74tfEou?usp=sharing)
-
-2. [SATIMAGE Tutorial](https://colab.research.google.com/drive/1wD-so8B14kSswZwCDHDhLGkkGIH7VUdU?usp=sharing)
-
-3. [IJCNN1 Tutorial](https://colab.research.google.com/drive/11WRz7CXC4ZCvmEkXQ-FQ2YiwRZY7QIof?usp=sharing)
-
-You can also download the .ipynb files from the notebooks folder.
+We provide a few example notebooks using DISTIL in the notebooks folder. For ease of execution, these notebooks are written for use in Google Colab. Simply upload the selected notebook to Google Colab and connect to a hosted runtime to execute the notebook.
 
 ## Active Learning Benchmarking using DISTIL
-#### Experimentation Method
-The models used below were first trained on an initial random set of points (equal to the budget). For each set of new points added, the model was trained from scratch until the training accuracy crossed the max accuracy threshold. The test accuracy was then reported before the next selection round. The results below are *preliminary* results each obtained only with one run. We are doing a more thorough benchmarking experiment, with more runs and report standard deviations etc. We will also link to a preprint which will include the benchmarking results.
+We include a thorough benchmarking of various AL algorithms that covers many evaluation facets. Our experiments can be found in the benchmark_notebooks folder. To execute these experiments, upload a selected experiment to Google Colab and connect to a hosted runtime. We present the results of this benchmark below. More details can be found in [Effective Evaluation of Deep Active Learning on Image Classification Tasks](https://arxiv.org/abs/2106.15324).
 
-For more details on the benchmarking results, please check out the [Active Learning Benchmark Blog: Cut Down Labeling Costs with DISTIL](https://decile-research.medium.com/cut-down-on-labeling-costs-with-distil-77bec5c2e864).
+#### Baseline Experiments
+In these experiments, we perform a comparative baseline across most of the AL algorithms in DISTIL. We utilize the ResNet18 architecture in these experiments (except for MNIST, where we instead use DISTIL's MnistNet definition), and we perform data augmentation consisting of random cropping and random horizontal flips during training. We give each strategy the same set of initial points and the same initial model. The test accuracy after training reaches 99% accuracy using SGD is reported for the corresponding labeled set size. Each experiment is repeated for a total of three times; the average and standard deviation are shown for each strategy.
 
-#### CIFAR10
-Model: Resnet18
+![BASELINE](./experiment_plots/baseline.png?raw=true)
+![MNIST_BASELINE](./experiment_plots/baseline_mnist.png?raw=true)
 
+The peak labeling efficiencies in each plot show that these AL strategies can range from 1.3x to 5.0x in their labeling efficiency. Hence, AL offers benefit over random sampling in many of the common datasets used in academia.
 
-![CIFAR10](./experiment_plots/cifar10_plot_50k.png?raw=true)
+#### The Role of Augmentation
+In these experiments, we disable the use of data augmentation during training. We also examine the use of the VGG11 architecture. 
 
+![AUGMENT](./experiment_plots/augmentation.png?raw=true)
 
-The best strategies show 2x labeling efficiency compared to random sampling. BADGE does better than entropy sampling with a larger budget, and all strategies do better than random sampling.
+Combined with a dip in test accuracy, there is also a noticeable dip in labeling efficiency when data augmentation is removed. Here, we also see that BADGE tends to outperform entropy sampling in the VGG11 architecture when data augmentation is removed, but the benefit of BADGE diminishes when data augmentation is added.
 
+#### Optimizer Effect on AL
 
-#### MNIST
-Model: MnistNet
+We examine the same setting as the baseline where we instead choose to use Adam instead of SGD.
 
+![OPTIM](./experiment_plots/adam.png?raw=true)
 
-![MNIST Plot](./experiment_plots/mnist_plot.png?raw=true)
+We see that the accuracy obtained using Adam is not as high as that obtained using SGD. Furthermore, we see that AL using SGD is able to obtain higher labeling efficiencies.
 
-All strategies exhibit a gain over random sampling, and both entropy sampling and BADGE achieve a 4x labeling efficiency compared to random sampling.
+#### The Effect of Redundancy
 
+Most AL experiments assume access to a clean dataset; however, it is usually the case that data gathered "in the wild" is highly redundant. To further explore the effect of redundancy, we repeat the baseline by redundantly copying some points in CIFAR10.
 
-#### FASHION MNIST
-Model: Resnet18
+![REDUNDANCY](./experiment_plots/redundancy.png?raw=true)
 
+We see that strategies that do not account for diversity are detrimental to the labeling efficiency of the AL loop. BADGE, which accounts for diversity, does much better than simple entropy sampling when there is an increasing amount of redundancy.
 
-![FMNIST Plot](./experiment_plots/fmnist_plot.png?raw=true)
+#### Active Learning versus Random Sampling
 
+We further explore the effect of the number of examples per class in the unlabeled set on the effectiveness of AL. In these experiments, we follow the baseline setting, but we vary the number of examples in the unlabeled set on a per-class basis.
 
-All strategies exhibit a gain over random sampling, and both entropy sampling and BADGE achieve a 4x labeling efficiency compared to random sampling.
+![ALVRS](./experiment_plots/alvrs.png?raw=true)
 
+We see that, with less examples per class in the unlabeled set, the benefit of AL is reduced as there are fewer informative points to select.
 
-#### SVHN
-Model: Resnet18
+#### Warm-Starting
 
+AL practitioners may be tempted to use the working model in future AL rounds. To examine the effect of having this "warm start" model.
 
-![SVHN Plot](./experiment_plots/svhn_plot.png?raw=true)
+![RESET](./experiment_plots/persistence.png?raw=true)
 
+Although the accuracies are close, we see that the labeling efficiency of each AL method is greater when using a model reset after each AL round.
 
-All strategies exhibit a gain over random sampling, and both entropy sampling and BADGE achieve a 3x labeling efficiency compared to random sampling.
+#### More Facets
 
-
-#### OPENML-6
-Budget: 400, Model: Two Layer Net, Number of rounds: 11, Total Points: 4800 (30%)
-
-![OPENML6 Plot](./experiment_plots/openml6_plot.png?raw=true)
+Consider reading [Effective Evaluation of Deep Active Learning on Image Classification Tasks](https://arxiv.org/abs/2106.15324) for more evaluation facets and discussion on AL.
 
 ## Testing Individual Strategies and Running Examples
 Before running the examples or test script, please clone the dataset repository in addition to this one. The default data path expects the repository in the same root directory as that of DISTIL. If you change the location, the data paths in the examples and test scripts need to be changed accordingly.
@@ -224,7 +213,7 @@ To receive updates about DISTIL and to be a part of the community, join the Deci
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
 ## Acknowledgment
-This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
+This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [submodlib](https://github.com/decile-team/submodlib) for submodular optimization.
 
 ## Team
 DISTIL is created and maintained by Nathan Beck, [Durga Sivasubramanian](https://www.linkedin.com/in/durga-s-352831105), [Apurva Dani](https://apurvadani.github.io/index.html), [Rishabh Iyer](https://www.rishiyer.com), and [Ganesh Ramakrishnan](https://www.cse.iitb.ac.in/~ganesh/). We look forward to have DISTIL more community driven. Please use it and contribute to it for your active learning research, and feel free to use it for your commercial projects. We will add the major contributors here.

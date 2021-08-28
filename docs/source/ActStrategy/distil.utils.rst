@@ -1,39 +1,23 @@
-utils
+Utilities
 ====================
 
 .. toctree::
    :maxdepth: 4
 
+Predefined Training Loop
+------------------------
 
-DataHandler
--------------------------------
-
-.. automodule:: distil.utils.data_handler
+.. automodule:: distil.utils.train_helper
    :members:
    :undoc-members:
    :show-inheritance:
 
-Dataset
----------------------------
+Utilities
+---------
 
-.. automodule:: distil.utils.dataset
+.. automodule:: distil.utils.utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-Submodular Functions
----------------------------
-
-.. automodule:: distil.utils.submodular
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Similarity Matrix
----------------------------
-
-.. automodule:: distil.utils.similarity_mat
-   :members:
-   :undoc-members:
-   :show-inheritance:
 

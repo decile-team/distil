@@ -1,20 +1,21 @@
+  
 from .strategy import Strategy
 import numpy as np
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset, Dataset
 
 import math
 
 class GLISTER(Strategy):
+    
     """
     This is implementation of GLISTER-ACTIVE from the paper GLISTER: Generalization based Data 
     Subset Selection for Efficient and Robust Learning :footcite:`killamsetty2020glister`. GLISTER 
     methods tries to solve a bi-level optimisation problem.
-
+    
     .. math::
         \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\underset{\\theta}{\\operatorname{argmin\\hspace{0.7mm}}} L_T( \\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
         
@@ -29,34 +30,26 @@ class GLISTER(Strategy):
         \\overbrace{\\underset{{S \\subseteq {\\mathcal U}, |S| \\leq k}}{\\operatorname{argmin\\hspace{0.7mm}}} L_V(\\underbrace{\\theta - \\eta \\nabla_{\\theta}L_T(\\theta, S)}_{inner-level}, {\\mathcal V})}^{outer-level}
     
     In the above equation, :math:`\\eta` denotes the step-size used for one-step gradient update.
-
     
     Parameters
     ----------
-    X: Numpy array 
-        Features of the labled set of points 
-    Y: Numpy array
-        Lables of the labled set of points 
-    unlabeled_x: Numpy array
-        Features of the unlabled set of points 
-    net: class object
-        Model architecture used for training. Could be instance of models defined in `distil.utils.models` or something similar.
-    handler: class object
-        It should be a subclass of torch.utils.data.Dataset i.e, have __getitem__ and __len__ methods implemented, so that is could be passed to pytorch DataLoader.Could be instance of handlers defined in `distil.utils.DataHandler` or something similar.
-    nclasses: int 
-        No. of classes in tha dataset
-    args: dictionary
-        This dictionary should have keys 'batch_size' and  'lr'. 
-        'lr' should be the learning rate used for training. 'batch_size'  'batch_size' should be such 
-        that one can exploit the benefits of tensorization while honouring the resourse constraits.
-    valid: boolean
-        Whether validation set is passed or not
-    X_val: Numpy array, optional
-        Features of the points in the validation set. Mandatory if `valid=True`.
-    Y_val:Numpy array, optional
-        Lables of the points in the validation set. Mandatory if `valid=True`.
-    loss_criterion: class object, optional
-        The type of loss criterion. Default is **torch.nn.CrossEntropyLoss()**
+    labeled_dataset: torch.utils.data.Dataset
+        The labeled training dataset
+    unlabeled_dataset: torch.utils.data.Dataset
+        The unlabeled pool dataset
+    net: torch.nn.Module
+        The deep model to use
+    nclasses: int
+        Number of unique values for the target
+    args: dict
+        Specify additional parameters
+        
+        - **batch_size**: The batch size used internally for torch.utils.data.DataLoader objects. (int, optional)
+        - **device**: The device to be used for computation. PyTorch constructs are transferred to this device. Usually is one of 'cuda' or 'cpu'. (string, optional)
+        - **loss**: The loss function to be used in computations. (typing.Callable[[torch.Tensor, torch.Tensor], torch.Tensor], optional)
+        - **lr**: The learning rate used for training (float)
+    validation_dataset: torch.utils.data.Dataset
+        The validation dataset to be used in GLISTER objective
     typeOf: str, optional
         Determines the type of regulariser to be used. Default is **'none'**.
         For random regulariser use **'Rand'**.
@@ -73,22 +66,17 @@ class GLISTER(Strategy):
         tensorization while honouring the resourse constraits. 
     """
     
-
-    def __init__(self,X, Y,unlabeled_x, net, handler, nclasses, args,valid,X_val=None,Y_val=None,\
-        loss_criterion=nn.CrossEntropyLoss(),typeOf='none',lam=None,kernel_batch_size = 200): # 
-        super(GLISTER, self).__init__(X, Y, unlabeled_x, net, handler,nclasses, args)
-
-        if valid:
-            self.X_Val = X_val
-            self.Y_Val = Y_val
-        self.loss = loss_criterion
-        self.valid = valid
+    def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}, validation_dataset = None,
+                 typeOf = 'none', lam = None, kernel_batch_size = 200):
+        
+        super(GLISTER, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
+    
+        self.validation_dataset = validation_dataset
         self.typeOf = typeOf
         self.lam = lam
         self.kernel_batch_size = kernel_batch_size
-        #self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def distance(self,x, y, exp = 2):
+    def distance(self, x, y, exp = 2):
 
       n = x.size(0)
       m = y.size(0)
@@ -132,38 +120,52 @@ class GLISTER(Strategy):
 
     def _compute_per_element_grads(self):
         
-        self.grads_per_elem = self.get_grad_embedding(self.unlabeled_x)
-        self.prev_grads_sum = torch.sum(self.get_grad_embedding(self.X,self.Y),dim=0).view(1, -1)
+        self.grads_per_elem = self.get_grad_embedding(self.unlabeled_dataset, True)
+        self.prev_grads_sum = torch.sum(self.get_grad_embedding(self.labeled_dataset, False), dim=0).view(1, -1)
 
     def _update_grads_val(self,grads_currX=None, first_init=False):
 
         embDim = self.model.get_embedding_dim()
         
         if first_init:
-            if self.valid:
-                if self.X_Val is not None:
-                    loader = DataLoader(self.handler(self.X_Val,self.Y_Val,select=False),shuffle=False,\
-                        batch_size=self.args['batch_size'])
-                    self.out = torch.zeros(self.Y_Val.shape[0], self.target_classes).to(self.device)
-                    self.emb = torch.zeros(self.Y_Val.shape[0], embDim).to(self.device)
-                else:
-                    raise ValueError("Since Valid is set True, please pass a appropriate Validation set")
-            
+            if self.validation_dataset is not None:
+                loader = DataLoader(self.validation_dataset,shuffle=False,batch_size=self.args['batch_size'])
+                self.out = torch.zeros(len(self.validation_dataset), self.target_classes).to(self.device)
+                self.emb = torch.zeros(len(self.validation_dataset), embDim).to(self.device)
             else:
-                predicted_y = self.predict(self.unlabeled_x)
-                self.X_new = np.concatenate((self.unlabeled_x,self.X), axis = 0)
-                self.Y_new = np.concatenate((predicted_y,self.Y), axis = 0)
+                predicted_y = self.predict(self.unlabeled_dataset).cpu() # Bring to CPU as the loaders used require it
+                
+                class AddLabelDataset(Dataset):
+                    
+                    def __init__(self, wrapped_unlabeled_dataset, added_labels):
+                        self.wrapped_unlabeled_dataset = wrapped_unlabeled_dataset
+                        self.added_labels = added_labels
+                        
+                    def __getitem__(self, index):
+                        unlabeled_data = self.wrapped_unlabeled_dataset[index]
+                        label = self.added_labels[index]
+                        
+                        return unlabeled_data, label
+                    
+                    def __len__(self):
+                        return len(self.wrapped_unlabeled_dataset)
+                
+                pseudolabeled_dataset = AddLabelDataset(self.unlabeled_dataset, predicted_y)
+                
+                self.new_dataset = ConcatDataset([pseudolabeled_dataset, self.labeled_dataset])
 
-                loader = DataLoader(self.handler(self.X_new,self.Y_new,select=False),shuffle=False,\
-                    batch_size=self.args['batch_size'])
-                self.out = torch.zeros(self.Y_new.shape[0], self.target_classes).to(self.device)
-                self.emb = torch.zeros(self.Y_new.shape[0], embDim).to(self.device)
+                loader = DataLoader(self.new_dataset, shuffle=False, batch_size=self.args['batch_size'])
+                self.out = torch.zeros(len(self.new_dataset), self.target_classes).to(self.device)
+                self.emb = torch.zeros(len(self.new_dataset), embDim).to(self.device)
 
             self.grads_val_curr = torch.zeros(self.target_classes*(1+embDim), 1).to(self.device)
             
+            evaluated_points = 0
+            
             with torch.no_grad():
 
-                for x, y, idxs in loader:
+                for x, y in loader:
+                    idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + y.shape[0])]
                     x = x.to(self.device)
                     y = y.to(self.device)
                     init_out, init_l1 = self.model(x,last=True)
@@ -173,7 +175,7 @@ class GLISTER(Strategy):
                             self.out[idxs, j] = init_out[:, j] - (1 * self.args['lr'] * (torch.matmul(init_l1, self.prev_grads_sum[0][(j * embDim) +
                                     self.target_classes:((j + 1) * embDim) + self.target_classes].view(-1, 1)) + self.prev_grads_sum[0][j])).view(-1)
                         except KeyError:
-                            print("Please pass learning rate used during the training")
+                            raise ValueError("Please pass learning rate used during the training")
                 
                     scores = F.softmax(self.out[idxs], dim=1)
                     one_hot_label = torch.zeros(len(y), self.target_classes).to(self.device)
@@ -183,11 +185,16 @@ class GLISTER(Strategy):
                     l1_grads = l0_expand * init_l1.repeat(1, self.target_classes)
 
                     self.grads_val_curr += torch.cat((l0_grads, l1_grads), dim=1).sum(dim=0).view(-1, 1)
+                    evaluated_points += y.shape[0]
             
-            if self.valid:
-                self.grads_val_curr /= self.Y_Val.shape[0]
+            if self.validation_dataset is not None:
+                self.grads_val_curr /= len(self.validation_dataset)
+                _, self.Y_Val = next(iter(DataLoader(self.validation_dataset, shuffle = False, batch_size = len(self.validation_dataset))))
+                self.Y_Val = self.Y_Val.to(self.device)
             else:
                 self.grads_val_curr /= predicted_y.shape[0]
+                _, self.Y_new = next(iter(DataLoader(self.new_dataset, shuffle = False, batch_size = len(self.new_dataset))))
+                self.Y_new = self.Y_new.to(self.device)
 
         elif grads_currX is not None:
             # update params:
@@ -202,14 +209,12 @@ class GLISTER(Strategy):
 
             
                 scores = F.softmax(self.out, dim=1)
-                if self.valid:
-                    Y_Val = torch.tensor(self.Y_Val,device=self.device)
-                    one_hot_label = torch.zeros(Y_Val.shape[0], self.target_classes).to(self.device)
-                    one_hot_label.scatter_(1,Y_Val.view(-1, 1), 1)   
+                if self.validation_dataset is not None:
+                    one_hot_label = torch.zeros(self.Y_Val.shape[0], self.target_classes).to(self.device)
+                    one_hot_label.scatter_(1,self.Y_Val.view(-1, 1), 1)   
                 else:
-                    
                     one_hot_label = torch.zeros(self.Y_new.shape[0], self.target_classes).to(self.device)
-                    one_hot_label.scatter_(1, torch.tensor(self.Y_new,device=self.device).view(-1, 1), 1)
+                    one_hot_label.scatter_(1, self.Y_new.view(-1, 1), 1)
                 l0_grads = scores - one_hot_label
                 l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
                 l1_grads = l0_expand * self.emb.repeat(1, self.target_classes)
@@ -233,25 +238,27 @@ class GLISTER(Strategy):
     def select(self, budget):
 
         """
-        Select next set of points
+        Selects next set of points
         
         Parameters
         ----------
         budget: int
-            Number of indexes to be returned for next set
-        
+            Number of data points to select for labeling
+            
         Returns
         ----------
-        chosen: list
-            List of selected data point indexes with respect to unlabeled_x
-        """ 
+        idxs: list
+            List of selected data point indices with respect to unlabeled_dataset
+        """	
+
+        self.model.eval()
 
         self._compute_per_element_grads()
         self._update_grads_val(first_init=True)
         
         numSelected = 0
         greedySet = list()
-        remainSet = list(range(self.unlabeled_x.shape[0]))
+        remainSet = list(range(len(self.unlabeled_dataset)))
 
         if self.typeOf == 'Rand':
             if self.lam is not None:

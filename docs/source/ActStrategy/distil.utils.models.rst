@@ -1,4 +1,4 @@
-distil.utils.models package
+Models
 ===========================
 
 We have incorporated several neural network architectures in the DISTIL repository. Below given is a list of Neural network architectures:
