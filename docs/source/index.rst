@@ -18,25 +18,14 @@ DISTIL is an active learning toolkit that implements a number of state-of-the-ar
 #. Huge reduction in labeling cost and time.
 #. Access to various active learning strategies with just one line of code.
 
-**Preliminary Results: CIFAR-10**
+**Preliminary Results**
 
-.. image:: ../../experiment_plots/cifar10_plot_50k.png
+.. image:: ../../experiment_plots/baseline.png
    :width: 1000px
 
-**Preliminary Results: MNIST**
-
-.. image:: ../../experiment_plots/mnist_plot.png
+.. image:: ../../experiment_plots/baseline_mnist.png
    :width: 1000px
 
-**Preliminary Results: Fashion MNIST**
-
-.. image:: ../../experiment_plots/fmnist_plot.png
-   :width: 1000px
-
-**Preliminary Results: SVHN**
-
-.. image:: ../../experiment_plots/svhn_plot.png
-   :width: 1000px
 
 .. toctree::
    :maxdepth: 2
