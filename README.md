@@ -129,16 +129,10 @@ DISTIL makes it extremely easy to integrate your custom models with active learn
 To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
 
 ## Demo Notebooks
-1. [CIFAR10 Tutorial](https://colab.research.google.com/drive/1K5eFLtJYbNEpDRI6YsYFCEQyi74tfEou?usp=sharing)
-
-2. [SATIMAGE Tutorial](https://colab.research.google.com/drive/1wD-so8B14kSswZwCDHDhLGkkGIH7VUdU?usp=sharing)
-
-3. [IJCNN1 Tutorial](https://colab.research.google.com/drive/11WRz7CXC4ZCvmEkXQ-FQ2YiwRZY7QIof?usp=sharing)
-
-You can also download the .ipynb files from the notebooks folder.
+We provide a few example notebooks using DISTIL in the notebooks folder. For ease of execution, these notebooks are written for use in Google Colab. Simply upload the selected notebook to Google Colab and connect to a hosted runtime to execute the notebook.
 
 ## Active Learning Benchmarking using DISTIL
-We include a thorough benchmarking of various AL algorithms that covers many evaluation facets. We present the results of this benchmark below. More details can be found in [Effective Evaluation of Deep Active Learning on Image Classification Tasks](https://arxiv.org/abs/2106.15324).
+We include a thorough benchmarking of various AL algorithms that covers many evaluation facets. Our experiments can be found in the benchmark_notebooks folder. To execute these experiments, upload a selected experiment to Google Colab and connect to a hosted runtime. We present the results of this benchmark below. More details can be found in [Effective Evaluation of Deep Active Learning on Image Classification Tasks](https://arxiv.org/abs/2106.15324).
 
 #### Baseline Experiments
 In these experiments, we perform a comparative baseline across most of the AL algorithms in DISTIL. We utilize the ResNet18 architecture in these experiments (except for MNIST, where we instead use DISTIL's MnistNet definition), and we perform data augmentation consisting of random cropping and random horizontal flips during training. We give each strategy the same set of initial points and the same initial model. The test accuracy after training reaches 99% accuracy using SGD is reported for the corresponding labeled set size. Each experiment is repeated for a total of three times; the average and standard deviation are shown for each strategy.
@@ -220,7 +214,7 @@ To receive updates about DISTIL and to be a part of the community, join the Deci
 https://groups.google.com/forum/#!forum/Decile_DISTIL_Dev/join 
 ```
 ## Acknowledgment
-This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [Apricot](https://github.com/jmschrei/apricot) for submodular optimization.
+This library takes inspiration, builds upon, and uses pieces of code from several open source codebases. These include [Kuan-Hao Huang's deep active learning repository](https://github.com/ej0cl6/deep-active-learning), [Jordan Ash's Badge repository](https://github.com/JordanAsh/badge), and [Andreas Kirsch's and Joost van Amersfoort's BatchBALD repository](https://github.com/BlackHC/batchbald_redux). Also, DISTIL uses [submodlib](https://github.com/decile-team/submodlib) for submodular optimization.
 
 ## Team
 DISTIL is created and maintained by Nathan Beck, [Durga Sivasubramanian](https://www.linkedin.com/in/durga-s-352831105), [Apurva Dani](https://apurvadani.github.io/index.html), [Rishabh Iyer](https://www.rishiyer.com), and [Ganesh Ramakrishnan](https://www.cse.iitb.ac.in/~ganesh/). We look forward to have DISTIL more community driven. Please use it and contribute to it for your active learning research, and feel free to use it for your commercial projects. We will add the major contributors here.
