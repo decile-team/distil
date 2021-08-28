@@ -5,6 +5,8 @@ scipy>=1.0.0
 torch>=1.4.0
 tqdm>=4.24.0
 numba>=0.43.0
+-i https://test.pypi.org/simple/ 
+--extra-index-url https://pypi.org/simple/
 submodlib
 pandas
 torchvision
