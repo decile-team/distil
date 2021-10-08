@@ -27,23 +27,6 @@
 <p>Cut down your labeling cost and time by 3x-5x!
 </h3>
 
-# In this README
-- [What is DISTIL?](#what-is-distil) 
-- [Key Features of DISTIL](#key-features-of-distil)
-- [Starting with DISTIL](#starting-with-distil)
-- [Where can DISTIL be used?](#where-can-distil-be-used)
-- [Package Requirements](#package-requirements)
-- [Documentation](#documentation)
-- [Make your PyTorch Model compatible with DISTIL](#make-your-pytorch-model-compatible-with-distil)
-- [Demo Notebooks](#demo-notebooks)
-- [Active Learning Benchmarking using DISTIL](#active-learning-benchmarking-using-distil)
-- [Testing Individual Strategies and Running Examples](#testing-individual-strategies-and-running-examples)
-- [Mailing List](#mailing-list)
-- [Acknowledgment](#acknowledgment)
-- [Team](#team)
-- [Resources](#resources)
-- [Publications](#publications)
-
 ## What is DISTIL?
 <p align="center">
     <br>
@@ -103,29 +86,8 @@ To learn more on different active learning algorithms, check out the [Active Lea
 ## Where can DISTIL be used?
 DISTIL is a toolkit which provides support for various active learning algorithms. Presently, it only works in the supervised learning setting for classification. We will be adding extensions to active semi-supervised learning and active learning for object detection. It can be used in scenarios where you want to reduce labeling cost and time by labeling only the few most informative points for your ML model.
 
-## Package Requirements
-1) "numpy >= 1.14.2",
-2) "scipy >= 1.0.0",
-3) "numba >= 0.43.0",
-4) "tqdm >= 4.24.0",
-5) "torch >= 1.4.0",
-6) "submodlib >= 1.1.2"
-
 ## Documentation
 Learn more about DISTIL by reading our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
-
-## Make your PyTorch Model compatible with DISTIL
-DISTIL provides various models and data handlers which can be used directly.
-DISTIL makes it extremely easy to integrate your custom models with active learning. There are two main things that need to be incorporated in your code before using DISTIL.
-
-* Model
-    * Your model should have a function get_embedding_dim() which returns the number of hidden units in the last layer.
-    * Your forward() function should have an optional boolean parameter “last” where:
-        * If True: It should return the model output and the output of the second last layer
-        * If False: It should return only the model output.
-    * Check the models included in DISTIL for examples!
-
-To get a clearer idea about how to incorporate DISTIL with your own models, refer to [Getting Started With DISTIL & Active Learning Blog](https://decile-research.medium.com/getting-started-with-distil-active-learning-ba7fafdbe6f3)
 
 ## Demo Notebooks
 We provide a few example notebooks using DISTIL in the notebooks folder. For ease of execution, these notebooks are written for use in Google Colab. Simply upload the selected notebook to Google Colab and connect to a hosted runtime to execute the notebook.
