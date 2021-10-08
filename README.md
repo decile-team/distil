@@ -130,60 +130,6 @@ To get a clearer idea about how to incorporate DISTIL with your own models, refe
 ## Demo Notebooks
 We provide a few example notebooks using DISTIL in the notebooks folder. For ease of execution, these notebooks are written for use in Google Colab. Simply upload the selected notebook to Google Colab and connect to a hosted runtime to execute the notebook.
 
-## Active Learning Benchmarking using DISTIL
-We include a thorough benchmarking of various AL algorithms that covers many evaluation facets. Our experiments can be found in the benchmark_notebooks folder. To execute these experiments, upload a selected experiment to Google Colab and connect to a hosted runtime. We present the results of this benchmark below. More details can be found in [Effective Evaluation of Deep Active Learning on Image Classification Tasks](https://arxiv.org/abs/2106.15324).
-
-#### Baseline Experiments
-In these experiments, we perform a comparative baseline across most of the AL algorithms in DISTIL. We utilize the ResNet18 architecture in these experiments (except for MNIST, where we instead use DISTIL's MnistNet definition), and we perform data augmentation consisting of random cropping and random horizontal flips during training. We give each strategy the same set of initial points and the same initial model. The test accuracy after training reaches 99% accuracy using SGD is reported for the corresponding labeled set size. Each experiment is repeated for a total of three times; the average and standard deviation are shown for each strategy.
-
-![BASELINE](./experiment_plots/baseline.png?raw=true)
-![MNIST_BASELINE](./experiment_plots/baseline_mnist.png?raw=true)
-
-The peak labeling efficiencies in each plot show that these AL strategies can range from 1.3x to 5.0x in their labeling efficiency. Hence, AL offers benefit over random sampling in many of the common datasets used in academia.
-
-#### The Role of Augmentation
-In these experiments, we disable the use of data augmentation during training. We also examine the use of the VGG11 architecture. 
-
-![AUGMENT](./experiment_plots/augmentation.png?raw=true)
-
-Combined with a dip in test accuracy, there is also a noticeable dip in labeling efficiency when data augmentation is removed. Here, we also see that BADGE tends to outperform entropy sampling in the VGG11 architecture when data augmentation is removed, but the benefit of BADGE diminishes when data augmentation is added.
-
-#### Optimizer Effect on AL
-
-We examine the same setting as the baseline where we instead choose to use Adam instead of SGD.
-
-![OPTIM](./experiment_plots/adam.png?raw=true)
-
-We see that the accuracy obtained using Adam is not as high as that obtained using SGD. Furthermore, we see that AL using SGD is able to obtain higher labeling efficiencies.
-
-#### The Effect of Redundancy
-
-Most AL experiments assume access to a clean dataset; however, it is usually the case that data gathered "in the wild" is highly redundant. To further explore the effect of redundancy, we repeat the baseline by redundantly copying some points in CIFAR10.
-
-![REDUNDANCY](./experiment_plots/redundancy.png?raw=true)
-
-We see that strategies that do not account for diversity are detrimental to the labeling efficiency of the AL loop. BADGE, which accounts for diversity, does much better than simple entropy sampling when there is an increasing amount of redundancy.
-
-#### Active Learning versus Random Sampling
-
-We further explore the effect of the number of examples per class in the unlabeled set on the effectiveness of AL. In these experiments, we follow the baseline setting, but we vary the number of examples in the unlabeled set on a per-class basis.
-
-![ALVRS](./experiment_plots/alvrs.png?raw=true)
-
-We see that, with less examples per class in the unlabeled set, the benefit of AL is reduced as there are fewer informative points to select.
-
-#### Warm-Starting
-
-AL practitioners may be tempted to use the working model in future AL rounds. To examine the effect of having this "warm start" model.
-
-![RESET](./experiment_plots/persistence.png?raw=true)
-
-Although the accuracies are close, we see that the labeling efficiency of each AL method is greater when using a model reset after each AL round.
-
-#### More Facets
-
-Consider reading [Effective Evaluation of Deep Active Learning on Image Classification Tasks](https://arxiv.org/abs/2106.15324) for more evaluation facets and discussion on AL.
-
 ## Testing Individual Strategies and Running Examples
 Before running the examples or test script, please clone the dataset repository in addition to this one. The default data path expects the repository in the same root directory as that of DISTIL. If you change the location, the data paths in the examples and test scripts need to be changed accordingly.
 
