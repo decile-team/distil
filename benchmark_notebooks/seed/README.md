@@ -9,4 +9,4 @@ Some AL initializations use carefully constructed seed sets. Here, we compare th
 |Badge_FL | 57.8 +- 0.0 | 77.9 +- 0.3 | 85.0 +- 0.7 | 88.5 +- 0.5 | 93.2 +- 0.4 |
 |Badge_Rand | 53.8 +- 0.0 | 78.1 +- 0.7 | 84.9 +- 0.4 | 88.6 +- 0.1 | 93.4 +- 0.4 |
 
-We see that the initial benefit of the carefully constructed seed sets (via facility location maximization) vanishes after only a few rounds. <p>&pm</p>
+We see that the initial benefit of the carefully constructed seed sets (via facility location maximization) vanishes after only a few rounds.
