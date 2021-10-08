@@ -92,33 +92,6 @@ Learn more about DISTIL by reading our [documentation](https://decile-team-disti
 ## Demo Notebooks
 We provide a few example notebooks using DISTIL in the notebooks folder. For ease of execution, these notebooks are written for use in Google Colab. Simply upload the selected notebook to Google Colab and connect to a hosted runtime to execute the notebook.
 
-## Testing Individual Strategies and Running Examples
-Before running the examples or test script, please clone the dataset repository in addition to this one. The default data path expects the repository in the same root directory as that of DISTIL. If you change the location, the data paths in the examples and test scripts need to be changed accordingly.
-
-Dataset repository:
-```
-git clone https://github.com/decile-team/datasets.git
-```
-
-To run examples:
-```
-cd distil/examples
-python example.py
-```
-
-To test individual strategies:
-```
-python test_strategy.py --strategy badge
-```
-For more information about the arguments that --strategy accepts:
-```
-python test_strategy.py -h
-```
-Lastly, to run all unit tests:
-```
-python -m unittest discover test
-```
-
 ## Mailing List
 To receive updates about DISTIL and to be a part of the community, join the Decile_DISTIL_Dev group.
 ```
