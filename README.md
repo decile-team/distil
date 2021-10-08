@@ -35,7 +35,7 @@
     </br>
 </p>
 
-DISTIL is an active learning toolkit that implements a number of state-of-the-art active learning strategies with a particular focus for active learning in the deep learning setting. DISTIL is built on *PyTorch* and decouples the training loop from the active learning algorithm, thereby providing flexibility to the user by allowing them to control the training procedure and model. It allows users to incorporate new active learning algorithms easily with minimal changes to their existing code. DISTIL also provides support for incorporating active learning with your custom dataset and allows you to experiment on well-known datasets. We are continuously incorporating newer and better active learning selection strategies into DISTIL.
+DISTIL is an active learning toolkit that implements a number of state-of-the-art active learning strategies with a particular focus for active learning in the deep learning setting. DISTIL is built on *PyTorch* and decouples the training loop from the active learning algorithm, thereby providing flexibility to the user by allowing them to control the training procedure and model. It allows users to incorporate new active learning algorithms easily with minimal changes to their existing code. DISTIL also provides support for incorporating active learning with your custom dataset and allows you to experiment on well-known datasets. We are continuously incorporating newer and better active learning selection strategies into DISTIL, and we plan to expand the scope of the supported active learning algorithms to settings beyond the currently supported supervised classification setting.
 
 ## Key Features of DISTIL
 - Decouples the active learning strategy from the training loop, allowing users to modify the training and/or the active learning strategy
@@ -50,20 +50,29 @@ DISTIL is an active learning toolkit that implements a number of state-of-the-ar
 
 ## Starting with DISTIL
 
+DISTIL can be installed using the following means:
+
 ### From Git Repository
 ```
 git clone https://github.com/decile-team/distil.git
 cd distil
 pip install -r requirements/requirements.txt
-python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
 ```
-For making your custom configuration file for training, please refer to [Distil Configuration File Documentation](https://decile-team-distil.readthedocs.io/en/latest/configuration.html)
 
 ### Pip Installation
-You can also install it directly as a pip package:
 ```python
 pip install decile-distil
 ```
+
+### First Steps
+
+To better understand DISTIL's functionality, we have provided example Jupyter notebooks in the examples folder, which can be easily executed by using Google Colab. We also provide a simple AL training loop that runs experiments using a provided configuration file. To run this loop, do the following from the base folder:
+
+```python
+python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
+```
+
+You can use the default configurations that we have provided in the configs folder, or you can make a custom configuration. For making your custom configuration file for training, please refer to [Distil Configuration File Documentation](https://decile-team-distil.readthedocs.io/en/latest/configuration.html).
 
 Some of the algorithms currently implemented in DISTIL include the following:
 
@@ -83,14 +92,8 @@ Some of the algorithms currently implemented in DISTIL include the following:
 
 To learn more on different active learning algorithms, check out the [Active Learning Strategies Survey Blog](https://decile-research.medium.com/active-learning-strategies-distil-62ee9fc166f9)
 
-## Where can DISTIL be used?
-DISTIL is a toolkit which provides support for various active learning algorithms. Presently, it only works in the supervised learning setting for classification. We will be adding extensions to active semi-supervised learning and active learning for object detection. It can be used in scenarios where you want to reduce labeling cost and time by labeling only the few most informative points for your ML model.
-
 ## Documentation
 Learn more about DISTIL by reading our [documentation](https://decile-team-distil.readthedocs.io/en/latest/).
-
-## Demo Notebooks
-We provide a few example notebooks using DISTIL in the notebooks folder. For ease of execution, these notebooks are written for use in Google Colab. Simply upload the selected notebook to Google Colab and connect to a hosted runtime to execute the notebook.
 
 ## Mailing List
 To receive updates about DISTIL and to be a part of the community, join the Decile_DISTIL_Dev group.
