@@ -66,7 +66,7 @@ pip install decile-distil
 
 ### First Steps
 
-To better understand DISTIL's functionality, we have provided example Jupyter notebooks in the examples folder, which can be easily executed by using Google Colab. We also provide a simple AL training loop that runs experiments using a provided configuration file. To run this loop, do the following from the base folder:
+To better understand DISTIL's functionality, we have provided example Jupyter notebooks in the [tutorials](tutorials) folder, which can be easily executed by using Google Colab. We also provide a simple AL training loop that runs experiments using a provided configuration file. To run this loop, do the following from the base folder:
 
 ```python
 python train.py --config_path=/content/distil/configs/config_svhn_resnet_randomsampling.json
