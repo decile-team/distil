@@ -136,6 +136,6 @@ Youtube Tutorials on DISTIL:
 
 [10] Gal, Yarin, Riashat Islam, and Zoubin Ghahramani. "Deep bayesian active learning with image data." International Conference on Machine Learning. PMLR, 2017.
 
-[11] Suraj Kothawade, Nathan Beck, Krishnateja Killamsetty, and Rishabh Iyer, “Similar: Submodular information measures based active learning in realistic scenarios,”
+[11] Suraj Kothawade, Nathan Beck, Krishnateja Killamsetty, and Rishabh Iyer, “SIMILAR: Submodular Information Measures based Active Learning in Realistic Scenarios,”
 To Appear In Neural Information Processing Systems, NeurIPS 2021.
 
