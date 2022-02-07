@@ -136,6 +136,7 @@ Youtube Tutorials on DISTIL:
 
 [10] Gal, Yarin, Riashat Islam, and Zoubin Ghahramani. "Deep bayesian active learning with image data." International Conference on Machine Learning. PMLR, 2017.
 
-[11] Suraj Kothawade, Nathan Beck, Krishnateja Killamsetty, and Rishabh Iyer, “SIMILAR: Submodular Information Measures based Active Learning in Realistic Scenarios,”
-To Appear In Neural Information Processing Systems, NeurIPS 2021.
+[11] Suraj Kothawade, Nathan Beck, Krishnateja Killamsetty, and Rishabh Iyer, “SIMILAR: Submodular Information Measures based Active Learning in Realistic Scenarios,” Neural Information Processing Systems, NeurIPS 2021.
+
+[12] Suraj Kothawade, Vishal Kaushal, Ganesh Ramakrishnan, Jeff Bilmes, Rishabh Iyer. PRISM: A Rich Class of Parameterized Submodular Information Measures for Guided Subset Selection. To Appear In 36th AAAI Conference on Artificial Intelligence, AAAI 2022
 
