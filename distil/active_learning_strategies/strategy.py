@@ -2,6 +2,18 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
+def dict_to(dictionary, device):
+    
+    # Predict the most likely class
+    if type(dictionary) == dict:
+        for key in dictionary.items():
+            value = dictionary[key]
+            if hasattr(value, "to"):
+                dictionary[key] = value.to(device=device)
+    
+    return dictionary
+                        
+
 class Strategy:
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}): #
         
@@ -55,12 +67,17 @@ class Strategy:
         evaluated_instances = 0
         
         with torch.no_grad():
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+            for elements_to_predict in to_predict_dataloader:
                 
                 # Predict the most likely class
-                elements_to_predict = elements_to_predict.to(self.device)
-                out = self.model(elements_to_predict)
-                pred = out.max(1)[1]
+                if type(elements_to_predict) == dict:
+                    elements_to_predict = dict_to(elements_to_predict, self.device)
+                    out = self.model(**elements_to_predict)
+                    pred = torch.argmax(out,dim=-1)
+                else:
+                    elements_to_predict = elements_to_predict.to(self.device)
+                    out = self.model(elements_to_predict)
+                    pred = out.max(1)[1]
                 
                 # Insert the calculated batch of predictions into the tensor to return
                 start_slice = evaluated_instances
@@ -85,12 +102,17 @@ class Strategy:
         evaluated_instances = 0
         
         with torch.no_grad():
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+            for elements_to_predict in to_predict_dataloader:
                 
                 # Calculate softmax (probabilities) of predictions
-                elements_to_predict = elements_to_predict.to(self.device)
-                out = self.model(elements_to_predict)
-                pred = F.softmax(out, dim=1)
+                if type(elements_to_predict) == dict:
+                    elements_to_predict = dict_to(elements_to_predict, self.device)
+                    out = self.model(**elements_to_predict)
+                    pred = torch.argmax(out,dim=-1)
+                else:
+                    elements_to_predict = elements_to_predict.to(self.device)
+                    out = self.model(elements_to_predict)
+                    pred = F.softmax(out, dim=1)
                 
                 # Insert the calculated batch of probabilities into the tensor to return
                 start_slice = evaluated_instances
@@ -118,12 +140,17 @@ class Strategy:
             for i in range(n_drop):
                 
                 evaluated_instances = 0
-                for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+                for elements_to_predict in to_predict_dataloader:
                 
                     # Calculate softmax (probabilities) of predictions
-                    elements_to_predict = elements_to_predict.to(self.device)
-                    out = self.model(elements_to_predict)
-                    pred = F.softmax(out, dim=1)
+                    if type(elements_to_predict) == dict:
+                        elements_to_predict = dict_to(elements_to_predict, self.device)
+                        out = self.model(**elements_to_predict)
+                        pred = torch.argmax(out,dim=-1)
+                    else:
+                        elements_to_predict = elements_to_predict.to(self.device)
+                        out = self.model(elements_to_predict)
+                        pred = F.softmax(out, dim=1)
                 
                     # Accumulate the calculated batch of probabilities into the tensor to return
                     start_slice = evaluated_instances
@@ -157,9 +184,14 @@ class Strategy:
                 for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
                 
                     # Calculate softmax (probabilities) of predictions
-                    elements_to_predict = elements_to_predict.to(self.device)
-                    out = self.model(elements_to_predict)
-                    pred = F.softmax(out, dim=1)
+                    if type(elements_to_predict) == dict:
+                        elements_to_predict = dict_to(elements_to_predict, self.device)
+                        out = self.model(**elements_to_predict)
+                        pred = torch.argmax(out,dim=-1)
+                    else:
+                        elements_to_predict = elements_to_predict.to(self.device)
+                        out = self.model(elements_to_predict)
+                        pred = F.softmax(out, dim=1)
                 
                     # Accumulate the calculated batch of probabilities into the tensor to return
                     start_slice = evaluated_instances
@@ -189,7 +221,11 @@ class Strategy:
                 
                 # Calculate softmax (probabilities) of predictions
                 elements_to_predict = elements_to_predict.to(self.device)
-                out, l1 = self.model(elements_to_predict, last=True)
+                if type(elements_to_predict) == dict:
+                    elements_to_predict = dict_to(elements_to_predict, self.device)
+                    out, l1 = self.model(**elements_to_predict, last=True)
+                else:
+                    out, l1 = self.model(elements_to_predict, last=True)
                 
                 # Insert the calculated batch of probabilities into the tensor to return
                 start_slice = evaluated_instances
@@ -224,13 +260,18 @@ class Strategy:
         
         # If labels need to be predicted, then do so. Calculate output as normal.
         if predict_labels:
-            for batch_idx, unlabeled_data_batch in enumerate(dataloader):
+            for unlabeled_data_batch in dataloader:
                 start_slice = evaluated_instances
                 end_slice = start_slice + unlabeled_data_batch.shape[0]
                 
-                inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
-                out, l1 = self.model(inputs, last=True, freeze=True)
-                targets = out.max(1)[1]
+                if type(unlabeled_data_batch) == dict:
+                    unlabeled_data_batch = dict_to(unlabeled_data_batch, self.device)
+                    out, l1 = self.model(**unlabeled_data_batch, last=True, freeze=True)
+                    targets = torch.argmax(out,dim=-1)
+                else:
+                    inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
+                    out, l1 = self.model(inputs, last=True, freeze=True)
+                    targets = out.max(1)[1]
                 
                 # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
                 loss = self.loss(out, targets, reduction="sum")
@@ -254,12 +295,18 @@ class Strategy:
                 # Empty the cache as the gradient embeddings could be very large
                 torch.cuda.empty_cache()
         else:
-        
-            for batch_idx, (inputs, targets) in enumerate(dataloader):
+            for inputs, targets in dataloader:
                 start_slice = evaluated_instances
                 end_slice = start_slice + inputs.shape[0]
-                inputs, targets = inputs.to(self.device, non_blocking=True), targets.to(self.device, non_blocking=True)
-                out, l1 = self.model(inputs, last=True, freeze=True)
+                
+                targets = targets.to(self.device, non_blocking=True)
+                
+                if type(inputs) == dict:
+                    inputs = dict_to(inputs, self.device)
+                    out, l1 = self.model(**inputs, last=True, freeze=True)
+                else:
+                    inputs = inputs.to(self.device, non_blocking=True)
+                    out, l1 = self.model(inputs, last=True, freeze=True)
             
                 # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
                 loss = self.loss(out, targets, reduction="sum")
@@ -302,14 +349,24 @@ class Strategy:
     def get_feature_embedding(self, dataset, unlabeled, layer_name='avgpool'):
         dataloader = DataLoader(dataset, batch_size = self.args['batch_size'], shuffle = False)
         features = []
-        if(unlabeled):
-            for batch_idx, inputs in enumerate(dataloader):
-                inputs = inputs.to(self.device)
+        if unlabeled:
+            for inputs in dataloader:
+                
+                if type(inputs) == dict:
+                    inputs = dict_to(inputs, self.device)
+                else:
+                    inputs = inputs.to(self.device)
+                
                 batch_features = self.feature_extraction(inputs, layer_name)
                 features.append(batch_features)
         else:
             for batch_idx, (inputs,_) in enumerate(dataloader):
-                inputs = inputs.to(self.device)
+                
+                if type(inputs) == dict:
+                    inputs = dict_to(inputs, self.device)
+                else:
+                    inputs = inputs.to(self.device)
+                
                 batch_features = self.feature_extraction(inputs, layer_name)
                 features.append(batch_features)
         return torch.vstack(features)
