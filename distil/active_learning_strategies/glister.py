@@ -9,6 +9,17 @@ from torch.utils.data import DataLoader, ConcatDataset, Dataset
 
 import math
 
+def dict_to(dictionary, device):
+    
+    # Predict the most likely class
+    if type(dictionary) == dict:
+        for key in dictionary.items():
+            value = dictionary[key]
+            if hasattr(value, "to"):
+                dictionary[key] = value.to(device=device)
+    
+    return dictionary
+
 class GLISTER(Strategy):
     
     """
@@ -166,9 +177,13 @@ class GLISTER(Strategy):
 
                 for x, y in loader:
                     idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + y.shape[0])]
-                    x = x.to(self.device)
+                    if type(x) == dict:
+                        x = dict_to(x, self.device)
+                        init_out, init_l1 = self.model(**x,last=True)
+                    else:
+                        x = x.to(self.device)    
+                        init_out, init_l1 = self.model(x,last=True)
                     y = y.to(self.device)
-                    init_out, init_l1 = self.model(x,last=True)
                     self.emb[idxs] = init_l1 
                     for j in range(self.target_classes):
                         try:
