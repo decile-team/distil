@@ -5,6 +5,17 @@ from .strategy import Strategy
 from ..utils.batch_bald.consistent_mc_dropout import ConsistentMCDropout
 from ..utils.batch_bald.batchbald import get_batchbald_batch
 
+def dict_to(dictionary, device):
+    
+    # Predict the most likely class
+    if type(dictionary) == dict:
+        for key in dictionary.items():
+            value = dictionary[key]
+            if hasattr(value, "to"):
+                dictionary[key] = value.to(device=device)
+    
+    return dictionary
+
 class BatchBALDDropout(Strategy):
     """
     Implementation of BatchBALD Strategy :footcite:`kirsch2019batchbald`, which refines 
@@ -94,8 +105,14 @@ class BatchBALDDropout(Strategy):
                 
                 for x in loader_te:
                     idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + len(x))]
-                    x = x.to(self.device)
-                    out = self.model(x)
+                    
+                    if type(x) == dict:
+                        x = dict_to(x, self.device)
+                        out = self.model(**x)
+                    else:
+                        x = x.to(self.device)
+                        out = self.model(x)
+                    
                     probs[i][idxs] = F.softmax(out, dim=1)
                     evaluated_points += len(x)
         
