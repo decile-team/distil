@@ -6,7 +6,7 @@ def dict_to(dictionary, device):
     
     # Predict the most likely class
     if type(dictionary) == dict:
-        for key in dictionary.items():
+        for key in dictionary:
             value = dictionary[key]
             if hasattr(value, "to"):
                 dictionary[key] = value.to(device=device)
