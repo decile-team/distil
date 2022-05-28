@@ -382,14 +382,14 @@ class TestStrategy(unittest.TestCase):
         unlabeled_dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
         
         # Get feature embedding for our two-layer-net 
-        features = self.strategy.get_feature_embedding(unlabeled_dict_style_dataset, unlabeled=True, layer_name="linear2")
+        features = self.strategy.get_feature_embedding(unlabeled_dict_style_dataset, unlabeled=True, layer_name="linear1")
         
         # Ensure feature embedding has correct number of points / dimension
         self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))
         self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
         
         # Get feature embedding, except with the labeled dataset
-        features = self.strategy.get_feature_embedding(labeled_dict_style_dataset, unlabeled=False, layer_name="linear2")
+        features = self.strategy.get_feature_embedding(labeled_dict_style_dataset, unlabeled=False, layer_name="linear1")
         
         # Ensure feature embedding has correct number of points / dimension
         self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))

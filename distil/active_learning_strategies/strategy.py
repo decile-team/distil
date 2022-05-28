@@ -289,12 +289,15 @@ class Strategy:
                 start_slice = evaluated_instances
                 
                 data_batch_dict = dict_to(data_batch_dict, self.device)
+                
+                if not predict_labels:
+                    targets = data_batch_dict["labels"] # We expect labels to be in "labels" field of dictionary
+                    del data_batch_dict["labels"]
+                
                 out, l1 = self.model(**data_batch_dict, last=True, freeze=True)
             
                 if predict_labels:
                     targets = out.max(1)[1]
-                else:
-                    targets = data_batch_dict["labels"] # We expect labels to be in "labels" field of dictionary
                     
                 end_slice = start_slice + targets.shape[0]
 
