@@ -28,7 +28,7 @@ class TestBatchBALDDropout(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 5, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'mod_inject': 'linear2'}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'mod_inject': 'linear2'}
         
         self.strategy = BatchBALDDropout(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)
         

@@ -28,7 +28,7 @@ class TestEntropySampling(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy}
         
         self.strategy = EntropySampling(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)  
         

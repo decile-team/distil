@@ -44,7 +44,7 @@ class TestSCMI(unittest.TestCase):
     def test_embedding_type(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'scmi_function': 'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'scmi_function': 'flcmi'}
         
         # Should work for the following choices
         strategy = SCMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.rand_private_dataset, self.mymodel, self.classes, args)
@@ -63,7 +63,7 @@ class TestSCMI(unittest.TestCase):
     def test_smi_function(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
         
         # Should work for the following choices
         args['scmi_function'] = 'flcmi'
@@ -82,7 +82,7 @@ class TestSCMI(unittest.TestCase):
     def test_select(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scmi_function': 'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scmi_function': 'flcmi'}
         strategy = SCMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.rand_private_dataset, self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -100,7 +100,7 @@ class TestSCMI(unittest.TestCase):
     def test_select_dict(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scmi_function': 'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scmi_function': 'flcmi'}
         strategy = SCMI(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), DictDatasetWrapper(self.rand_query_dataset), DictDatasetWrapper(self.rand_private_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         

@@ -38,7 +38,7 @@ class TestSMI(unittest.TestCase):
     def test_embedding_type(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'smi_function': 'fl2mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'smi_function': 'fl2mi'}
         
         # Should work for the following choices
         strategy = SMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.mymodel, self.classes, args)
@@ -57,7 +57,7 @@ class TestSMI(unittest.TestCase):
     def test_smi_function(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
         
         # Should work for the following choices
         args['smi_function'] = 'fl1mi'
@@ -88,7 +88,7 @@ class TestSMI(unittest.TestCase):
     def test_select(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
         strategy = SMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -107,7 +107,7 @@ class TestSMI(unittest.TestCase):
         
         # Try dictionary-style datasets
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
         strategy = SMI(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), DictDatasetWrapper(self.rand_query_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         

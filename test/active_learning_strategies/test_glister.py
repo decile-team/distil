@@ -34,7 +34,7 @@ class TestGLISTER(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        self.args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'lr': 0.01}
+        self.args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'lr': 0.01}
         
     def test_select_no_val(self):
         

@@ -28,7 +28,7 @@ class TestAdversarialBIM(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'verbose': True}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'eps': 0.04, 'verbose': True}
         
         self.strategy = AdversarialBIM(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)    
         

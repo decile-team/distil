@@ -26,7 +26,7 @@ class TestAdversarialDeepFool(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'max_iter': 30}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy, 'max_iter': 30}
         
         self.strategy = AdversarialDeepFool(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)   
         

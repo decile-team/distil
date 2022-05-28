@@ -49,18 +49,18 @@ class TestPartitionStrategy(unittest.TestCase):
     def test_wrapped_strategy_class(self):
         
         # Should fail; no wrapped strategy
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
         self.assertRaises(type(BaseException()), PartitionStrategy, self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         
         # Should work; wrapped strategy
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         
     def test_select_non_sim(self):
         
         budget = 30
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':10}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':10}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -75,7 +75,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':1}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':1}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -94,7 +94,7 @@ class TestPartitionStrategy(unittest.TestCase):
         
         budget = 30
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':10}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':10}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -109,7 +109,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':1}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':1}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -129,7 +129,7 @@ class TestPartitionStrategy(unittest.TestCase):
         budget = 30
         
         # Num partitions = 5 should be faster than no partition
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':10, 'smi_function':'fl1mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':10, 'smi_function':'fl1mi'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, self.rand_query_dataset)
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -147,7 +147,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':1, 'smi_function':'fl1mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':1, 'smi_function':'fl1mi'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, self.rand_query_dataset)
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -172,7 +172,7 @@ class TestPartitionStrategy(unittest.TestCase):
         budget = 30
         
         # Num partitions = 5 should be faster than no partition
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':10, 'smi_function':'fl1mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':10, 'smi_function':'fl1mi'}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -190,7 +190,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':1, 'smi_function':'fl1mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':1, 'smi_function':'fl1mi'}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -215,7 +215,7 @@ class TestPartitionStrategy(unittest.TestCase):
         budget = 30
         
         # Num partitions = 5 should be faster than no partition
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':10, 'scg_function':'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':10, 'scg_function':'flcg'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, private_dataset=self.rand_query_dataset)
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -233,7 +233,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':1, 'scg_function':'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':1, 'scg_function':'flcg'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, private_dataset=self.rand_query_dataset)
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -258,7 +258,7 @@ class TestPartitionStrategy(unittest.TestCase):
         budget = 30
         
         # Num partitions = 5 should be faster than no partition
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':10, 'scg_function':'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':10, 'scg_function':'flcg'}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, private_dataset=DictDatasetWrapper(self.rand_query_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -276,7 +276,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':1, 'scg_function':'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':1, 'scg_function':'flcg'}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, private_dataset=DictDatasetWrapper(self.rand_query_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -301,7 +301,7 @@ class TestPartitionStrategy(unittest.TestCase):
         budget = 30
         
         # Num partitions = 5 should be faster than no partition
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':10, 'scmi_function':'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':10, 'scmi_function':'flcmi'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, self.rand_query_dataset, self.rand_private_dataset)
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -319,7 +319,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':1, 'scmi_function':'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':1, 'scmi_function':'flcmi'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, self.rand_query_dataset, self.rand_private_dataset)
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -344,7 +344,7 @@ class TestPartitionStrategy(unittest.TestCase):
         budget = 30
         
         # Num partitions = 5 should be faster than no partition
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':10, 'scmi_function':'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':10, 'scmi_function':'flcmi'}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset), DictDatasetWrapper(self.rand_private_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)
@@ -362,7 +362,7 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':1, 'scmi_function':'flcmi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':1, 'scmi_function':'flcmi'}
         strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset), DictDatasetWrapper(self.rand_private_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)

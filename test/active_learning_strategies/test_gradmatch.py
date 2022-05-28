@@ -34,7 +34,7 @@ class TestGradMatchActive(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        self.args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy}
+        self.args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy}
         
     def test_fixed_weight_greedy_parallel(self):
         

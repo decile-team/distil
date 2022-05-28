@@ -38,7 +38,7 @@ class TestSCG(unittest.TestCase):
     def test_embedding_type(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'scg_function': 'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'scg_function': 'flcg'}
         
         # Should work for the following choices
         strategy = SCG(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_private_dataset, self.mymodel, self.classes, args)
@@ -57,7 +57,7 @@ class TestSCG(unittest.TestCase):
     def test_scg_function(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
         
         # Should work for the following choices
         args['scg_function'] = 'flcg'
@@ -80,7 +80,7 @@ class TestSCG(unittest.TestCase):
     def test_select(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scg_function': 'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scg_function': 'flcg'}
         strategy = SCG(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_private_dataset, self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
@@ -98,7 +98,7 @@ class TestSCG(unittest.TestCase):
     def test_select_dict(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scg_function': 'flcg'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scg_function': 'flcg'}
         strategy = SCG(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), DictDatasetWrapper(self.rand_private_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         

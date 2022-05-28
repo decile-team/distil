@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.random_sampling import RandomSampling
-from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
+from test.utils import MyLabeledDataset, MyUnlabeledDataset
 
 import unittest
 import torch
@@ -28,7 +28,7 @@ class TestRandomSampling(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy}
         
         self.strategy = RandomSampling(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)  
 
