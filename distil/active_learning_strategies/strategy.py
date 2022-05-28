@@ -73,15 +73,14 @@ class Strategy:
                 if type(elements_to_predict) == dict:
                     elements_to_predict = dict_to(elements_to_predict, self.device)
                     out = self.model(**elements_to_predict)
-                    pred = torch.argmax(out,dim=-1)
                 else:
                     elements_to_predict = elements_to_predict.to(self.device)
                     out = self.model(elements_to_predict)
-                    pred = out.max(1)[1]
+                pred = out.max(1)[1]
                 
                 # Insert the calculated batch of predictions into the tensor to return
                 start_slice = evaluated_instances
-                end_slice = start_slice + elements_to_predict.shape[0]
+                end_slice = start_slice + pred.shape[0]
                 P[start_slice:end_slice] = pred
                 evaluated_instances = end_slice
                 
@@ -108,15 +107,14 @@ class Strategy:
                 if type(elements_to_predict) == dict:
                     elements_to_predict = dict_to(elements_to_predict, self.device)
                     out = self.model(**elements_to_predict)
-                    pred = torch.argmax(out,dim=-1)
                 else:
                     elements_to_predict = elements_to_predict.to(self.device)
                     out = self.model(elements_to_predict)
-                    pred = F.softmax(out, dim=1)
+                pred = F.softmax(out, dim=1)
                 
                 # Insert the calculated batch of probabilities into the tensor to return
                 start_slice = evaluated_instances
-                end_slice = start_slice + elements_to_predict.shape[0]
+                end_slice = start_slice + pred.shape[0]
                 probs[start_slice:end_slice] = pred
                 evaluated_instances = end_slice
 
@@ -146,15 +144,14 @@ class Strategy:
                     if type(elements_to_predict) == dict:
                         elements_to_predict = dict_to(elements_to_predict, self.device)
                         out = self.model(**elements_to_predict)
-                        pred = torch.argmax(out,dim=-1)
                     else:
                         elements_to_predict = elements_to_predict.to(self.device)
                         out = self.model(elements_to_predict)
-                        pred = F.softmax(out, dim=1)
+                    pred = F.softmax(out, dim=1)
                 
                     # Accumulate the calculated batch of probabilities into the tensor to return
                     start_slice = evaluated_instances
-                    end_slice = start_slice + elements_to_predict.shape[0]
+                    end_slice = start_slice + pred.shape[0]
                     probs[start_slice:end_slice] += pred
                     evaluated_instances = end_slice
 
@@ -187,15 +184,14 @@ class Strategy:
                     if type(elements_to_predict) == dict:
                         elements_to_predict = dict_to(elements_to_predict, self.device)
                         out = self.model(**elements_to_predict)
-                        pred = torch.argmax(out,dim=-1)
                     else:
                         elements_to_predict = elements_to_predict.to(self.device)
                         out = self.model(elements_to_predict)
-                        pred = F.softmax(out, dim=1)
+                    pred = F.softmax(out, dim=1)
                 
                     # Accumulate the calculated batch of probabilities into the tensor to return
                     start_slice = evaluated_instances
-                    end_slice = start_slice + elements_to_predict.shape[0]
+                    end_slice = start_slice + pred.shape[0]
                     probs[i][start_slice:end_slice] = pred
                     evaluated_instances = end_slice
 
@@ -229,7 +225,7 @@ class Strategy:
                 
                 # Insert the calculated batch of probabilities into the tensor to return
                 start_slice = evaluated_instances
-                end_slice = start_slice + elements_to_predict.shape[0]
+                end_slice = start_slice + out.shape[0]
                 embedding[start_slice:end_slice] = l1
                 evaluated_instances = end_slice
 
@@ -262,16 +258,16 @@ class Strategy:
         if predict_labels:
             for unlabeled_data_batch in dataloader:
                 start_slice = evaluated_instances
-                end_slice = start_slice + unlabeled_data_batch.shape[0]
                 
                 if type(unlabeled_data_batch) == dict:
                     unlabeled_data_batch = dict_to(unlabeled_data_batch, self.device)
                     out, l1 = self.model(**unlabeled_data_batch, last=True, freeze=True)
-                    targets = torch.argmax(out,dim=-1)
                 else:
                     inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
                     out, l1 = self.model(inputs, last=True, freeze=True)
-                    targets = out.max(1)[1]
+                targets = out.max(1)[1]
+                    
+                end_slice = start_slice + targets.shape[0]
                 
                 # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
                 loss = self.loss(out, targets, reduction="sum")
@@ -297,7 +293,6 @@ class Strategy:
         else:
             for inputs, targets in dataloader:
                 start_slice = evaluated_instances
-                end_slice = start_slice + inputs.shape[0]
                 
                 targets = targets.to(self.device, non_blocking=True)
                 
@@ -307,6 +302,8 @@ class Strategy:
                 else:
                     inputs = inputs.to(self.device, non_blocking=True)
                     out, l1 = self.model(inputs, last=True, freeze=True)
+                    
+                end_slice = start_slice + targets.shape[0]
             
                 # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
                 loss = self.loss(out, targets, reduction="sum")
