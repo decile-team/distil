@@ -311,7 +311,7 @@ class TestStrategy(unittest.TestCase):
         
         # Repeat with a dictionary-style dataset
         labeled_dict_style_dataset = DictDatasetWrapper(self.strategy.labeled_dataset)
-        unlabeled_dict_style_dataset = DictDatasetWrapper(self.stategy.unlabeled_dataset)
+        unlabeled_dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
         
         # Get grad embedding (bias)
         bias_grad_embedding = self.strategy.get_grad_embedding(unlabeled_dict_style_dataset, predict_labels=True, grad_embedding_type='bias')
@@ -379,7 +379,7 @@ class TestStrategy(unittest.TestCase):
         
         # Repeat with a dictionary-style dataset
         labeled_dict_style_dataset = DictDatasetWrapper(self.strategy.labeled_dataset)
-        unlabeled_dict_style_dataset = DictDatasetWrapper(self.stategy.unlabeled_dataset)
+        unlabeled_dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
         
         # Get feature embedding for our two-layer-net 
         features = self.strategy.get_feature_embedding(unlabeled_dict_style_dataset, unlabeled=True, layer_name="linear2")

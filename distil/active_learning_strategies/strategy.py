@@ -216,11 +216,11 @@ class Strategy:
             for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
                 
                 # Calculate softmax (probabilities) of predictions
-                elements_to_predict = elements_to_predict.to(self.device)
                 if type(elements_to_predict) == dict:
                     elements_to_predict = dict_to(elements_to_predict, self.device)
                     out, l1 = self.model(**elements_to_predict, last=True)
-                else:
+                else:    
+                    elements_to_predict = elements_to_predict.to(self.device)
                     out, l1 = self.model(elements_to_predict, last=True)
                 
                 # Insert the calculated batch of probabilities into the tensor to return
@@ -237,7 +237,7 @@ class Strategy:
         
         # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
         loss = self.loss(model_output, targets, reduction="sum")
-        l0_grads = torch.autograd.grad(loss, out)[0]
+        l0_grads = torch.autograd.grad(loss, model_output)[0]
 
         # Calculate the linear layer gradients as well if needed
         if grad_embedding_type != "bias":
