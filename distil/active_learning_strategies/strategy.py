@@ -231,6 +231,29 @@ class Strategy:
 
         return embedding
 
+    def _last_layer_backprop(self, model_output, l1, targets, grad_embedding_type):
+    
+        embDim = self.model.get_embedding_dim()
+        
+        # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
+        loss = self.loss(model_output, targets, reduction="sum")
+        l0_grads = torch.autograd.grad(loss, out)[0]
+
+        # Calculate the linear layer gradients as well if needed
+        if grad_embedding_type != "bias":
+            l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
+            l1_grads = l0_expand * l1.repeat(1, self.target_classes)
+
+        # Populate embedding tensor according to the supplied argument.
+        if grad_embedding_type == "bias":                
+            gradient_embedding = l0_grads
+        elif grad_embedding_type == "linear":
+            gradient_embedding = l1_grads
+        else:
+            gradient_embedding = torch.cat([l0_grads, l1_grads], dim=1) 
+            
+        return gradient_embedding
+
     # gradient embedding (assumes cross-entropy loss)
     #calculating hypothesised labels within
     def get_grad_embedding(self, dataset, predict_labels, grad_embedding_type="bias_linear"):
@@ -254,78 +277,67 @@ class Strategy:
           
         evaluated_instances = 0
         
-        # If labels need to be predicted, then do so. Calculate output as normal.
-        if predict_labels:
-            for unlabeled_data_batch in dataloader:
+        # We need to be careful how we unpack each batch from the loader. Each case
+        # depends on if 1) the dataloader returns dictionary objects and 2) we need
+        # to predict labels. Each is enumerated here. DataLoader will return dict
+        # objects if dataset returns dictionaries.
+        dataloader_is_returning_dictionary_type_object = type(dataset[0]) == dict
+        
+        if dataloader_is_returning_dictionary_type_object:
+            
+            for data_batch_dict in dataloader:
                 start_slice = evaluated_instances
                 
-                if type(unlabeled_data_batch) == dict:
-                    unlabeled_data_batch = dict_to(unlabeled_data_batch, self.device)
-                    out, l1 = self.model(**unlabeled_data_batch, last=True, freeze=True)
+                data_batch_dict = dict_to(data_batch_dict, self.device)
+                out, l1 = self.model(**data_batch_dict, last=True, freeze=True)
+            
+                if predict_labels:
+                    targets = out.max(1)[1]
                 else:
-                    inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
-                    out, l1 = self.model(inputs, last=True, freeze=True)
-                targets = out.max(1)[1]
+                    targets = data_batch_dict["labels"] # We expect labels to be in "labels" field of dictionary
                     
                 end_slice = start_slice + targets.shape[0]
-                
-                # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
-                loss = self.loss(out, targets, reduction="sum")
-                l0_grads = torch.autograd.grad(loss, out)[0]
 
-                # Calculate the linear layer gradients as well if needed
-                if grad_embedding_type != "bias":
-                    l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
-                    l1_grads = l0_expand * l1.repeat(1, self.target_classes)
-
-                # Populate embedding tensor according to the supplied argument.
-                if grad_embedding_type == "bias":                
-                    grad_embedding[start_slice:end_slice] = l0_grads
-                elif grad_embedding_type == "linear":
-                    grad_embedding[start_slice:end_slice] = l1_grads
-                else:
-                    grad_embedding[start_slice:end_slice] = torch.cat([l0_grads, l1_grads], dim=1) 
+                grad_embedding[start_slice:end_slice] = self._last_layer_backprop(out, l1, targets, grad_embedding_type)
             
                 evaluated_instances = end_slice
             
                 # Empty the cache as the gradient embeddings could be very large
                 torch.cuda.empty_cache()
         else:
-            for inputs, targets in dataloader:
-                start_slice = evaluated_instances
-                
-                targets = targets.to(self.device, non_blocking=True)
-                
-                if type(inputs) == dict:
-                    inputs = dict_to(inputs, self.device)
-                    out, l1 = self.model(**inputs, last=True, freeze=True)
-                else:
-                    inputs = inputs.to(self.device, non_blocking=True)
-                    out, l1 = self.model(inputs, last=True, freeze=True)
+            
+            if predict_labels:
+                for unlabeled_data_batch in dataloader:
+                    start_slice = evaluated_instances
                     
-                end_slice = start_slice + targets.shape[0]
-            
-                # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
-                loss = self.loss(out, targets, reduction="sum")
-                l0_grads = torch.autograd.grad(loss, out)[0]
-
-                # Calculate the linear layer gradients as well if needed
-                if grad_embedding_type != "bias":
-                    l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
-                    l1_grads = l0_expand * l1.repeat(1, self.target_classes)
-
-                # Populate embedding tensor according to the supplied argument.
-                if grad_embedding_type == "bias":                
-                    grad_embedding[start_slice:end_slice] = l0_grads
-                elif grad_embedding_type == "linear":
-                    grad_embedding[start_slice:end_slice] = l1_grads
-                else:
-                    grad_embedding[start_slice:end_slice] = torch.cat([l0_grads, l1_grads], dim=1) 
-            
-                evaluated_instances = end_slice
-            
-                # Empty the cache as the gradient embeddings could be very large
-                torch.cuda.empty_cache()
+                    inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
+                    out, l1 = self.model(inputs, last=True, freeze=True)
+                    targets = out.max(1)[1]
+                        
+                    end_slice = start_slice + targets.shape[0]
+        
+                    grad_embedding[start_slice:end_slice] = self._last_layer_backprop(out, l1, targets, grad_embedding_type)
+        
+                    evaluated_instances = end_slice
+                
+                    # Empty the cache as the gradient embeddings could be very large
+                    torch.cuda.empty_cache()
+            else:
+                for inputs, targets in dataloader:
+                    start_slice = evaluated_instances
+                    
+                    inputs = inputs.to(self.device, non_blocking=True)
+                    targets = targets.to(self.device, non_blocking=True)
+                    out, l1 = self.model(inputs, last=True, freeze=True)
+                        
+                    end_slice = start_slice + targets.shape[0]
+                
+                    grad_embedding[start_slice:end_slice] = self._last_layer_backprop(out, l1, targets, grad_embedding_type)
+                
+                    evaluated_instances = end_slice
+                
+                    # Empty the cache as the gradient embeddings could be very large
+                    torch.cuda.empty_cache()
         
         # Return final gradient embedding
         return grad_embedding
@@ -346,24 +358,27 @@ class Strategy:
     def get_feature_embedding(self, dataset, unlabeled, layer_name='avgpool'):
         dataloader = DataLoader(dataset, batch_size = self.args['batch_size'], shuffle = False)
         features = []
-        if unlabeled:
-            for inputs in dataloader:
-                
-                if type(inputs) == dict:
-                    inputs = dict_to(inputs, self.device)
-                else:
-                    inputs = inputs.to(self.device)
-                
-                batch_features = self.feature_extraction(inputs, layer_name)
+        self.model = self.model.to(self.device)
+        
+        # Again, we need to be careful when unpacking instances from the loader. 
+        # DataLoader will return dict objects if dataset returns dictionaries.
+        dataloader_is_returning_dictionary_type_object = type(dataset[0]) == dict
+        
+        if dataloader_is_returning_dictionary_type_object:
+            for inputs_dict in dataloader:
+                inputs_dict = dict_to(inputs_dict, self.device)
+                batch_features = self.feature_extraction(inputs_dict, layer_name)
                 features.append(batch_features)
         else:
-            for batch_idx, (inputs,_) in enumerate(dataloader):
-                
-                if type(inputs) == dict:
-                    inputs = dict_to(inputs, self.device)
-                else:
+            if unlabeled:
+                for inputs in dataloader:
                     inputs = inputs.to(self.device)
-                
-                batch_features = self.feature_extraction(inputs, layer_name)
-                features.append(batch_features)
+                    batch_features = self.feature_extraction(inputs, layer_name)
+                    features.append(batch_features)
+            else:
+                for inputs, _ in dataloader:
+                    inputs = inputs.to(self.device)
+                    batch_features = self.feature_extraction(inputs, layer_name)
+                    features.append(batch_features)
+        
         return torch.vstack(features)

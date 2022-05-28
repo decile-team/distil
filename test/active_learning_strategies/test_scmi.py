@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.scmi import SCMI
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -84,6 +84,24 @@ class TestSCMI(unittest.TestCase):
         budget = 10
         args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scmi_function': 'flcmi'}
         strategy = SCMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.rand_private_dataset, self.mymodel, self.classes, args)
+        idxs = strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_dict(self):
+        
+        budget = 10
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'scmi_function': 'flcmi'}
+        strategy = SCMI(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), DictDatasetWrapper(self.rand_query_dataset), DictDatasetWrapper(self.rand_private_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
         # Ensure that indices are within the range spanned by the unlabeled dataset

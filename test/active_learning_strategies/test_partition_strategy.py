@@ -4,7 +4,7 @@ from distil.active_learning_strategies.smi import SMI
 from distil.active_learning_strategies.scg import SCG
 from distil.active_learning_strategies.partition_strategy import PartitionStrategy
 from distil.active_learning_strategies.badge import BADGE
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -90,6 +90,40 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
+    def test_select_non_sim_dict(self):
+        
+        budget = 30
+        
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':10}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args)
+        idxs = strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': BADGE, 'num_partitions':1}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args)
+        idxs = strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
     def test_select_smi(self):
         
         budget = 30
@@ -115,6 +149,49 @@ class TestPartitionStrategy(unittest.TestCase):
         
         args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':1, 'smi_function':'fl1mi'}
         strategy = PartitionStrategy(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args, self.rand_query_dataset)
+        start_time = time.time()
+        idxs = strategy.select(budget)
+        end_time = time.time()
+        non_part_time = end_time - start_time
+        
+        self.assertLess(part_time, non_part_time)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_smi_dict(self):
+        
+        budget = 30
+        
+        # Num partitions = 5 should be faster than no partition
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':10, 'smi_function':'fl1mi'}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset))
+        start_time = time.time()
+        idxs = strategy.select(budget)
+        end_time = time.time()
+        part_time = end_time - start_time
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SMI, 'num_partitions':1, 'smi_function':'fl1mi'}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset))
         start_time = time.time()
         idxs = strategy.select(budget)
         end_time = time.time()
@@ -176,6 +253,49 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
+    def test_select_scg_dict(self):
+        
+        budget = 30
+        
+        # Num partitions = 5 should be faster than no partition
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':10, 'scg_function':'flcg'}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, private_dataset=DictDatasetWrapper(self.rand_query_dataset))
+        start_time = time.time()
+        idxs = strategy.select(budget)
+        end_time = time.time()
+        part_time = end_time - start_time
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCG, 'num_partitions':1, 'scg_function':'flcg'}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, private_dataset=DictDatasetWrapper(self.rand_query_dataset))
+        start_time = time.time()
+        idxs = strategy.select(budget)
+        end_time = time.time()
+        non_part_time = end_time - start_time
+        
+        self.assertLess(part_time, non_part_time)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
     def test_select_scmi(self):
         
         budget = 30
@@ -219,4 +339,45 @@ class TestPartitionStrategy(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
-    
+    def test_select_scmi_dict(self):
+        
+        budget = 30
+        
+        # Num partitions = 5 should be faster than no partition
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':10, 'scmi_function':'flcmi'}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset), DictDatasetWrapper(self.rand_private_dataset))
+        start_time = time.time()
+        idxs = strategy.select(budget)
+        end_time = time.time()
+        part_time = end_time - start_time
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'wrapped_strategy_class': SCMI, 'num_partitions':1, 'scmi_function':'flcmi'}
+        strategy = PartitionStrategy(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args, DictDatasetWrapper(self.rand_query_dataset), DictDatasetWrapper(self.rand_private_dataset))
+        start_time = time.time()
+        idxs = strategy.select(budget)
+        end_time = time.time()
+        non_part_time = end_time - start_time
+        
+        self.assertLess(part_time, non_part_time)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))

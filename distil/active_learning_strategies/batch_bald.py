@@ -104,7 +104,6 @@ class BatchBALDDropout(Strategy):
                 dropout_module.reset_mask()
                 
                 for x in loader_te:
-                    idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + len(x))]
                     
                     if type(x) == dict:
                         x = dict_to(x, self.device)
@@ -112,6 +111,8 @@ class BatchBALDDropout(Strategy):
                     else:
                         x = x.to(self.device)
                         out = self.model(x)
+                        
+                    idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + out.shape[0])]
                     
                     probs[i][idxs] = F.softmax(out, dim=1)
                     evaluated_points += len(x)

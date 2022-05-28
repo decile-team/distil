@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.glister import GLISTER
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -53,10 +53,46 @@ class TestGLISTER(unittest.TestCase):
         
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
+    
+    def test_select_no_val_dict(self):
+        
+        self.strategy = GLISTER(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args)  
+        
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
         
     def test_select_val(self):
         
         self.strategy = GLISTER(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, self.args, validation_dataset=self.rand_validation_dataset)  
+        
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_val_dict(self):
+        
+        self.strategy = GLISTER(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args, validation_dataset=DictDatasetWrapper(self.rand_validation_dataset))  
         
         budget = 10
         idxs = self.strategy.select(budget)
@@ -89,6 +125,24 @@ class TestGLISTER(unittest.TestCase):
         
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
+    
+    def test_select_reg_rand_dict(self):
+        
+        self.strategy = GLISTER(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args, typeOf='Rand', lam=0.5)  
+
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
         
     def test_select_reg_div(self):
         
@@ -107,7 +161,25 @@ class TestGLISTER(unittest.TestCase):
         
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
+    
+    def test_select_reg_div_dict(self):
         
+        self.strategy = GLISTER(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args, typeOf='Diversity', lam=1)  
+
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))    
+    
     def test_select_reg_fac_loc(self):
         
         self.strategy = GLISTER(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, self.args, typeOf='FacLoc', lam=1)  
@@ -126,9 +198,45 @@ class TestGLISTER(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
+    def test_select_reg_fac_loc_dict(self):
+        
+        self.strategy = GLISTER(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args, typeOf='FacLoc', lam=1)  
+
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
     def test_select_kern_batch(self):
         
         self.strategy = GLISTER(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, self.args, kernel_batch_size=100)  
+        
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_kern_batch_dict(self):
+        
+        self.strategy = GLISTER(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args, kernel_batch_size=100)  
         
         budget = 10
         idxs = self.strategy.select(budget)

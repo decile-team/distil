@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.gradmatch_active import GradMatchActive
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -108,9 +108,51 @@ class TestGradMatchActive(unittest.TestCase):
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
         
+    def test_select_dict(self):
+        
+        self.strategy = GradMatchActive(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args) 
+        
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+     
     def test_select_weighted(self):
         
         self.strategy = GradMatchActive(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, self.args) 
+        
+        budget = 10
+        idxs, weights = self.strategy.select(budget, True)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+        # Ensure weights are positive and number the same as the idxs
+        self.assertEqual(len(weights), len(idxs))
+        
+        for weight in weights:
+            self.assertGreater(weight, 0)   
+    
+    def test_select_weighted_dict(self):
+        
+        self.strategy = GradMatchActive(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, self.args) 
         
         budget = 10
         idxs, weights = self.strategy.select(budget, True)

@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.bayesian_active_learning_disagreement_dropout import BALDDropout
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -55,3 +55,25 @@ class TestBALD(unittest.TestCase):
         
         # Ensure that no point is selected multiple times
         self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_dict(self):
+        
+        # Update the datasets to be dict-style
+        new_labeled = DictDatasetWrapper(self.strategy.labeled_dataset)
+        new_unlabeled = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        self.strategy.update_data(new_labeled, new_unlabeled)
+        
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
