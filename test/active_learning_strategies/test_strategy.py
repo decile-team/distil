@@ -372,7 +372,7 @@ class TestStrategy(unittest.TestCase):
         features = self.strategy.get_feature_embedding(self.strategy.labeled_dataset, unlabeled=False, layer_name="linear1")
         
         # Ensure feature embedding has correct number of points / dimension
-        self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(features.shape[0], len(self.strategy.labeled_dataset))
         self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
     
     def test_get_feature_embedding_dict(self):
@@ -392,7 +392,7 @@ class TestStrategy(unittest.TestCase):
         features = self.strategy.get_feature_embedding(labeled_dict_style_dataset, unlabeled=False, layer_name="linear1")
         
         # Ensure feature embedding has correct number of points / dimension
-        self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(features.shape[0], len(self.strategy.labeled_dataset))
         self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
     
 if __name__ == "__main__":

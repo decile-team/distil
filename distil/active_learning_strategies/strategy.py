@@ -375,6 +375,9 @@ class Strategy:
         
         if dataloader_is_returning_dictionary_type_object:
             for inputs_dict in dataloader:
+                if not unlabeled:
+                    del inputs_dict["labels"] # Again, we expect labels to be in "labels" field of dictionary
+                    
                 inputs_dict = dict_to(inputs_dict, self.device)
                 batch_features = self.feature_extraction(inputs_dict, layer_name)
                 features.append(batch_features)
