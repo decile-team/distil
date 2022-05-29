@@ -362,14 +362,14 @@ class TestStrategy(unittest.TestCase):
     def test_get_feature_embedding(self):
         
         # Get feature embedding for our two-layer-net 
-        features = self.strategy.get_feature_embedding(self.strategy.unlabeled_dataset, unlabeled=True, layer_name="linear2")
+        features = self.strategy.get_feature_embedding(self.strategy.unlabeled_dataset, unlabeled=True, layer_name="linear1")
         
         # Ensure feature embedding has correct number of points / dimension
         self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))
         self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
         
         # Get feature embedding, except with the labeled dataset
-        features = self.strategy.get_feature_embedding(self.strategy.labeled_dataset, unlabeled=False, layer_name="linear2")
+        features = self.strategy.get_feature_embedding(self.strategy.labeled_dataset, unlabeled=False, layer_name="linear1")
         
         # Ensure feature embedding has correct number of points / dimension
         self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))

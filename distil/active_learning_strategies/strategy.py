@@ -355,7 +355,13 @@ class Strategy:
         for name, layer in self.model._modules.items():
             if name == layer_name:
                 layer.register_forward_hook(get_features(layer_name))
-        output = self.model(inp)
+        
+        with torch.no_grad():
+            if type(inp) == dict:
+                output = self.model(**inp)
+            else:
+                output = self.model(inp)
+            
         return torch.squeeze(feature[layer_name])
 
     def get_feature_embedding(self, dataset, unlabeled, layer_name='avgpool'):
