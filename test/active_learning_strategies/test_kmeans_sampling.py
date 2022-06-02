@@ -407,26 +407,7 @@ class TestKMeansSampling(unittest.TestCase):
         
     def test_select_dict(self):
         
-        self.strategy.representation = 'linear'
-        
-        # Update the datasets to be dict-style
-        new_labeled = DictDatasetWrapper(self.strategy.labeled_dataset)
-        new_unlabeled = DictDatasetWrapper(self.strategy.unlabeled_dataset)
-        self.strategy.update_data(new_labeled, new_unlabeled)
-        
         budget = 100
-        idxs = self.strategy.select(budget)
-        
-        # Ensure that indices are within the range spanned by the unlabeled dataset
-        for idx in idxs:
-            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
-            self.assertGreaterEqual(idx, 0)
-            
-        # Ensure that `budget` idx were returned
-        self.assertEqual(budget, len(idxs))
-        
-        # Ensure that no point is selected multiple times
-        self.assertEqual(len(idxs), len(set(idxs)))
         
         # Raw representation is not supported currently for dictionary-type inputs, so make sure an error is thrown.
         self.strategy.representation = "raw"
