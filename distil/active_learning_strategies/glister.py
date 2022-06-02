@@ -13,7 +13,7 @@ def dict_to(dictionary, device):
     
     # Predict the most likely class
     if type(dictionary) == dict:
-        for key in dictionary.items():
+        for key in dictionary:
             value = dictionary[key]
             if hasattr(value, "to"):
                 dictionary[key] = value.to(device=device)
@@ -175,7 +175,16 @@ class GLISTER(Strategy):
             
             with torch.no_grad():
 
-                for x, y in loader:
+                for loaded_instance in loader:
+                    
+                    if type(loaded_instance) == dict:
+                        y = loaded_instance["labels"]   # Per our convention, we expect labels in dictionary-type inputs to be in "labels" field
+                        del loaded_instance["labels"]
+                        x = loaded_instance
+                    else:
+                        x = loaded_instance[0]
+                        y = loaded_instance[1]
+                    
                     idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + y.shape[0])]
                     if type(x) == dict:
                         x = dict_to(x, self.device)

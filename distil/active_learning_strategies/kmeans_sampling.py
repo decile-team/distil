@@ -76,6 +76,19 @@ class KMeansSampling(Strategy):
         if 'n_init' not in self.kmeans_args:
             self.kmeans_args['n_init'] = 10
     
+    def _dataset_to_raw_device_tensor(self, input_dataset):
+        
+        loaded_dataset_tensor = next(iter(DataLoader(input_dataset, shuffle=False, batch_size=len(input_dataset))))
+        
+        if type(loaded_dataset_tensor) == dict:
+            raise ValueError("Dictionary-type input not supported with raw representation")
+        else:
+            
+            loaded_dataset_tensor = loaded_dataset_tensor.to(self.device)
+            loaded_dataset_tensor = loaded_dataset_tensor.view(len(input_dataset), -1)
+    
+        return loaded_dataset_tensor
+    
     def get_closest_distances(self, ground_set, center_tensor):
         
         ground_set_loader = DataLoader(ground_set, batch_size = self.args['batch_size'], shuffle = False)
@@ -123,8 +136,7 @@ class KMeansSampling(Strategy):
             if self.representation == 'linear':
                 selected_centers_tensor = self.get_embedding(selected_centers)
             elif self.representation == 'raw':
-                selected_centers_tensor = next(iter(DataLoader(selected_centers, shuffle=False, batch_size=len(selected_points)))).to(self.device)
-                selected_centers_tensor = selected_centers_tensor.view(len(selected_points), -1)
+                selected_centers_tensor = self._dataset_to_raw_device_tensor(selected_centers)
             else:
                 raise ValueError("Representation must be one of 'linear', 'raw'")
             
@@ -215,7 +227,7 @@ class KMeansSampling(Strategy):
             if self.representation == "linear":
                 centers = self.get_embedding(centers_subset)
             else:
-                centers = next(iter(DataLoader(centers_subset, shuffle=False, batch_size=len(centers_subset)))).to(self.device)
+                centers = self._dataset_to_raw_device_tensor(centers_subset)
         
             # Alternate between means/assignment steps until max_iter reached
             for i in range(self.kmeans_args['max_iter']):
