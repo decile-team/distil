@@ -266,7 +266,7 @@ class KMeansSampling(Strategy):
         self.model.eval()
         
         # See if the unlabeled dataset returns dictionary-style type instances. If so, raise an error.
-        if type(self.unlabeled_dataset[0]) == dict:
+        if type(self.unlabeled_dataset[0]) == dict and self.representation == "raw":
             raise ValueError("Dictionary-type input not supported with raw representation")
         
         # Get the best centers through kmeans clustering
