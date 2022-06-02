@@ -79,13 +79,8 @@ class KMeansSampling(Strategy):
     def _dataset_to_raw_device_tensor(self, input_dataset):
         
         loaded_dataset_tensor = next(iter(DataLoader(input_dataset, shuffle=False, batch_size=len(input_dataset))))
-        
-        if type(loaded_dataset_tensor) == dict:
-            raise ValueError("Dictionary-type input not supported with raw representation")
-        else:
-            
-            loaded_dataset_tensor = loaded_dataset_tensor.to(self.device)
-            loaded_dataset_tensor = loaded_dataset_tensor.view(len(input_dataset), -1)
+        loaded_dataset_tensor = loaded_dataset_tensor.to(self.device)
+        loaded_dataset_tensor = loaded_dataset_tensor.view(len(input_dataset), -1)
     
         return loaded_dataset_tensor
     
@@ -269,6 +264,10 @@ class KMeansSampling(Strategy):
         """	
         
         self.model.eval()
+        
+        # See if the unlabeled dataset returns dictionary-style type instances. If so, raise an error.
+        if self.unlabeled_dataset[0] == dict:
+            raise ValueError("Dictionary-type input not supported with raw representation")
         
         # Get the best centers through kmeans clustering
         best_centers = self.kmeans_clustering(budget)
