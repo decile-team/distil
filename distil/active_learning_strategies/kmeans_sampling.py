@@ -86,35 +86,34 @@ class KMeansSampling(Strategy):
     
     def get_closest_distances(self, ground_set, center_tensor):
         
-        ground_set_loader = DataLoader(ground_set, batch_size = self.args['batch_size'], shuffle = False)
-
         # Store the minimum distances in this tensor    
         ground_set_min_distances = torch.zeros(len(ground_set)).to(self.device)
         ground_set_closest_center_indices = torch.zeros(len(ground_set), dtype=torch.long).to(self.device)
-        evaluated_ground_set_points = 0
+        start_batch_idx = 0
     
         with torch.no_grad():
-            for ground_set_batch_idx, ground_set_batch in enumerate(ground_set_loader):
+            while start_batch_idx != len(ground_set):
+                end_batch_idx = min(start_batch_idx + self.args['batch_size'], len(ground_set))
+                batch_idx_list = list(range(start_batch_idx, end_batch_idx))
+                batch_subset = Subset(ground_set, batch_idx_list)
                 
-                # Put the batch on the correct device, calculate embedding, initialize this batch's min distance center to None
-                if self.representation == 'linear':
-                    ground_set_batch = CustomTensorDataset(ground_set_batch.to(self.device))
-                    ground_set_batch = self.get_embedding(ground_set_batch)
-                elif self.representation == 'raw':
-                    ground_set_batch = ground_set_batch.to(self.device).view(len(ground_set_batch), -1)
+                if self.representation == "linear":
+                    batch_embedding_tensor = self.get_embedding(batch_subset)
+                elif self.representation == "raw":
+                    batch_embedding_tensor = self._dataset_to_raw_device_tensor(batch_subset)
                 else:
                     raise ValueError("Representation must be one of 'linear', 'raw'")
-                                 
+                    
                 # Calculate the distance of each point in the ground set batch to each center in the center batch.
-                inter_batch_distances = torch.cdist(ground_set_batch, center_tensor, p=2)
+                inter_batch_distances = torch.cdist(batch_embedding_tensor, center_tensor, p=2)
                     
                 # Calculate the minimum distances across each row; this will reflect the distance to the closest center
                 batch_min_distances, batch_min_idx = torch.min(inter_batch_distances, dim=1)                   
                     
                 # Assign minimum distance to the correct slice of the storage tensor
-                ground_set_min_distances[evaluated_ground_set_points:(evaluated_ground_set_points + len(ground_set_batch))] = batch_min_distances
-                ground_set_closest_center_indices[evaluated_ground_set_points:(evaluated_ground_set_points + len(ground_set_batch))] = batch_min_idx
-                evaluated_ground_set_points += len(ground_set_batch)
+                ground_set_min_distances[start_batch_idx:end_batch_idx] = batch_min_distances
+                ground_set_closest_center_indices[start_batch_idx:end_batch_idx] = batch_min_idx
+                start_batch_idx = end_batch_idx
 
         return ground_set_min_distances, ground_set_closest_center_indices.tolist()
     
@@ -164,35 +163,41 @@ class KMeansSampling(Strategy):
         else:
             raise ValueError("Representation must be one of 'linear', 'raw'")
             
-        # Calculate the mean of each cluster
-        for i, cluster in enumerate(clusters):
-            
-            # Only load those points specific to the cluster
-            ground_set_cluster = Subset(self.unlabeled_dataset, cluster)
-            ground_set_loader = DataLoader(ground_set_cluster, batch_size = self.args['batch_size'], shuffle = False)
-    
-            running_cluster_sum = None
-    
-            # Calculate the sum of all the elements in the cluster after getting the correct embedding
-            for batch_idx, ground_set_batch in enumerate(ground_set_loader):
+        with torch.no_grad():
+            # Calculate the mean of each cluster
+            for i, cluster in enumerate(clusters):    
+                start_batch_idx = 0
                 
-                # Put the center batch on the correct device, calculate embedding
-                if self.representation == 'linear':
-                    ground_set_batch = CustomTensorDataset(ground_set_batch.to(self.device))
-                    ground_set_batch = self.get_embedding(ground_set_batch)
-                elif self.representation == 'raw':
-                    ground_set_batch = ground_set_batch.to(self.device).view(len(ground_set_batch), -1)    
+                # Only load those points specific to the cluster
+                ground_set_cluster = Subset(self.unlabeled_dataset, cluster)
+                running_cluster_sum = None
                 
-                if running_cluster_sum is None:
-                    running_cluster_sum = torch.sum(ground_set_batch, dim=0)
-                else:
-                    running_cluster_sum += torch.sum(ground_set_batch, dim=0)
-         
-            # Divide by total number of elements to get the mean
-            running_cluster_sum /= len(ground_set_cluster)
-            means[i] = running_cluster_sum
-
+                while start_batch_idx != len(ground_set_cluster):
+                    end_batch_idx = min(start_batch_idx + self.args['batch_size'], len(ground_set_cluster))
+                    batch_idx_list = list(range(start_batch_idx, end_batch_idx))
+                    batch_subset = Subset(ground_set_cluster, batch_idx_list)
+        
+                    # Put center batch on correct device, calculate embedding
+                    if self.representation == 'linear':
+                        batch_subset_tensor = self.get_embedding(batch_subset)
+                    elif self.representation == 'raw':
+                        batch_subset_tensor = self._dataset_to_raw_device_tensor(batch_subset)
+                    else:
+                        raise ValueError("Representation must be one of 'linear', 'raw'")
+                       
+                    if running_cluster_sum is None:
+                        running_cluster_sum = torch.sum(batch_subset_tensor, dim=0)
+                    else:
+                        running_cluster_sum += torch.sum(batch_subset_tensor, dim=0)
+        
+                    start_batch_idx = end_batch_idx
+                    
+                # Divide by total number of elements to get the mean
+                running_cluster_sum /= len(ground_set_cluster)
+                means[i] = running_cluster_sum
+                
         return means
+    
     
     def kmeans_calculate_clusters(self, center_tensor):
         
