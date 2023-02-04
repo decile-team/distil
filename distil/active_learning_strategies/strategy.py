@@ -2,6 +2,18 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
+def dict_to(dictionary, device):
+    
+    # Predict the most likely class
+    if type(dictionary) == dict:
+        for key in dictionary:
+            value = dictionary[key]
+            if hasattr(value, "to"):
+                dictionary[key] = value.to(device=device)
+    
+    return dictionary
+                        
+
 class Strategy:
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}): #
         
@@ -55,16 +67,20 @@ class Strategy:
         evaluated_instances = 0
         
         with torch.no_grad():
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+            for elements_to_predict in to_predict_dataloader:
                 
                 # Predict the most likely class
-                elements_to_predict = elements_to_predict.to(self.device)
-                out = self.model(elements_to_predict)
+                if type(elements_to_predict) == dict:
+                    elements_to_predict = dict_to(elements_to_predict, self.device)
+                    out = self.model(**elements_to_predict)
+                else:
+                    elements_to_predict = elements_to_predict.to(self.device)
+                    out = self.model(elements_to_predict)
                 pred = out.max(1)[1]
                 
                 # Insert the calculated batch of predictions into the tensor to return
                 start_slice = evaluated_instances
-                end_slice = start_slice + elements_to_predict.shape[0]
+                end_slice = start_slice + pred.shape[0]
                 P[start_slice:end_slice] = pred
                 evaluated_instances = end_slice
                 
@@ -85,16 +101,20 @@ class Strategy:
         evaluated_instances = 0
         
         with torch.no_grad():
-            for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+            for elements_to_predict in to_predict_dataloader:
                 
                 # Calculate softmax (probabilities) of predictions
-                elements_to_predict = elements_to_predict.to(self.device)
-                out = self.model(elements_to_predict)
+                if type(elements_to_predict) == dict:
+                    elements_to_predict = dict_to(elements_to_predict, self.device)
+                    out = self.model(**elements_to_predict)
+                else:
+                    elements_to_predict = elements_to_predict.to(self.device)
+                    out = self.model(elements_to_predict)
                 pred = F.softmax(out, dim=1)
                 
                 # Insert the calculated batch of probabilities into the tensor to return
                 start_slice = evaluated_instances
-                end_slice = start_slice + elements_to_predict.shape[0]
+                end_slice = start_slice + pred.shape[0]
                 probs[start_slice:end_slice] = pred
                 evaluated_instances = end_slice
 
@@ -118,16 +138,20 @@ class Strategy:
             for i in range(n_drop):
                 
                 evaluated_instances = 0
-                for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
+                for elements_to_predict in to_predict_dataloader:
                 
                     # Calculate softmax (probabilities) of predictions
-                    elements_to_predict = elements_to_predict.to(self.device)
-                    out = self.model(elements_to_predict)
+                    if type(elements_to_predict) == dict:
+                        elements_to_predict = dict_to(elements_to_predict, self.device)
+                        out = self.model(**elements_to_predict)
+                    else:
+                        elements_to_predict = elements_to_predict.to(self.device)
+                        out = self.model(elements_to_predict)
                     pred = F.softmax(out, dim=1)
                 
                     # Accumulate the calculated batch of probabilities into the tensor to return
                     start_slice = evaluated_instances
-                    end_slice = start_slice + elements_to_predict.shape[0]
+                    end_slice = start_slice + pred.shape[0]
                     probs[start_slice:end_slice] += pred
                     evaluated_instances = end_slice
 
@@ -157,13 +181,17 @@ class Strategy:
                 for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
                 
                     # Calculate softmax (probabilities) of predictions
-                    elements_to_predict = elements_to_predict.to(self.device)
-                    out = self.model(elements_to_predict)
+                    if type(elements_to_predict) == dict:
+                        elements_to_predict = dict_to(elements_to_predict, self.device)
+                        out = self.model(**elements_to_predict)
+                    else:
+                        elements_to_predict = elements_to_predict.to(self.device)
+                        out = self.model(elements_to_predict)
                     pred = F.softmax(out, dim=1)
                 
                     # Accumulate the calculated batch of probabilities into the tensor to return
                     start_slice = evaluated_instances
-                    end_slice = start_slice + elements_to_predict.shape[0]
+                    end_slice = start_slice + pred.shape[0]
                     probs[i][start_slice:end_slice] = pred
                     evaluated_instances = end_slice
 
@@ -188,16 +216,43 @@ class Strategy:
             for batch_idx, elements_to_predict in enumerate(to_predict_dataloader):
                 
                 # Calculate softmax (probabilities) of predictions
-                elements_to_predict = elements_to_predict.to(self.device)
-                out, l1 = self.model(elements_to_predict, last=True)
+                if type(elements_to_predict) == dict:
+                    elements_to_predict = dict_to(elements_to_predict, self.device)
+                    out, l1 = self.model(**elements_to_predict, last=True)
+                else:    
+                    elements_to_predict = elements_to_predict.to(self.device)
+                    out, l1 = self.model(elements_to_predict, last=True)
                 
                 # Insert the calculated batch of probabilities into the tensor to return
                 start_slice = evaluated_instances
-                end_slice = start_slice + elements_to_predict.shape[0]
+                end_slice = start_slice + out.shape[0]
                 embedding[start_slice:end_slice] = l1
                 evaluated_instances = end_slice
 
         return embedding
+
+    def _last_layer_backprop(self, model_output, l1, targets, grad_embedding_type):
+    
+        embDim = self.model.get_embedding_dim()
+        
+        # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
+        loss = self.loss(model_output, targets, reduction="sum")
+        l0_grads = torch.autograd.grad(loss, model_output)[0]
+
+        # Calculate the linear layer gradients as well if needed
+        if grad_embedding_type != "bias":
+            l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
+            l1_grads = l0_expand * l1.repeat(1, self.target_classes)
+
+        # Populate embedding tensor according to the supplied argument.
+        if grad_embedding_type == "bias":                
+            gradient_embedding = l0_grads
+        elif grad_embedding_type == "linear":
+            gradient_embedding = l1_grads
+        else:
+            gradient_embedding = torch.cat([l0_grads, l1_grads], dim=1) 
+            
+        return gradient_embedding
 
     # gradient embedding (assumes cross-entropy loss)
     #calculating hypothesised labels within
@@ -222,66 +277,70 @@ class Strategy:
           
         evaluated_instances = 0
         
-        # If labels need to be predicted, then do so. Calculate output as normal.
-        if predict_labels:
-            for batch_idx, unlabeled_data_batch in enumerate(dataloader):
+        # We need to be careful how we unpack each batch from the loader. Each case
+        # depends on if 1) the dataloader returns dictionary objects and 2) we need
+        # to predict labels. Each is enumerated here. DataLoader will return dict
+        # objects if dataset returns dictionaries.
+        dataloader_is_returning_dictionary_type_object = type(dataset[0]) == dict
+        
+        if dataloader_is_returning_dictionary_type_object:
+            
+            for data_batch_dict in dataloader:
                 start_slice = evaluated_instances
-                end_slice = start_slice + unlabeled_data_batch.shape[0]
                 
-                inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
-                out, l1 = self.model(inputs, last=True, freeze=True)
-                targets = out.max(1)[1]
+                data_batch_dict = dict_to(data_batch_dict, self.device)
                 
-                # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
-                loss = self.loss(out, targets, reduction="sum")
-                l0_grads = torch.autograd.grad(loss, out)[0]
+                if not predict_labels:
+                    targets = data_batch_dict["labels"] # We expect labels to be in "labels" field of dictionary
+                    del data_batch_dict["labels"]
+                
+                out, l1 = self.model(**data_batch_dict, last=True, freeze=True)
+            
+                if predict_labels:
+                    targets = out.max(1)[1]
+                    
+                end_slice = start_slice + targets.shape[0]
 
-                # Calculate the linear layer gradients as well if needed
-                if grad_embedding_type != "bias":
-                    l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
-                    l1_grads = l0_expand * l1.repeat(1, self.target_classes)
-
-                # Populate embedding tensor according to the supplied argument.
-                if grad_embedding_type == "bias":                
-                    grad_embedding[start_slice:end_slice] = l0_grads
-                elif grad_embedding_type == "linear":
-                    grad_embedding[start_slice:end_slice] = l1_grads
-                else:
-                    grad_embedding[start_slice:end_slice] = torch.cat([l0_grads, l1_grads], dim=1) 
+                grad_embedding[start_slice:end_slice] = self._last_layer_backprop(out, l1, targets, grad_embedding_type)
             
                 evaluated_instances = end_slice
             
                 # Empty the cache as the gradient embeddings could be very large
                 torch.cuda.empty_cache()
         else:
+            
+            if predict_labels:
+                for unlabeled_data_batch in dataloader:
+                    start_slice = evaluated_instances
+                    
+                    inputs = unlabeled_data_batch.to(self.device, non_blocking=True)
+                    out, l1 = self.model(inputs, last=True, freeze=True)
+                    targets = out.max(1)[1]
+                        
+                    end_slice = start_slice + targets.shape[0]
         
-            for batch_idx, (inputs, targets) in enumerate(dataloader):
-                start_slice = evaluated_instances
-                end_slice = start_slice + inputs.shape[0]
-                inputs, targets = inputs.to(self.device, non_blocking=True), targets.to(self.device, non_blocking=True)
-                out, l1 = self.model(inputs, last=True, freeze=True)
-            
-                # Calculate loss as a sum, allowing for the calculation of the gradients using autograd wprt the outputs (bias gradients)
-                loss = self.loss(out, targets, reduction="sum")
-                l0_grads = torch.autograd.grad(loss, out)[0]
-
-                # Calculate the linear layer gradients as well if needed
-                if grad_embedding_type != "bias":
-                    l0_expand = torch.repeat_interleave(l0_grads, embDim, dim=1)
-                    l1_grads = l0_expand * l1.repeat(1, self.target_classes)
-
-                # Populate embedding tensor according to the supplied argument.
-                if grad_embedding_type == "bias":                
-                    grad_embedding[start_slice:end_slice] = l0_grads
-                elif grad_embedding_type == "linear":
-                    grad_embedding[start_slice:end_slice] = l1_grads
-                else:
-                    grad_embedding[start_slice:end_slice] = torch.cat([l0_grads, l1_grads], dim=1) 
-            
-                evaluated_instances = end_slice
-            
-                # Empty the cache as the gradient embeddings could be very large
-                torch.cuda.empty_cache()
+                    grad_embedding[start_slice:end_slice] = self._last_layer_backprop(out, l1, targets, grad_embedding_type)
+        
+                    evaluated_instances = end_slice
+                
+                    # Empty the cache as the gradient embeddings could be very large
+                    torch.cuda.empty_cache()
+            else:
+                for inputs, targets in dataloader:
+                    start_slice = evaluated_instances
+                    
+                    inputs = inputs.to(self.device, non_blocking=True)
+                    targets = targets.to(self.device, non_blocking=True)
+                    out, l1 = self.model(inputs, last=True, freeze=True)
+                        
+                    end_slice = start_slice + targets.shape[0]
+                
+                    grad_embedding[start_slice:end_slice] = self._last_layer_backprop(out, l1, targets, grad_embedding_type)
+                
+                    evaluated_instances = end_slice
+                
+                    # Empty the cache as the gradient embeddings could be very large
+                    torch.cuda.empty_cache()
         
         # Return final gradient embedding
         return grad_embedding
@@ -296,20 +355,42 @@ class Strategy:
         for name, layer in self.model._modules.items():
             if name == layer_name:
                 layer.register_forward_hook(get_features(layer_name))
-        output = self.model(inp)
+        
+        with torch.no_grad():
+            if type(inp) == dict:
+                output = self.model(**inp)
+            else:
+                output = self.model(inp)
+            
         return torch.squeeze(feature[layer_name])
 
     def get_feature_embedding(self, dataset, unlabeled, layer_name='avgpool'):
         dataloader = DataLoader(dataset, batch_size = self.args['batch_size'], shuffle = False)
         features = []
-        if(unlabeled):
-            for batch_idx, inputs in enumerate(dataloader):
-                inputs = inputs.to(self.device)
-                batch_features = self.feature_extraction(inputs, layer_name)
+        self.model = self.model.to(self.device)
+        
+        # Again, we need to be careful when unpacking instances from the loader. 
+        # DataLoader will return dict objects if dataset returns dictionaries.
+        dataloader_is_returning_dictionary_type_object = type(dataset[0]) == dict
+        
+        if dataloader_is_returning_dictionary_type_object:
+            for inputs_dict in dataloader:
+                if not unlabeled:
+                    del inputs_dict["labels"] # Again, we expect labels to be in "labels" field of dictionary
+                    
+                inputs_dict = dict_to(inputs_dict, self.device)
+                batch_features = self.feature_extraction(inputs_dict, layer_name)
                 features.append(batch_features)
         else:
-            for batch_idx, (inputs,_) in enumerate(dataloader):
-                inputs = inputs.to(self.device)
-                batch_features = self.feature_extraction(inputs, layer_name)
-                features.append(batch_features)
+            if unlabeled:
+                for inputs in dataloader:
+                    inputs = inputs.to(self.device)
+                    batch_features = self.feature_extraction(inputs, layer_name)
+                    features.append(batch_features)
+            else:
+                for inputs, _ in dataloader:
+                    inputs = inputs.to(self.device)
+                    batch_features = self.feature_extraction(inputs, layer_name)
+                    features.append(batch_features)
+        
         return torch.vstack(features)

@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.strategy import Strategy
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -28,7 +28,7 @@ class TestStrategy(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy}
         
         self.strategy = Strategy(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args)    
     
@@ -97,11 +97,45 @@ class TestStrategy(unittest.TestCase):
             self.assertLess(predicted_label, self.strategy.target_classes)
             self.assertGreaterEqual(predicted_label, 0)
             
+    def test_predict_dict(self):
+        
+        # Repeat with a dictionary-style dataset
+        dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        predicted_labels = self.strategy.predict(dict_style_dataset)
+            
+        # Ensure the same number of labels exist as the number of points
+        self.assertEqual(len(predicted_labels), len(self.strategy.unlabeled_dataset))
+        
+        # Ensure none of the predicted labels are outside the expected range
+        for predicted_label in predicted_labels:
+            self.assertLess(predicted_label, self.strategy.target_classes)
+            self.assertGreaterEqual(predicted_label, 0)
+            
     def test_predict_prob(self):
         
         # Predict probabilities for the unlabeled dataset
         predict_probs = self.strategy.predict_prob(self.strategy.unlabeled_dataset)
         
+        # Ensure the same number of probability vectors and number of probabilities
+        self.assertEqual(predict_probs.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(predict_probs.shape[1], self.strategy.target_classes)
+        
+        # Ensure probabilities sum to 1
+        for predicted_prob_vector in predict_probs:
+            self.assertAlmostEqual(predicted_prob_vector.sum().item(), 1, places=6)
+            
+        # Ensure probabilities are geq 0, leq 1
+        for predicted_prob_vector in predict_probs:
+            for predicted_prob in predicted_prob_vector:
+                self.assertLessEqual(predicted_prob, 1)
+                self.assertGreaterEqual(predicted_prob, 0)
+    
+    def test_predict_prob_dict(self):
+        
+        # Repeat with a dictionary-style dataset
+        dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        predict_probs = self.strategy.predict_prob(dict_style_dataset)
+            
         # Ensure the same number of probability vectors and number of probabilities
         self.assertEqual(predict_probs.shape[0], len(self.strategy.unlabeled_dataset))
         self.assertEqual(predict_probs.shape[1], self.strategy.target_classes)
@@ -134,7 +168,27 @@ class TestStrategy(unittest.TestCase):
             for predicted_prob in predicted_prob_vector:
                 self.assertLessEqual(predicted_prob, 1)
                 self.assertGreaterEqual(predicted_prob, 0)
-                
+
+    def test_predict_prob_dropout_dict(self):
+        
+        # Repeat with a dictionary-style dataset                
+        dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        predict_probs = self.strategy.predict_prob_dropout(dict_style_dataset, n_drop=5)
+        
+        # Ensure the same number of probability vectors and number of probabilities
+        self.assertEqual(predict_probs.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(predict_probs.shape[1], self.strategy.target_classes)
+        
+        # Ensure probabilities sum to 1
+        for predicted_prob_vector in predict_probs:
+            self.assertAlmostEqual(predicted_prob_vector.sum().item(), 1, places=6)
+            
+        # Ensure probabilities are geq 0, leq 1
+        for predicted_prob_vector in predict_probs:
+            for predicted_prob in predicted_prob_vector:
+                self.assertLessEqual(predicted_prob, 1)
+                self.assertGreaterEqual(predicted_prob, 0) 
+        
     def test_predict_prob_dropout_split(self):
         
         # Predict probabilities for the unlabeled dataset
@@ -158,10 +212,46 @@ class TestStrategy(unittest.TestCase):
                     self.assertLessEqual(predicted_prob, 1)
                     self.assertGreaterEqual(predicted_prob, 0)
                     
+    def test_predict_probs_dropout_split_dict(self):
+        
+        # Repeat with a dictionary-style dataset
+        n_drop = 5             
+        dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        predict_probs = self.strategy.predict_prob_dropout_split(dict_style_dataset, n_drop=n_drop)
+        
+        # Ensure the same number of probability vectors and number of probabilities and number of dropout samples
+        self.assertEqual(predict_probs.shape[0], n_drop)
+        self.assertEqual(predict_probs.shape[1], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(predict_probs.shape[2], self.strategy.target_classes)
+        
+        # Ensure probabilities sum to 1
+        for predict_prob_dropout in predict_probs:
+            for predicted_prob_vector in predict_prob_dropout:
+                self.assertAlmostEqual(predicted_prob_vector.sum().item(), 1, places=6)
+            
+        # Ensure probabilities are geq 0, leq 1
+        for predict_prob_dropout in predict_probs:
+            for predicted_prob_vector in predict_prob_dropout:
+                for predicted_prob in predicted_prob_vector:
+                    self.assertLessEqual(predicted_prob, 1)
+                    self.assertGreaterEqual(predicted_prob, 0)
+        
     def test_get_embedding(self):
         
         # Get a last linear layer embedding
         embedding = self.strategy.get_embedding(self.strategy.unlabeled_dataset)
+    
+        # Ensure embedding has number of points equal to the unlabeled dataset
+        self.assertEqual(embedding.shape[0], len(self.strategy.unlabeled_dataset))
+
+        # Ensure embedding has number of features equal to the embedding of the model
+        self.assertEqual(embedding.shape[1], self.strategy.model.get_embedding_dim())
+         
+    def test_get_embedding_dict(self):
+        
+        # Repeat with a dictionary-style dataset
+        dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        embedding = self.strategy.get_embedding(dict_style_dataset)
     
         # Ensure embedding has number of points equal to the unlabeled dataset
         self.assertEqual(embedding.shape[0], len(self.strategy.unlabeled_dataset))
@@ -216,6 +306,94 @@ class TestStrategy(unittest.TestCase):
         # Make sure that ValueError is raised on invalid grad_embedding_type
         with self.assertRaises(ValueError):
             self.strategy.get_grad_embedding(self.strategy.unlabeled_dataset, predict_labels=True, grad_embedding_type='invalid_type')
-            
+    
+    def test_get_grad_embedding_dict(self):
+        
+        # Repeat with a dictionary-style dataset
+        labeled_dict_style_dataset = DictDatasetWrapper(self.strategy.labeled_dataset)
+        unlabeled_dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        
+        # Get grad embedding (bias)
+        bias_grad_embedding = self.strategy.get_grad_embedding(unlabeled_dict_style_dataset, predict_labels=True, grad_embedding_type='bias')
+        
+        # Ensure grad embedding has correct number of points / dimension
+        self.assertEqual(bias_grad_embedding.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(bias_grad_embedding.shape[1], self.strategy.target_classes)
+        
+        # Get grad embedding (linear)
+        linear_grad_embedding = self.strategy.get_grad_embedding(unlabeled_dict_style_dataset, predict_labels=True, grad_embedding_type='linear')
+        
+        # Ensure grad embedding has correct number of points / dimension
+        self.assertEqual(linear_grad_embedding.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(linear_grad_embedding.shape[1], self.strategy.model.get_embedding_dim() * self.strategy.target_classes)
+        
+        # Get grad embedding (bias_linear)
+        bias_linear_grad_embedding = self.strategy.get_grad_embedding(unlabeled_dict_style_dataset, predict_labels=True, grad_embedding_type='bias_linear')
+        
+        # Ensure grad embedding has correct number of points / dimension
+        self.assertEqual(bias_linear_grad_embedding.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(bias_linear_grad_embedding.shape[1], self.strategy.model.get_embedding_dim() * self.strategy.target_classes + self.strategy.target_classes)
+
+        # Get grad embedding on labeled dataset (bias)
+        bias_grad_embedding = self.strategy.get_grad_embedding(labeled_dict_style_dataset, predict_labels=False, grad_embedding_type='bias')
+        
+        # Ensure grad embedding has correct number of points / dimension
+        self.assertEqual(bias_grad_embedding.shape[0], len(self.strategy.labeled_dataset))
+        self.assertEqual(bias_grad_embedding.shape[1], self.strategy.target_classes)
+        
+        # Get grad embedding on labeled dataset (linear)
+        linear_grad_embedding = self.strategy.get_grad_embedding(labeled_dict_style_dataset, predict_labels=False, grad_embedding_type='linear')
+        
+        # Ensure grad embedding has correct number of points / dimension
+        self.assertEqual(linear_grad_embedding.shape[0], len(self.strategy.labeled_dataset))
+        self.assertEqual(linear_grad_embedding.shape[1], self.strategy.model.get_embedding_dim() * self.strategy.target_classes)
+        
+        # Get grad embedding on labeled dataset (bias_linear)
+        bias_linear_grad_embedding = self.strategy.get_grad_embedding(labeled_dict_style_dataset, predict_labels=False, grad_embedding_type='bias_linear')
+        
+        # Ensure grad embedding has correct number of points / dimension
+        self.assertEqual(bias_linear_grad_embedding.shape[0], len(self.strategy.labeled_dataset))
+        self.assertEqual(bias_linear_grad_embedding.shape[1], self.strategy.model.get_embedding_dim() * self.strategy.target_classes + self.strategy.target_classes)       
+        
+        # Make sure that ValueError is raised on invalid grad_embedding_type
+        with self.assertRaises(ValueError):
+            self.strategy.get_grad_embedding(self.strategy.unlabeled_dataset, predict_labels=True, grad_embedding_type='invalid_type')
+    
+    def test_get_feature_embedding(self):
+        
+        # Get feature embedding for our two-layer-net 
+        features = self.strategy.get_feature_embedding(self.strategy.unlabeled_dataset, unlabeled=True, layer_name="linear1")
+        
+        # Ensure feature embedding has correct number of points / dimension
+        self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
+        
+        # Get feature embedding, except with the labeled dataset
+        features = self.strategy.get_feature_embedding(self.strategy.labeled_dataset, unlabeled=False, layer_name="linear1")
+        
+        # Ensure feature embedding has correct number of points / dimension
+        self.assertEqual(features.shape[0], len(self.strategy.labeled_dataset))
+        self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
+    
+    def test_get_feature_embedding_dict(self):
+        
+        # Repeat with a dictionary-style dataset
+        labeled_dict_style_dataset = DictDatasetWrapper(self.strategy.labeled_dataset)
+        unlabeled_dict_style_dataset = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        
+        # Get feature embedding for our two-layer-net 
+        features = self.strategy.get_feature_embedding(unlabeled_dict_style_dataset, unlabeled=True, layer_name="linear1")
+        
+        # Ensure feature embedding has correct number of points / dimension
+        self.assertEqual(features.shape[0], len(self.strategy.unlabeled_dataset))
+        self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
+        
+        # Get feature embedding, except with the labeled dataset
+        features = self.strategy.get_feature_embedding(labeled_dict_style_dataset, unlabeled=False, layer_name="linear1")
+        
+        # Ensure feature embedding has correct number of points / dimension
+        self.assertEqual(features.shape[0], len(self.strategy.labeled_dataset))
+        self.assertEqual(features.shape[1], self.strategy.model.linear2.in_features)
+    
 if __name__ == "__main__":
     unittest.main()

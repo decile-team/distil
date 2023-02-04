@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.core_set import CoreSet
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -28,11 +28,32 @@ class TestCoreSet(unittest.TestCase):
         
         # Create args array
         device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-        args = {'batch_size': 1, 'device': device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': device, 'loss': torch.nn.functional.cross_entropy}
         
         self.strategy = CoreSet(rand_labeled_dataset, rand_unlabeled_dataset, mymodel, self.classes, args) 
         
     def test_select(self):
+        
+        budget = 10
+        idxs = self.strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(self.strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_dict(self):
+        
+        # Update the datasets to be dict-style
+        new_labeled = DictDatasetWrapper(self.strategy.labeled_dataset)
+        new_unlabeled = DictDatasetWrapper(self.strategy.unlabeled_dataset)
+        self.strategy.update_data(new_labeled, new_unlabeled)
         
         budget = 10
         idxs = self.strategy.select(budget)

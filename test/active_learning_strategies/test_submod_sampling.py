@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.submod_sampling import SubmodularSampling
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -34,7 +34,7 @@ class TestSubmodularSampling(unittest.TestCase):
         budget = 10
         
         submod_args = {'submod': 'facility_location', 'metric': 'cosine'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         
         # Should pass; metric is okay
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
@@ -55,7 +55,7 @@ class TestSubmodularSampling(unittest.TestCase):
         budget = 10
         
         submod_args = {'submod': 'facility_location', 'representation': 'linear'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         
         # Should pass the following representation choices
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
@@ -83,7 +83,7 @@ class TestSubmodularSampling(unittest.TestCase):
         budget = 10
         
         submod_args = {'submod': 'facility_location'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         
         # Should pass the following submod choices
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
@@ -93,7 +93,7 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'feature_based'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         strategy.select(budget)
     
@@ -101,7 +101,7 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'graph_cut', 'lambda_val': 1}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         strategy.select(budget)
         
@@ -115,7 +115,7 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'log_determinant', 'lambda_val': 1}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         strategy.select(budget)
         
@@ -129,7 +129,7 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'disparity_min'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         strategy.select(budget)
         
@@ -137,7 +137,7 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'disparity_sum'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         strategy.select(budget)
     
@@ -146,7 +146,7 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'invalid'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
         self.assertRaises(type(BaseException()), strategy.select, budget)
         
@@ -154,8 +154,28 @@ class TestSubmodularSampling(unittest.TestCase):
         
         budget = 10
         submod_args = {'submod': 'facility_location'}
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
         strategy = SubmodularSampling(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.mymodel, self.classes, args)
+        idxs = strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_dict(self):
+        
+        # Repeat selection as before; however, utilize dictionary-style datasets
+        budget = 10
+        submod_args = {'submod': 'facility_location'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'submod_args': submod_args}
+        strategy = SubmodularSampling(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
         # Ensure that indices are within the range spanned by the unlabeled dataset

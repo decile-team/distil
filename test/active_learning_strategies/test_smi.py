@@ -1,6 +1,6 @@
 from distil.utils.models.simple_net import TwoLayerNet
 from distil.active_learning_strategies.smi import SMI
-from test.utils import MyLabeledDataset, MyUnlabeledDataset
+from test.utils import MyLabeledDataset, MyUnlabeledDataset, DictDatasetWrapper
 
 import unittest
 import torch
@@ -38,7 +38,7 @@ class TestSMI(unittest.TestCase):
     def test_embedding_type(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'smi_function': 'fl2mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'embedding_type': 'gradients', 'smi_function': 'fl2mi'}
         
         # Should work for the following choices
         strategy = SMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.mymodel, self.classes, args)
@@ -57,7 +57,7 @@ class TestSMI(unittest.TestCase):
     def test_smi_function(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy}
         
         # Should work for the following choices
         args['smi_function'] = 'fl1mi'
@@ -88,8 +88,27 @@ class TestSMI(unittest.TestCase):
     def test_select(self):
         
         budget = 10
-        args = {'batch_size': 1, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
         strategy = SMI(self.rand_labeled_dataset, self.rand_unlabeled_dataset, self.rand_query_dataset, self.mymodel, self.classes, args)
+        idxs = strategy.select(budget)
+        
+        # Ensure that indices are within the range spanned by the unlabeled dataset
+        for idx in idxs:
+            self.assertLess(idx, len(strategy.unlabeled_dataset))
+            self.assertGreaterEqual(idx, 0)
+            
+        # Ensure that `budget` idx were returned
+        self.assertEqual(budget, len(idxs))
+        
+        # Ensure that no point is selected multiple times
+        self.assertEqual(len(idxs), len(set(idxs)))
+        
+    def test_select_dict(self):
+        
+        # Try dictionary-style datasets
+        budget = 10
+        args = {'batch_size': 20, 'device': self.device, 'loss': torch.nn.functional.cross_entropy, 'smi_function': 'fl2mi'}
+        strategy = SMI(DictDatasetWrapper(self.rand_labeled_dataset), DictDatasetWrapper(self.rand_unlabeled_dataset), DictDatasetWrapper(self.rand_query_dataset), self.mymodel, self.classes, args)
         idxs = strategy.select(budget)
         
         # Ensure that indices are within the range spanned by the unlabeled dataset

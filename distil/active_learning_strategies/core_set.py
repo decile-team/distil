@@ -77,7 +77,13 @@ class CoreSet(Strategy):
                 self.wrapped_dataset = wrapped_dataset
                 
             def __getitem__(self, index):
-                features, label = self.wrapped_dataset[index]
+                instance = self.wrapped_dataset[index]
+                if type(instance) == dict:
+                    if "labels" in instance:
+                        del instance["labels"]
+                    features = instance
+                else:
+                    features = instance[0]
                 return features
             
             def __len__(self):

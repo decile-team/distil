@@ -9,6 +9,17 @@ from torch.utils.data import DataLoader, ConcatDataset, Dataset
 
 import math
 
+def dict_to(dictionary, device):
+    
+    # Predict the most likely class
+    if type(dictionary) == dict:
+        for key in dictionary:
+            value = dictionary[key]
+            if hasattr(value, "to"):
+                dictionary[key] = value.to(device=device)
+    
+    return dictionary
+
 class GLISTER(Strategy):
     
     """
@@ -123,6 +134,27 @@ class GLISTER(Strategy):
         self.grads_per_elem = self.get_grad_embedding(self.unlabeled_dataset, True)
         self.prev_grads_sum = torch.sum(self.get_grad_embedding(self.labeled_dataset, False), dim=0).view(1, -1)
 
+    def _procure_labels(self, input_dataset):
+        
+        loader = DataLoader(input_dataset, shuffle=False, batch_size = self.args['batch_size'])
+        
+        # If the input is a dictionary type, procure the labels by indexing the batch
+        labels = None
+        if type(input_dataset[0]) == dict:
+            for dict_batch in loader:
+                if labels is None:
+                    labels = dict_batch["labels"]
+                else:
+                    labels = torch.cat([labels, dict_batch["labels"]])
+        else:
+            for _, batch_labels in loader:
+                if labels is None:
+                    labels = batch_labels
+                else:
+                    labels = torch.cat([labels, batch_labels])
+                    
+        return labels         
+
     def _update_grads_val(self,grads_currX=None, first_init=False):
 
         embDim = self.model.get_embedding_dim()
@@ -133,8 +165,6 @@ class GLISTER(Strategy):
                 self.out = torch.zeros(len(self.validation_dataset), self.target_classes).to(self.device)
                 self.emb = torch.zeros(len(self.validation_dataset), embDim).to(self.device)
             else:
-                predicted_y = self.predict(self.unlabeled_dataset).cpu() # Bring to CPU as the loaders used require it
-                
                 class AddLabelDataset(Dataset):
                     
                     def __init__(self, wrapped_unlabeled_dataset, added_labels):
@@ -150,7 +180,30 @@ class GLISTER(Strategy):
                     def __len__(self):
                         return len(self.wrapped_unlabeled_dataset)
                 
-                pseudolabeled_dataset = AddLabelDataset(self.unlabeled_dataset, predicted_y)
+                class AddLabelDictDataset(Dataset):
+                
+                    def __init__(self, wrapped_unlabeled_dataset, added_labels):
+                        self.wrapped_unlabeled_dataset = wrapped_unlabeled_dataset
+                        self.added_labels = added_labels
+                        
+                    def __getitem__(self, index):
+                        unlabeled_data = self.wrapped_unlabeled_dataset[index]
+                        label = self.added_labels[index]
+                        
+                        new_labeled_data = unlabeled_data
+                        new_labeled_data["labels"] = label
+                        
+                        return new_labeled_data
+                    
+                    def __len__(self):
+                        return len(self.wrapped_unlabeled_dataset)    
+                
+                # Prepare the "new" dataset differently, depending on the type of the input
+                predicted_y = self.predict(self.unlabeled_dataset).cpu() # Bring to CPU as the loaders used require it
+                if type(self.unlabeled_dataset[0]) == dict:
+                    pseudolabeled_dataset = AddLabelDictDataset(self.unlabeled_dataset, predicted_y)                    
+                else:
+                    pseudolabeled_dataset = AddLabelDataset(self.unlabeled_dataset, predicted_y)
                 
                 self.new_dataset = ConcatDataset([pseudolabeled_dataset, self.labeled_dataset])
 
@@ -164,11 +217,24 @@ class GLISTER(Strategy):
             
             with torch.no_grad():
 
-                for x, y in loader:
+                for loaded_instance in loader:
+                    
+                    if type(loaded_instance) == dict:
+                        y = loaded_instance["labels"]   # Per our convention, we expect labels in dictionary-type inputs to be in "labels" field
+                        del loaded_instance["labels"]
+                        x = loaded_instance
+                    else:
+                        x = loaded_instance[0]
+                        y = loaded_instance[1]
+                    
                     idxs = [iter_index for iter_index in range(evaluated_points, evaluated_points + y.shape[0])]
-                    x = x.to(self.device)
+                    if type(x) == dict:
+                        x = dict_to(x, self.device)
+                        init_out, init_l1 = self.model(**x,last=True)
+                    else:
+                        x = x.to(self.device)    
+                        init_out, init_l1 = self.model(x,last=True)
                     y = y.to(self.device)
-                    init_out, init_l1 = self.model(x,last=True)
                     self.emb[idxs] = init_l1 
                     for j in range(self.target_classes):
                         try:
@@ -189,11 +255,11 @@ class GLISTER(Strategy):
             
             if self.validation_dataset is not None:
                 self.grads_val_curr /= len(self.validation_dataset)
-                _, self.Y_Val = next(iter(DataLoader(self.validation_dataset, shuffle = False, batch_size = len(self.validation_dataset))))
+                self.Y_Val = self._procure_labels(self.validation_dataset)
                 self.Y_Val = self.Y_Val.to(self.device)
             else:
                 self.grads_val_curr /= predicted_y.shape[0]
-                _, self.Y_new = next(iter(DataLoader(self.new_dataset, shuffle = False, batch_size = len(self.new_dataset))))
+                self.Y_new = self._procure_labels(self.new_dataset)
                 self.Y_new = self.Y_new.to(self.device)
 
         elif grads_currX is not None:
