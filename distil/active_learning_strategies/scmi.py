@@ -93,7 +93,7 @@ class SCMI(Strategy):
         self.model.eval()
 
         #Get hyperparameters from args dict
-        optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
+        optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'LazyGreedy'
         metric = self.args['metric'] if 'metric' in self.args else 'cosine'
         eta = self.args['eta'] if 'eta' in self.args else 1
         nu = self.args['nu'] if 'nu' in self.args else 1
@@ -118,15 +118,15 @@ class SCMI(Strategy):
             raise ValueError("Provided representation must be one of gradients or features")
 
         #Compute image-image kernel
-        data_sijs = submodlib.helper.create_kernel(X=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
+        data_sijs = (submodlib.helper.create_kernel(X=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn") + 1.) / 2.
         #Compute query-query kernel
         if(self.args['scmi_function']=='logdetcmi'):
-            query_query_sijs = submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), metric=metric, method="sklearn")
-            private_private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), metric=metric, method="sklearn")
-            query_private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), X_rep=query_embedding.cpu().numpy(), metric=metric, method="sklearn")
+            query_query_sijs = (submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), metric=metric, method="sklearn") + 1.) / 2.
+            private_private_sijs = (submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), metric=metric, method="sklearn") + 1.) / 2.
+            query_private_sijs = (submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), X_rep=query_embedding.cpu().numpy(), metric=metric, method="sklearn") + 1.) / 2.
         #Compute image-query kernel
-        query_sijs = submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), X_rep=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
-        private_sijs = submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), X_rep=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn")
+        query_sijs = (submodlib.helper.create_kernel(X=query_embedding.cpu().numpy(), X_rep=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn") + 1.) / 2.
+        private_sijs = (submodlib.helper.create_kernel(X=private_embedding.cpu().numpy(), X_rep=unlabeled_data_embedding.cpu().numpy(), metric=metric, method="sklearn") + 1.) / 2.
         
         if(self.args['scmi_function']=='flcmi'):
             obj = submodlib.FacilityLocationConditionalMutualInformationFunction(n=unlabeled_data_embedding.shape[0],
